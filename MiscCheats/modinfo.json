@@ -1,0 +1,464 @@
+{
+  "name": "Misc Cheats",
+  "author": "Aidanamite",
+  "description": "Adds a bunch of little cheat settings",
+  "version": "1.2.3",
+  "license": "GNU AGPLv3",
+  "icon": "icon.png",
+  "banner": "banner.jpg",
+  "gameVersion": "1.0",
+  "requiredByAllPlayers": false,
+  "updateUrl": "https://www.raftmodding.com/api/v1/mods/misc-cheats/version.txt",
+  "isModPermanent": false,
+  "excludedFiles": [],
+  "modSettings": [
+    {
+      "type": "section",
+      "text": "Multipliers",
+      "name": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Computer Puzzle Time Multiplier",
+      "name": "puzzleTime",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Engine Power Multiplier",
+      "name": "enginePower",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Animal Looting Time Multiplier",
+      "name": "lootTime",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Mining Time Multiplier",
+      "name": "mineTime",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Seagull Awareness Multiplier",
+      "name": "seagullAware",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Metal Detector Treasure Multiplier",
+      "name": "metalTreasure",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Fishing Wait Time Multiplier",
+      "name": "fishingWait",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Fishing Catch Window Multiplier",
+      "name": "fishingWindow",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Item Loot Multiplier",
+      "name": "itemLooting",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Battery Max Capacity Multiplier",
+      "name": "batteryMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Equipment Max Durability Multiplier",
+      "name": "equipmentMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Tool Max Durability Multiplier",
+      "name": "toolMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Food Max Uses Multiplier",
+      "name": "foodMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Collection Net Max Capacity Multiplier",
+      "name": "collectorMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Sprinkler Radius Multiplier",
+      "name": "sprinklerRadius",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Sprinkler Max Vertical Distance Multiplier",
+      "name": "sprinklerDistance",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Player Use Distance Multiplier",
+      "name": "playerReach",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Electric Zipline Acceleration Multiplier",
+      "name": "zipAccel",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Electric Zipline Max Speed Multiplier",
+      "name": "zipSpeed",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Brick Dry Time Multiplier",
+      "name": "brickDry",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Animal Production Time Multiplier",
+      "name": "animalProduce",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Melee Weapon Range Multiplier",
+      "name": "meleeWeaponRange",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Melee Weapon Radius Multiplier",
+      "name": "meleeWeaponRadius",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "section",
+      "text": "On/Off",
+      "name": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Return Armor Resources",
+      "name": "returnArmor",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow Respawn In Hardmode",
+      "name": "hardRespawn",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow Honeycomb In Refiners",
+      "name": "refineComb",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Free Vending Machines",
+      "name": "freeVending",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Sniper Ranged Weapons",
+      "name": "sniperRange",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Equal Fishing Loot Chances",
+      "name": "fishingEqual",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Free Crafting/Building",
+      "name": "freeCrafting",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Keep Inventory On Respawn",
+      "name": "keepInventory",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Reciever Works Anywhere",
+      "name": "recieverAnywhere",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Antenna Works Anywhere",
+      "name": "antennaAnywhere",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow Smelting Bolts and Hinges",
+      "name": "recycleMetal",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Automatic Doors",
+      "name": "autoDoor",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow Forced Mining",
+      "name": "forceMining",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Disable Scarecrow Damage",
+      "name": "invincibleScarecrow",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow Console While Paused",
+      "name": "pausedConsoleFix",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Axe is a Weapon",
+      "name": "axeWeapon",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Trade Posts Sell Blueprints",
+      "name": "buyBlueprints",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Timeless Hearty Stew",
+      "name": "permHearty",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "section",
+      "text": "Other",
+      "name": "other"
+    },
+    {
+      "type": "keybind",
+      "text": "Sniper Zoom Key",
+      "name": "zoomKey",
+      "section": "other"
+    },
+    {
+      "type": "input",
+      "text": "Sniper Zoom FOV",
+      "name": "zoomFOV",
+      "mode": "IntegerNumber",
+      "default": "30",
+      "section": "other"
+    },
+    {
+      "type": "input",
+      "text": "Reciever Auto-Off Timer (secs)",
+      "name": "autoOff",
+      "mode": "DecimalNumber",
+      "default": "-1",
+      "section": "other"
+    },
+    {
+      "type": "input",
+      "text": "Console Max Entries Override",
+      "name": "consoleLines",
+      "mode": "IntegerNumber",
+      "default": "-1",
+      "section": "other"
+    },
+    {
+      "type": "combobox",
+      "text": "Cooking Table Mode",
+      "name": "cookingTableMode",
+      "default": "Default",
+      "values": [ "Default", "Disable Pickup Item", "Better Item Detection" ],
+      "section": "other"
+    },
+    {
+      "type": "combobox",
+      "text": "Return Dishes",
+      "name": "returnDishes",
+      "default": "Default",
+      "values": [ "Default", "Mutliplayer Safe", "Full" ],
+      "section": "other"
+    },
+    {
+      "type": "combobox",
+      "text": "Seagull Attack Prevention",
+      "name": "seagulls",
+      "default": "No Change",
+      "values": [
+        "No Change",
+        "Ignore Flowers",
+        "Ignore Medium Plants",
+        "Ignore Medium And Flowers",
+        "Ignore All"
+      ],
+      "section": "other"
+    },
+    {
+      "type": "input",
+      "text": "Min Foundations For Shark Attack",
+      "name": "sharkAttackThresholdMin",
+      "mode": "IntegerNumber",
+      "default": "0",
+      "section": "other"
+    },
+    {
+      "type": "input",
+      "text": "Max Foundations For Shark Attack",
+      "name": "sharkAttackThresholdMax",
+      "mode": "IntegerNumber",
+      "default": "-1",
+      "section": "other"
+    },
+    {
+      "type": "input",
+      "text": "FOV Override",
+      "name": "FOVOverride",
+      "mode": "IntegerNumber",
+      "default": "-1",
+      "section": "other"
+    },
+    {
+      "type": "input",
+      "text": "Time Speed",
+      "name": "timeSpeed",
+      "mode": "DecimalNumber",
+      "default": "",
+      "section": "other"
+    },
+    {
+      "type": "combobox",
+      "text": "Axe-on-Block Durability Loss",
+      "name": "axeDur",
+      "default": "No Change",
+      "values": [
+        "No Change",
+        "Once on Break",
+        "Disabled"
+      ],
+      "section": "other"
+    },
+    {
+      "type": "multibutton",
+      "buttons": [ "Learn Recipes", "Research All", "Discover Blueprints" ],
+      "name": "learning",
+      "section": "other",
+      "access": "world"
+    },
+    {
+      "type": "multibutton",
+      "buttons": [ "Forget Recipes", "Unresearch All", "Forget Blueprints" ],
+      "name": "unlearning",
+      "section": "other",
+      "access": "worldcustom"
+    },
+    {
+      "type": "button",
+      "text": "Reset Settings To Defaults",
+      "name": "reset"
+    }
+  ] 
+}
