@@ -94,10 +94,13 @@ namespace MiscCheats
         public float zipSpeed = 1;
         public bool buyBlueprints = false;
         public bool permHearty = false;
+        public bool boostedStacks = false;
         public float brickDry = 1;
         public float animalProduce = 1;
         public float meleeWeaponRange = 1;
         public float meleeWeaponRadius = 1;
+        public float shovelTime = 1;
+        public int treasureSpeed = 1;
         public bool AllowSharkAttack => ComponentManager<RaftBounds>.Value.FoundationCount >= sharkAttackThresholdMin && (sharkAttackThresholdMax < 0 || sharkAttackThresholdMax >= ComponentManager<RaftBounds>.Value.FoundationCount);
         public static Item_Base scrappedGlass;
         public static RectTransform parent;
@@ -134,6 +137,11 @@ namespace MiscCheats
                 }
             harmony.UnpatchAll(harmony.Id);
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            if (boostedStacks)
+            {
+                boostedStacks = false;
+                UpdateStackSizes();
+            }
             Log("Mod has been unloaded!");
         }
 
@@ -202,6 +210,10 @@ namespace MiscCheats
             animalProduce = ExtraSettingsAPI_GetInputValue("animalProduce").ParseFloat();
             meleeWeaponRange = ExtraSettingsAPI_GetInputValue("meleeWeaponRange").ParseFloat();
             meleeWeaponRadius = ExtraSettingsAPI_GetInputValue("meleeWeaponRadius").ParseFloat();
+            boostedStacks = ExtraSettingsAPI_GetCheckboxState("boostedStacks");
+            shovelTime = ExtraSettingsAPI_GetInputValue("shovelTime").ParseFloat();
+            treasureSpeed = ExtraSettingsAPI_GetInputValue("treasureSpeed").ParseInt();
+            UpdateStackSizes();
         }
 
         void SetConsoleCount(int count)
@@ -229,8 +241,25 @@ namespace MiscCheats
                     Destroy(RConsole.logs[0]);
                     RConsole.logs.RemoveAt(0);
                 }
+        }
 
-
+        Dictionary<Item_Base, int> PrevStackSizes = new Dictionary<Item_Base, int>();
+        void UpdateStackSizes()
+        {
+            if (!boostedStacks)
+            {
+                foreach (var p in PrevStackSizes)
+                    Traverse.Create(p.Key.settings_Inventory).Field("stackSize").SetValue(p.Value);
+                PrevStackSizes.Clear();
+                return;
+            }
+            foreach (var i in ItemManager.GetAllItems())
+                if (i.settings_Inventory.StackSize > 1 || i.MaxUses <= 1)
+                {
+                    var f = Traverse.Create(i.settings_Inventory).Field<int>("stackSize");
+                    PrevStackSizes[i] = f.Value;
+                    f.Value = i.MaxUses > 1 ? int.MaxValue / i.MaxUses : int.MaxValue;
+                }
         }
 
         void ExtraSettingsAPI_ButtonPress(string SettingName)
@@ -644,12 +673,12 @@ namespace MiscCheats
         static void Prefix(PickupChanneling __instance, ref float time)
         {
             if (Main.instance.lootTime != 1 && __instance.GetComponentInParent<Network_Entity>())
-                time = Main.instance.lootTime == 0 ? float.PositiveInfinity : (time / Main.instance.lootTime);
+                time = time.SafeDivide(Main.instance.lootTime);
             if (Main.instance.mineTime != 1)
             {
                 var i = __instance.GetComponentInParent<PickupItem>();
                 if (i && i.tag == "PickupHook")
-                    time = Main.instance.mineTime == 0 ? float.PositiveInfinity : (time / Main.instance.mineTime);
+                    time = time.SafeDivide(Main.instance.mineTime);
             }
         }
     }
@@ -1634,7 +1663,7 @@ namespace MiscCheats
             code.Insert(code.FindIndex(x => x.operand is MethodInfo m && m.Name == "get_deltaTime") + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_BrickDryProgress), nameof(ModifyTime))));
             return code;
         }
-        static float ModifyTime(float original) => original != 0 ? original / Main.instance.brickDry : original;
+        static float ModifyTime(float original) => original != 0 ? original.SafeDivide(Main.instance.brickDry) : original;
     }
 
     [HarmonyPatch]
@@ -1652,7 +1681,7 @@ namespace MiscCheats
             code.Insert(code.FindIndex(x => x.operand is MethodInfo m && m.Name == "get_deltaTime") + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_AnimalsUpdateDrop), nameof(ModifyTime))));
             return code;
         }
-        static float ModifyTime(float original) => original != 0 ? original / Main.instance.animalProduce : original;
+        static float ModifyTime(float original) => original != 0 ? original.SafeDivide(Main.instance.animalProduce) : original;
     }
 
     [HarmonyPatch]
@@ -1680,6 +1709,33 @@ namespace MiscCheats
 
         static float ModifyRange(float original) => original * Main.instance.meleeWeaponRange;
         static float ModifyRadius(float original) => original * Main.instance.meleeWeaponRadius;
+    }
+
+    [HarmonyPatch(typeof(UseableItem),"ChannelItem")]
+    static class Patch_ChannelUseableItem
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = instructions.ToList();
+            code.InsertRange(
+                code.FindIndex(x => x.operand is MethodInfo m && m.Name == "get_deltaTime") + 1,
+                new[] {
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_ChannelUseableItem), nameof(ModifyTime)))
+                });
+            return code;
+        }
+        static float ModifyTime(float original, UseableItem usingItem) => original != 0 && usingItem is Shovel ? original.SafeDivide(Main.instance.shovelTime) : original;
+    }
+
+    [HarmonyPatch(typeof(TreasurePoint), "SendNetworkProgressExcevation")]
+    static class Patch_ProgressTreasureExcevation
+    {
+        static void Prefix(ref int amount)
+        {
+            if (Main.instance.treasureSpeed != 0)
+                amount *= Main.instance.treasureSpeed;
+        }
     }
 
     static class ExtentionMethods
@@ -1893,5 +1949,7 @@ namespace MiscCheats
 
         static FieldInfo _rayHit => AccessTools.Field(typeof(Axe), "rayHit");
         public static RaycastHit RayHit(this Axe axe) => (RaycastHit)_rayHit.GetValue(axe);
+
+        public static float SafeDivide(this float divided, float divider) => divided == 0 ? 0 : divider == 0 ? divided < 0 ? float.NegativeInfinity : float.PositiveInfinity : (divided / divider);
     }
 }

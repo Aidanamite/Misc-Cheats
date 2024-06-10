@@ -2,7 +2,7 @@
   "name": "Misc Cheats",
   "author": "Aidanamite",
   "description": "Adds a bunch of little cheat settings",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -202,6 +202,22 @@
       "section": "multi"
     },
     {
+      "type": "input",
+      "text": "Shoveling Time Multiplier",
+      "name": "shovelTime",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
+      "type": "input",
+      "text": "Treasure Digging Speed Multiplier",
+      "name": "treasureSpeed",
+      "mode": "IntegerNumber",
+      "default": "1",
+      "section": "multi"
+    },
+    {
       "type": "section",
       "text": "On/Off",
       "name": "onoff"
@@ -329,6 +345,13 @@
       "type": "checkbox",
       "text": "Timeless Hearty Stew",
       "name": "permHearty",
+      "default": false,
+      "section": "onoff"
+    },
+    {
+      "type": "checkbox",
+      "text": "Boosted Stack Sizes",
+      "name": "boostedStacks",
       "default": false,
       "section": "onoff"
     },
