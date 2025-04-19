@@ -257,8 +257,9 @@ namespace MiscCheats
                 if (i.settings_Inventory.StackSize > 1 || i.MaxUses <= 1)
                 {
                     var f = Traverse.Create(i.settings_Inventory).Field<int>("stackSize");
-                    PrevStackSizes[i] = f.Value;
-                    f.Value = i.MaxUses > 1 ? int.MaxValue / i.MaxUses : int.MaxValue;
+                    if (!PrevStackSizes.ContainsKey(i))
+                        PrevStackSizes[i] = f.Value;
+                    f.Value = Math.Min(i.MaxUses > 1 ? int.MaxValue / i.MaxUses : int.MaxValue, short.MaxValue);
                 }
         }
 
