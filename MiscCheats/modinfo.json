@@ -1,8 +1,8 @@
 {
-  "name": "Misc Cheats",
+  "name": "Misc Cheats and Tweaks",
   "author": "Aidanamite",
-  "description": "Adds a bunch of little cheat settings",
-  "version": "1.3.1",
+  "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
+  "version": "1.5.0",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -14,40 +14,71 @@
   "modSettings": [
     {
       "type": "section",
-      "text": "Multipliers",
-      "name": "multi"
+      "text": "Animals",
+      "name": "animal",
+      "tooltip": [
+        "Settings that control animal behaviours and spawning.",
+        "",
+        "Most, but not all, of these settings are only available to the world host."
+      ]
+    },
+    {
+      "type": "checkbox",
+      "name": "invisible",
+      "text": "All Players Invisible To Enemies",
+      "default": false,
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "invisible",
+      "tooltip": "<color=#007F00>[Host only]</color> Makes all players invisible to enemies, they will just go about their business.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "invisibleHost",
+      "text": "Invisible To Enemies",
+      "default": false,
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "invisibleHost",
+      "tooltip": "<color=#007F00>[Host only]</color> Makes the host invisible to enemies, they will act like you're not even there.",
+      "splitResetButton": true,
+      "resetButton": true
     },
     {
       "type": "input",
-      "text": "Computer Puzzle Time Multiplier",
-      "name": "puzzleTime",
+      "text": "Animal Respawn Delay Multiplier",
+      "name": "spawnSpeed",
       "mode": "DecimalNumber",
       "default": "1",
-      "section": "multi"
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "spawnSpeed",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> Multiplies the time it takes for animals on islands to respawn.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them take longer to respawn."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
     },
     {
       "type": "input",
-      "text": "Engine Power Multiplier",
-      "name": "enginePower",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Animal Looting Time Multiplier",
-      "name": "lootTime",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Mining Time Multiplier",
-      "name": "mineTime",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
+      "text": "Seagull Count",
+      "name": "seagullCount",
+      "mode": "IntegerNumber",
+      "default": "",
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "seagullCount",
+      "memberFallback": -1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> Changes the max number of seagulls that can be flying around the top of the raft at once.",
+        "Leave blank or put a negative number to leave it vanilla."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
     },
     {
       "type": "input",
@@ -55,356 +86,28 @@
       "name": "seagullAware",
       "mode": "DecimalNumber",
       "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Metal Detector Treasure Multiplier",
-      "name": "metalTreasure",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Fishing Wait Time Multiplier",
-      "name": "fishingWait",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Fishing Catch Window Multiplier",
-      "name": "fishingWindow",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Item Loot Multiplier",
-      "name": "itemLooting",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Battery Max Capacity Multiplier",
-      "name": "batteryMax",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Equipment Max Durability Multiplier",
-      "name": "equipmentMax",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Tool Max Durability Multiplier",
-      "name": "toolMax",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Food Max Uses Multiplier",
-      "name": "foodMax",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Collection Net Max Capacity Multiplier",
-      "name": "collectorMax",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Sprinkler Radius Multiplier",
-      "name": "sprinklerRadius",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Sprinkler Max Vertical Distance Multiplier",
-      "name": "sprinklerDistance",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Player Use Distance Multiplier",
-      "name": "playerReach",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Electric Zipline Acceleration Multiplier",
-      "name": "zipAccel",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Electric Zipline Max Speed Multiplier",
-      "name": "zipSpeed",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Brick Dry Time Multiplier",
-      "name": "brickDry",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Animal Production Time Multiplier",
-      "name": "animalProduce",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Melee Weapon Range Multiplier",
-      "name": "meleeWeaponRange",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Melee Weapon Radius Multiplier",
-      "name": "meleeWeaponRadius",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Shoveling Time Multiplier",
-      "name": "shovelTime",
-      "mode": "DecimalNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "input",
-      "text": "Treasure Digging Speed Multiplier",
-      "name": "treasureSpeed",
-      "mode": "IntegerNumber",
-      "default": "1",
-      "section": "multi"
-    },
-    {
-      "type": "section",
-      "text": "On/Off",
-      "name": "onoff"
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "seagullAware",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> Multiplies the seagull's view radius. This affects how close a player needs to get to \"startle\" a seagull when it's nesting or attacking crops.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them see players from further away."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
     },
     {
       "type": "checkbox",
-      "text": "Return Armor Resources",
-      "name": "returnArmor",
+      "name": "seagullEggs",
+      "text": "Seagulls Can Lay Eggs",
       "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Allow Respawn In Hardmode",
-      "name": "hardRespawn",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Allow Honeycomb In Refiners",
-      "name": "refineComb",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Free Vending Machines",
-      "name": "freeVending",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Sniper Ranged Weapons",
-      "name": "sniperRange",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Equal Fishing Loot Chances",
-      "name": "fishingEqual",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Free Crafting/Building",
-      "name": "freeCrafting",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Keep Inventory On Respawn",
-      "name": "keepInventory",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Reciever Works Anywhere",
-      "name": "recieverAnywhere",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Antenna Works Anywhere",
-      "name": "antennaAnywhere",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Allow Smelting Bolts and Hinges",
-      "name": "recycleMetal",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Automatic Doors",
-      "name": "autoDoor",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Allow Forced Mining",
-      "name": "forceMining",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Disable Scarecrow Damage",
-      "name": "invincibleScarecrow",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Allow Console While Paused",
-      "name": "pausedConsoleFix",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Axe is a Weapon",
-      "name": "axeWeapon",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Trade Posts Sell Blueprints",
-      "name": "buyBlueprints",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Timeless Hearty Stew",
-      "name": "permHearty",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "checkbox",
-      "text": "Boosted Stack Sizes",
-      "name": "boostedStacks",
-      "default": false,
-      "section": "onoff"
-    },
-    {
-      "type": "section",
-      "text": "Other",
-      "name": "other"
-    },
-    {
-      "type": "keybind",
-      "text": "Sniper Zoom Key",
-      "name": "zoomKey",
-      "section": "other"
-    },
-    {
-      "type": "input",
-      "text": "Sniper Zoom FOV",
-      "name": "zoomFOV",
-      "mode": "IntegerNumber",
-      "default": "30",
-      "section": "other"
-    },
-    {
-      "type": "input",
-      "text": "Reciever Auto-Off Timer (secs)",
-      "name": "autoOff",
-      "mode": "DecimalNumber",
-      "default": "-1",
-      "section": "other"
-    },
-    {
-      "type": "input",
-      "text": "Console Max Entries Override",
-      "name": "consoleLines",
-      "mode": "IntegerNumber",
-      "default": "-1",
-      "section": "other"
-    },
-    {
-      "type": "combobox",
-      "text": "Cooking Table Mode",
-      "name": "cookingTableMode",
-      "default": "Default",
-      "values": [ "Default", "Disable Pickup Item", "Better Item Detection" ],
-      "section": "other"
-    },
-    {
-      "type": "combobox",
-      "text": "Return Dishes",
-      "name": "returnDishes",
-      "default": "Default",
-      "values": [ "Default", "Mutliplayer Safe", "Full" ],
-      "section": "other"
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "seagullEggs",
+      "tooltip": "<color=#007F00>[Host only]</color> Re-enables the seagull's ability to lay eggs in the nests.",
+      "splitResetButton": true,
+      "resetButton": true
     },
     {
       "type": "combobox",
@@ -418,7 +121,85 @@
         "Ignore Medium And Flowers",
         "Ignore All"
       ],
-      "section": "other"
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "seagulls",
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> Makes seagulls ignore specific categories of plants when picking a target to attack.",
+        "• No Change = This is the vanilla behaviour.",
+        "• Ignore Flowers = They will ignore all flower types.",
+        "• Ignore Medium Plants = They will ignore medium sized plants like the pineapple and watermelon.",
+        "• Ignore Medium And Flowers = This has the effects of both \"Ignore Flowers\" and \"Ignore Medium Plants\".",
+        "• Ignore All = They will not attack crops at all."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Animal Production Time Multiplier",
+      "name": "animalProduce",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "animalProduce",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> Multiplies the time it takes for an domestic animal to produce more resource.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them take longer."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Extra Shark Count",
+      "name": "sharkCount",
+      "mode": "IntegerNumber",
+      "default": "0",
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "sharkCount",
+      "memberFallback": 0,
+      "tooltip": "<color=#007F00>[Host only]</color> This will make additional sharks spawn and follow the raft. This does not/cannot prevent the original shark from spawning. The total number of sharks will be this setting plus 1.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Extra Shark Respawn Delay",
+      "name": "sharkExtraRespawn",
+      "mode": "IntegerNumber",
+      "default": "300",
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "sharkExtraRespawn",
+      "memberFallback": 300,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This is the time, in seconds, it takes for the \"Extra Sharks\" from the <color=#00FFFF>Extra Shark Count</color> setting to spawn and respawn. This does not affect the normal shark respawn timer.",
+        "",
+        "Keep in mind, this is also affected by the <color=#00FFFF>Shark Respawn Delay Multiplier</color> setting."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Shark Respawn Delay Multiplier",
+      "name": "sharkRespawn",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "sharkRespawn",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> Multiplies the time it takes for sharks to respawn.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them take longer."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
     },
     {
       "type": "input",
@@ -426,7 +207,16 @@
       "name": "sharkAttackThresholdMin",
       "mode": "IntegerNumber",
       "default": "0",
-      "section": "other"
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "sharkAttackThresholdMin",
+      "memberFallback": 0,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This is the minimum number of foundations your raft must have for the shark to be able to attack.",
+        "At 0 or less, the shark will not be prevented from attacking."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
     },
     {
       "type": "input",
@@ -434,23 +224,405 @@
       "name": "sharkAttackThresholdMax",
       "mode": "IntegerNumber",
       "default": "-1",
-      "section": "other"
+      "access": "splitcustom",
+      "section": "animal",
+      "member": "sharkAttackThresholdMax",
+      "memberFallback": -1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This is the maximum number of foundations your raft can have before the shark is too intimidated to attack it.",
+        "If set to a negative number, the shark will not be prevented from attacking."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
     },
     {
-      "type": "input",
-      "text": "FOV Override",
-      "name": "FOVOverride",
-      "mode": "IntegerNumber",
-      "default": "-1",
-      "section": "other"
+      "type": "section",
+      "text": "  Per Animal",
+      "name": "animal-spec",
+      "section": "animal",
+      "tooltip": "These are settings that can be adjusted per animal species."
     },
     {
-      "type": "input",
-      "text": "Time Speed",
-      "name": "timeSpeed",
-      "mode": "DecimalNumber",
+      "type": "combobox",
+      "text": "   Animal",
+      "name": "specSelect",
       "default": "",
-      "section": "other"
+      "values": [
+        ""
+      ],
+      "section": "animal-spec",
+      "member": "specSelect",
+      "dontSave": true,
+      "tooltip": "Select an animal to change the settings of."
+    },
+    {
+      "type": "checkbox",
+      "name": "specDespawn",
+      "text": "   Disallow",
+      "default": false,
+      "section": "animal-spec",
+      "member": "specDespawn",
+      "memberRealtime": true,
+      "dontSave": true,
+      "tooltip": "If enabled, the animal will be despawned everytime one tries to spawn. This will generally work even if you're not the host."
+    },
+    {
+      "type": "checkbox",
+      "name": "specPassive",
+      "text": "   Force Passive",
+      "default": false,
+      "access": "globalcustom",
+      "section": "animal-spec",
+      "member": "specPassive",
+      "memberRealtime": true,
+      "dontSave": true,
+      "tooltip": "<color=#007F00>[Host only]</color> Forces the animal to be passive towards all players."
+    },
+    {
+      "type": "multibutton",
+      "buttons": [ "Revert to Global", "Reset to Default" ],
+      "name": "specReset",
+      "section": "animal-spec"
+    },
+    {
+      "type": "seperator",
+      "section": "animal-spec"
+    },
+    {
+      "type": "data",
+      "name": "animalSpecs",
+      "default": {},
+      "memberRealtime": true
+    },
+    {
+      "type": "section",
+      "text": "Loot and Crafting",
+      "name": "loot",
+      "tooltip": "Settings that affect loot generation and crafting stuff."
+    },
+    {
+      "type": "input",
+      "text": "Metal Detector Treasure Multiplier",
+      "name": "metalTreasure",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "loot",
+      "member": "metalTreasure",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies the number of metal detector dig spots that spawn on islands.",
+        "Keep in mind, only newly spawned islands will be affected, also, each island will have an upper limit of dig spots it will spawn.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make more spawn."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Treasure Digging Speed Multiplier",
+      "name": "treasureSpeed",
+      "mode": "IntegerNumber",
+      "default": "1",
+      "access": "split",
+      "section": "loot",
+      "member": "treasureSpeed",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies each shovel hit of a metal detector dig spot. Metal detector dig spots normally take a specific number of hits to fully uncover, this makes each shovel hit count as more than 1.",
+        "This setting does not allow decimals because the hits is measured as a whole number.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make you dig up treasure faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Shoveling Time Multiplier",
+      "name": "shovelTime",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "loot",
+      "member": "shovelTime",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of time it takes to shovel up dig spots that require holding down the dig button.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make it take longer to dig stuff up."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Animal Looting Time Multiplier",
+      "name": "lootTime",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "loot",
+      "member": "lootTime",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of time it takes to loot an animal corpse.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make it take longer to loot."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Mining Time Multiplier",
+      "name": "mineTime",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "loot",
+      "member": "mineTime",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of time it takes to mine items like underwater resources.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make it take longer to mine."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow Forced Mining",
+      "name": "forceMining",
+      "default": false,
+      "access": "split",
+      "section": "loot",
+      "member": "forceMining",
+      "tooltip": "This makes it so you can hold the Right Mouse Button to mine items while above water.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "handMining",
+      "text": "Hand Mining",
+      "default": false,
+      "access": "split",
+      "section": "loot",
+      "member": "handMining",
+      "tooltip": "This makes it so you can mine items without using a hook.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Tree Fruit Interval",
+      "name": "fruitTime",
+      "mode": "IntegerNumber",
+      "default": "",
+      "access": "split",
+      "section": "loot",
+      "member": "fruitTime",
+      "memberFallback": -1,
+      "tooltip": [
+        "This is the time in seconds before you can harvest fruit from trees. Harvesting fruit does not damage the tree.",
+        "A blank value or less than 0 will never produce fruit.",
+        "",
+        "The remaining fruit time is not saved or networked in a multiplayer. Every player has their own timer and the timers will all start at full when loading into a save."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Item Loot Multiplier",
+      "name": "itemLooting",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "loot",
+      "member": "itemLooting",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of items you get from loot, this includes items floating on the water, items collected from islands and items collected from plants on your raft and animals.",
+        "A value of 1 will be the same as vanilla. Higher numbers will give you more items."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Boosted Stack Sizes",
+      "name": "boostedStacks",
+      "default": false,
+      "access": "split",
+      "section": "loot",
+      "member": "boostedStacks",
+      "tooltip": "This will make every stackable item be able to stack as high as the game's code will allow.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Free Crafting/Building",
+      "name": "freeCrafting",
+      "default": false,
+      "access": "split",
+      "section": "loot",
+      "member": "freeCrafting",
+      "tooltip": "This will allow you to build and craft without spending or requiring any resources. You won't get any resources back from breaking stuff with an axe either.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "multibutton",
+      "buttons": [ "Learn Recipes", "Research All", "Discover Blueprints" ],
+      "name": "learning",
+      "section": "loot",
+      "access": "world",
+      "tooltip": [
+        "• Learn Recipes = This will instantly learn all recipes",
+        "• Research All = This will instantly research all resources. This does not learn any recipes",
+        "• Discover Blueprints = This will instantly make all blueprint locked recipes available in the research table"
+      ]
+    },
+    {
+      "type": "multibutton",
+      "buttons": [ "Forget Recipes", "Unresearch All", "Forget Blueprints" ],
+      "name": "unlearning",
+      "section": "loot",
+      "access": "worldcustom",
+      "tooltip": [
+        "Undoing game progress is not a game supported feature so these options are only available in singleplayer and <i>may</i> not work as well as other features.",
+        "• Forget Recipes = This will reset your learned recipes back to the start of the game. This does not clear researched resources or relock blueprint locked recipes.",
+        "• Unresearch All = This clear all researched resources. This does not unlearn any recipes.",
+        "• Discover Blueprints = This will relock all blueprint locked recipes in the research table. This does not unlearn any recipes."
+      ]
+    },
+    {
+      "type": "combobox",
+      "text": "Uncraft Button",
+      "name": "recycleButton",
+      "default": "Disabled",
+      "values": [
+        "Disabled",
+        "Horizontal",
+        "Vertical"
+      ],
+      "access": "split",
+      "section": "loot",
+      "member": "recycleButton",
+      "tooltip": [
+        "This adds an \"Uncraft\" button to the crafting menu, allowing you to get at least some resources back from crafted items.",
+        "• Disabled = No uncraft button.",
+        "• Horizontal = The uncraft button will appear next to the craft button.",
+        "• Vertical = The uncraft button will appear under the craft button."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "combobox",
+      "text": "Damaged Item Uncraft Mode",
+      "name": "recycleMode",
+      "values": [ "Random", "First", "Last", "Random (Skewed First)", "Random (Skewed Last)" ],
+      "default": "Random",
+      "access": "split",
+      "section": "loot",
+      "member": "recycleMode",
+      "tooltip": [
+        "This controls how the uncraft button decides which materials to give back from an item that has lost some durability.",
+        "• Random = Resources are picked completely randomly.",
+        "• First = Resources will be given from the start of the ingredient list.",
+        "• Last = Resources will be given from the end of the ingredient list.",
+        "• Random (Skewed First) = Resources will be picked at random but are more likely to pick from the start of the ingredient list.",
+        "• Random (Skewed Last) = Resources will be picked at random but are more likely to pick from the end of the ingredient list."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Trash Spawn Rate Multiplier",
+      "name": "trashSpawn",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "loot",
+      "member": "trashSpawn",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies the spawn rate of ocean trash.",
+        "A value of 1 will be the same as vanilla. Higher numbers will spawn more trash more often."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Trash Spawn Quantity Multiplier",
+      "name": "trashQuantity",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "loot",
+      "member": "trashQuantity",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies the amount of ocean trash spawned.",
+        "A value of 1 will be the same as vanilla. Higher numbers will spawn more trash."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "combobox",
+      "text": "Trash Spawn Mode",
+      "name": "trashMode",
+      "values": [ "Vanilla", "Distance", "Area" ],
+      "default": "Vanilla",
+      "access": "splitcustom",
+      "section": "loot",
+      "member": "trashMode",
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This controls how the game decides when to spawn more trash.",
+        "• Vanilla = Trash will be spawned based on the amount of time spent traveling. This is the vanilla behaviour.",
+        "• Distance = Trash will be spawned based on the distance traveled.",
+        "• Area = Trash will be spawned as an area around the raft, making it behave like an ocean full of trash instead of spawning in clumps in the direction you're traveling. <color=#FFFF00>Warning</color>: This will generally greatly increase the total trash in the ocean which will have a hefty performance impact. It's highly recommend to use the <color=#00FFFF>Trash Lag Fix</color> settings and turn down the <color=#00FFFF>Trash Radius Multiplier</color> setting"
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Trash Radius Multiplier [Area Mode Only]",
+      "name": "trashArea",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "loot",
+      "member": "trashArea",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies the size of the area that Area <color=#00FFFF>Trash Spawn Mode</color> will spawn around the raft.",
+        "A value of 1 will be the same as the vanilla trash despawn radius (about 170 blocks or 255 meters). Higher numbers will increase the area which will spawn more trash."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "multibutton",
+      "buttons": [ "Clear Trash", "Clear and Spawn Trash" ],
+      "name": "clearTrash",
+      "section": "loot",
+      "access": "world",
+      "tooltip": [
+        "• Clear Trash = Deletes all trash in the ocean.",
+        "• Clear and Spawn Trash = <color=#007F00>[Host only]</color> Deletes all the ocean trash then spawns some new trash around the raft."
+      ]
+    },
+    {
+      "type": "section",
+      "text": "Tools",
+      "name": "tool",
+      "tooltip": "Settings that affect tools and equipment."
     },
     {
       "type": "combobox",
@@ -462,26 +634,1765 @@
         "Once on Break",
         "Disabled"
       ],
-      "section": "other"
+      "access": "split",
+      "section": "tool",
+      "member": "axeDur",
+      "tooltip": [
+        "This affects when the axe losses durability while breaking blocks on the raft.",
+        "• No Change = This is the vanilla behaviour. The axe will loose durability every time it visually \"hits\" the block.",
+        "• Once on Break = The axe will loose 1 durability per block broken.",
+        "• Disabled = The axe will not loose durability from breaking blocks."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Melee Weapon Range Multiplier",
+      "name": "meleeWeaponRange",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "meleeWeaponRange",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the attack range of melee weapons.",
+        "A value of 1 will be the same as vanilla. Higher numbers will allow you to hit things from further away."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Melee Weapon Radius Multiplier",
+      "name": "meleeWeaponRadius",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "meleeWeaponRadius",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the attack radius of melee weapons.",
+        "A value of 1 will be the same as vanilla. Higher numbers will have a wider striking area."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Attack Damage Multiplier",
+      "name": "damage",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "damage",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies your attack damage.",
+        "A value of 1 will be the same as vanilla. Higher numbers will increase the damage you deal."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Axe is a Weapon",
+      "name": "axeWeapon",
+      "default": false,
+      "access": "split",
+      "section": "tool",
+      "member": "axeWeapon",
+      "tooltip": "This will make it so you can attack animals with your axe. This deals 5 damage and will spend 1 durability per hit.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Sniper Ranged Weapons",
+      "name": "sniperRange",
+      "default": false,
+      "access": "split",
+      "section": "tool",
+      "member": "sniperRange",
+      "tooltip": "This will make it so if you're aiming right at something when you fire/throw something, your projectile will instantly hit the target.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "keybind",
+      "text": "Sniper Zoom Key",
+      "name": "zoomKey",
+      "section": "tool",
+      "member": "zoomKey",
+      "tooltip": "While holding this key, your FOV will be changed to the value set in the <color=#00FFFF>Sniper Zoom FOV</color> setting."
+    },
+    {
+      "type": "input",
+      "text": "Sniper Zoom FOV",
+      "name": "zoomFOV",
+      "mode": "IntegerNumber",
+      "default": "30",
+      "access": "split",
+      "section": "tool",
+      "member": "zoomFOV",
+      "memberFallback": 30,
+      "tooltip": "Check the <color=#00FFFF>Sniper Zoom Key</color> setting for details",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Fishing Wait Time Multiplier",
+      "name": "fishingWait",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "fishingWait",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the time you need to wait before a fish will bite your fishing hook.",
+        "A value of 1 will be the same as vanilla. Higher numbers will increase the time you need to wait."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Fishing Catch Window Multiplier",
+      "name": "fishingWindow",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "fishingWindow",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the time you have before a fish will escape your fishing hook.",
+        "A value of 1 will be the same as vanilla. Higher numbers will give you more time to capture the fish."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Equal Fishing Loot Chances",
+      "name": "fishingEqual",
+      "default": false,
+      "access": "split",
+      "section": "tool",
+      "member": "fishingEqual",
+      "tooltip": "This makes it so all the items you can get from fishing have an equal chance of appearing.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Hook Area Multiplier",
+      "name": "hookArea",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "hookArea",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the area that a thrown hook will \"catch\" items floating on the ocean.",
+        "A value of 1 will be the same as vanilla. Higher numbers will have a bigger area."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Electric Zipline Acceleration Multiplier",
+      "name": "zipAccel",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "zipAccel",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies how fast you accelerate when using an electric zipline tool.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make you accelerate faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Electric Zipline Max Speed Multiplier",
+      "name": "zipSpeed",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "zipSpeed",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies how the maximum speed you can get to using an electric zipline tool.",
+        "A value of 1 will be the same as vanilla. Higher numbers will let you travel faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Tool Max Durability Multiplier",
+      "name": "toolMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "toolMax",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the max durability of all tools. This will not affect the remaining durability of already crafted tools.",
+        "A value of 1 will be the same as vanilla. Higher numbers will increase the total durability."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Equipment Max Durability Multiplier",
+      "name": "equipmentMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "equipmentMax",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the max durability of all equipment. This will not affect the remaining durability of already crafted equipment.",
+        "A value of 1 will be the same as vanilla. Higher numbers will increase the total durability."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Battery Max Capacity Multiplier",
+      "name": "batteryMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "batteryMax",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the max charge of all batteries. This will not affect the remaining charge of already crafted batteries.",
+        "A value of 1 will be the same as vanilla. Higher numbers will allow batteries to hold more charge."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Food Max Uses Multiplier",
+      "name": "foodMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "foodMax",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the max number of uses of food items. This will not affect the remaining uses of already collected/crafted items.",
+        "A value of 1 will be the same as vanilla. Higher numbers will increase the total uses."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "multiEquip",
+      "text": "Allow Multiple Same Type Equipment",
+      "default": false,
+      "access": "split",
+      "section": "tool",
+      "member": "allowMultiEquipment",
+      "tooltip": "This will allow you to equip multiple of the same category of equipment, so you can wear more than 1 hat/mask.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "infiniteDurability",
+      "text": "Infinite Durability",
+      "default": false,
+      "access": "split",
+      "section": "tool",
+      "member": "infiniteDurability",
+      "tooltip": "This will make it so equipment and tools do not loose durability at all.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "returnArrows",
+      "text": "Auto Pickup Arrows",
+      "default": false,
+      "access": "split",
+      "section": "tool",
+      "member": "returnArrows",
+      "tooltip": "This will make it so when one of your arrows hits the ground or an enemy, they will be instantly re-collected.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "combobox",
+      "text": "Return Dishes",
+      "name": "returnDishes",
+      "default": "Default",
+      "values": [ "Default", "Multiplayer Safe", "Full" ],
+      "access": "split",
+      "section": "tool",
+      "member": "returnDishes",
+      "tooltip": [
+        "• Default = This is the vanilla behaviour.",
+        "• Multiplayer Safe = This ensures that certain consumable items will return their \"dishes\" when used. For example, cooking pot recipes will return clay bowls, juicer recipes will return glass cups and using a bucket of milk will give you the bucket back and putting honey into the refiners will return \"Scrapped Glass\" which can be crafted back into normal glass",
+        "• Full = This is similar to Multiplayer Safe but cooking tables will leave \"After Use\" items on the table after starting the cooking process (this means milk buckets will leave an empty bucket on the table). This mode should only be used if every player in the multiplayer also has it enabled."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Flipper Depletion Multiplier",
+      "name": "flipperDurability",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "flipperDurability",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies how fast swimming flippers will lose their durability.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them lose durability faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Air Bottle Depletion Multiplier",
+      "name": "bottleDurability",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "bottleDurability",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies how fast oxygen bottles will lose their durability.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them lose durability faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Headlight Depletion Multiplier",
+      "name": "lampDurability",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "lampDurability",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies how fast headlamps will lose their durability.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them lose durability faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "section",
+      "text": "Blocks",
+      "name": "block",
+      "tooltip": "Settings that affect blocks on the raft."
+    },
+    {
+      "type": "checkbox",
+      "text": "Automatic Doors",
+      "name": "autoDoor",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "autoDoors",
+      "tooltip": [
+        "This will make it so doors and gates will automatically open when you try to walk through them and close once you've gone through. Hassle free.",
+        "This will not automatically close doors that were open before you walked through them."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Engine Power Multiplier",
+      "name": "enginePower",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "block",
+      "member": "enginePower",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies the number of blocks each engine can push.",
+        "A value of 1 will be the same as vanilla. Higher numbers will allow them to push more blocks."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Brick Dry Time Multiplier",
+      "name": "brickDry",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "block",
+      "member": "brickDry",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies how long it takes for a brick to dry.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them take longer."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Sprinkler Radius Multiplier",
+      "name": "sprinklerRadius",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "block",
+      "member": "sprinklerRadius",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies the horizontal radius of a sprinkler.",
+        "A value of 1 will be the same as vanilla. Higher numbers will allow them to water blocks further from them."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Sprinkler Max Vertical Distance Multiplier",
+      "name": "sprinklerDistance",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "block",
+      "member": "sprinklerDistance",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies the vertical reach of a sprinkler.",
+        "A value of 1 will be the same as vanilla. Higher numbers will allow them to water blocks further from them."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Item Net Capacity Multiplier",
+      "name": "collectorMax",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "block",
+      "member": "collectorMax",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies how many items each item net can hold.",
+        "A value of 1 will be the same as vanilla. Higher numbers will let them hold more items."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Fuel Consumption Rate Multiplier",
+      "name": "fuelConsumption",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "block",
+      "member": "fuelConsumption",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies how fast engines and the like consume fuel.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them use more fuel."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "infinitePower",
+      "text": "Infinite Battery",
+      "default": false,
+      "access": "splitcustom",
+      "section": "block",
+      "member": "infinitePower",
+      "tooltip": "<color=#007F00>[Host only]</color> This makes it so batteries never lose charges.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Crop Growth Time Multiplier",
+      "name": "cropSpeed",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "block",
+      "member": "cropSpeed",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies how fast plants on the raft grow. <color=#FFFF00>NOTE</color>: it is recommended for all players in a multiplayer to set this the same.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make them take longer to grow."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Return Armor Resources",
+      "name": "returnArmor",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "returnArmor",
+      "tooltip": "This makes it so you get back the resources used to reinforce a foundation when you break it with an axe.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "slider",
+      "name": "returnPercent",
+      "text": "Axe Return Percent",
+      "default": 0.5,
+      "range": {
+        "type": "percent",
+        "min": 0,
+        "max": 1,
+        "decimals": 0
+      },
+      "access": "split",
+      "section": "block",
+      "member": "returnPercent",
+      "tooltip": [
+        "This changes the percentage of resources you get back from breaking blocks.",
+        "A value of 50% will be the same as vanilla. Higher numbers will give you more resources back."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Block Break Time Multiplier",
+      "name": "breakSpeed",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "block",
+      "member": "breakSpeed",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies how long it takes to break blocks with an axe.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make it take more time to break them."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Block Pickup Time Multiplier",
+      "name": "removeSpeed",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "block",
+      "member": "removeSpeed",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies how long it takes to pickup/remove blocks.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make it take more time to pick them up."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Receiver Ignores Altitude",
+      "name": "recieverAnywhere",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "recieverAnywhere",
+      "tooltip": "This makes it so the receiver will work at any height.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Antenna Ignores Altitude",
+      "name": "antennaAnywhere",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "antennaAnywhere",
+      "tooltip": "This makes it so the antenna do not need to be at the same height as the receiver.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Antenna Ignores Receiver Distance",
+      "name": "antennaAnyDistReciever",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "antennaAnyDistReciever",
+      "tooltip": "This makes it so the antenna ignore how close or far away from the receiver.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Antenna Ignores Antenna Distance",
+      "name": "antennaAnyDistAntenna",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "antennaAnyDistAntenna",
+      "tooltip": "This makes it so the antenna ignore how close they are to other antenna.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Reciever Auto-Off Timer (secs)",
+      "name": "autoOff",
+      "mode": "DecimalNumber",
+      "default": "-1",
+      "access": "split",
+      "section": "block",
+      "member": "autoOff",
+      "memberFallback": -1,
+      "tooltip": [
+        "This is the time in seconds before a reciever will automatically turn off. Even if it was turned on by another player.",
+        "A black or negative value will not turn off the reciever (same as vanilla)."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "radarSmall",
+      "text": "Small Island Radar Blip",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "radarSmall",
+      "tooltip": "This makes it so Small Islands will appear on the radar.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "slider",
+      "name": "rcolorSmall",
+      "text": "  | Colour",
+      "default": 0.16667,
+      "range": {
+        "type": "custom",
+        "min": 0,
+        "max": 1
+      },
+      "access": "split",
+      "section": "block",
+      "member": "rcolorSmall",
+      "tooltip": "This is the colour of small island blips on the radar.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "radarRaft",
+      "text": "Raft Radar Blip",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "radarRaft",
+      "tooltip": "This makes it so Abandoned Rafts will appear on the radar.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "slider",
+      "name": "rcolorRaft",
+      "text": "  | Colour",
+      "default": 0,
+      "range": {
+        "type": "custom",
+        "min": 0,
+        "max": 1
+      },
+      "access": "split",
+      "section": "block",
+      "member": "rcolorRaft",
+      "tooltip": "This is the colour of abandoned raft blips on the radar.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "radarAch",
+      "text": "Achievement Island Radar Blip",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "radarAch",
+      "tooltip": "This makes it so Achievement Islands will appear on the radar.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "slider",
+      "name": "rcolorAch",
+      "text": "  | Colour",
+      "default": 0.83333,
+      "range": {
+        "type": "custom",
+        "min": 0,
+        "max": 1
+      },
+      "access": "split",
+      "section": "block",
+      "member": "rcolorAch",
+      "tooltip": "This is the colour of achievement island blips on the radar.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow Smelting Bolts and Hinges",
+      "name": "recycleMetal",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "recycleMetal",
+      "tooltip": [
+        "This makes it so you can put bolts and hinges into a smelter to melt them back into metal ingots.",
+        "<color=#FFFF00>NOTE</color>: This setting will only work if the host has it enabled, and each player will only be able to put the item in in they also have it enabled."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow Honeycomb In Refiners",
+      "name": "refineComb",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "refineComb",
+      "tooltip": [
+        "This makes it so you can directly put honeycombs into refiners instead of needing to craft it into honey jars. 5 Honeycombs are equal to 1 Honey Jar.",
+        "<color=#FFFF00>NOTE</color>: This setting will only work if the host has it enabled, and each player will only be able to put the item in in they also have it enabled."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "disableRudder",
+      "text": "Disable Steering Wheel Rudder",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "disableRudder",
+      "tooltip": "This hides the \"steering column\" of the steering wheel so you don't have a big pole going through your raft.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "combobox",
+      "text": "Cooking Table Mode",
+      "name": "cookingTableMode",
+      "default": "Default",
+      "values": [ "Default", "Disable Pickup Item", "Better Item Detection" ],
+      "access": "split",
+      "section": "block",
+      "member": "cookingTableMode",
+      "tooltip": [
+        "This changes how cooking pots and juicers check for the item used to collect the food they've made.",
+        "• Default = This is the vanilla behaviour.",
+        "• Disable Pickup Item = This makes it does not use clay bowls or glass cups to collect food.",
+        "• Better Item Detection = This makes it so collecting food will check your whole inventory for the clay bowls or glass cups instead of requiring you to have it in your hand."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Invincible Scarecrows",
+      "name": "invincibleScarecrow",
+      "default": false,
+      "access": "splitcustom",
+      "section": "block",
+      "member": "invincibleScarecrow",
+      "tooltip": "<color=#007F00>[Host only]</color> This makes it so scarecrows do not take any damage from seagulls.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "section",
+      "text": "Weather and Time",
+      "name": "enviro",
+      "tooltip": [
+        "Settings that control time of day and weather.",
+        "",
+        "Most, but not all, of these settings are only available to the world host."
+      ]
     },
     {
       "type": "multibutton",
-      "buttons": [ "Learn Recipes", "Research All", "Discover Blueprints" ],
-      "name": "learning",
-      "section": "other",
-      "access": "world"
+      "name": "weatherType",
+      "buttons": [
+        "Default",
+        "Calm",
+        "Fog",
+        "Big Waves",
+        "Rain",
+        "Snow",
+        "Snow Rough"
+      ],
+      "access": "worldcustom",
+      "section": "enviro",
+      "tooltip": "<color=#007F00>[Host only]</color> Changes the current weather."
     },
     {
-      "type": "multibutton",
-      "buttons": [ "Forget Recipes", "Unresearch All", "Forget Blueprints" ],
-      "name": "unlearning",
-      "section": "other",
-      "access": "worldcustom"
+      "type": "input",
+      "text": "Weather Time Speed Multiplier",
+      "name": "weatherSpeed",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "enviro",
+      "member": "weatherSpeed",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies how fast weather will pass.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make it so weather changes more frequently."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Time Speed (hours per second)",
+      "name": "timeSpeed",
+      "mode": "DecimalNumber",
+      "default": "",
+      "access": "split",
+      "section": "enviro",
+      "member": "timeSpeed",
+      "memberFallback": "NaN",
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This overrides how fast day-night time passes. The value is in in-game hours per IRL second. a value of 1 will make an in-game day take 24 seconds.",
+        "A blank value will be the same as vanilla. Higher numbers will make days pass by faster.",
+        "<color=#007F00>[Non-host]</color> This setting should be set to the same as the host otherwise the day-night cycle will look jittery."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Wave Choppiness Multiplier",
+      "name": "amplitudeMul",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "enviro",
+      "member": "amplitudeMul",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the \"amplitude\" of waves.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make the water choppier.",
+        "<color=#FFFF00>WARNING</color> A value of 0 may cause issues"
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Wave Choppiness Exponential",
+      "name": "amplitudeExp",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "enviro",
+      "member": "amplitudeExp",
+      "memberFallback": 1,
+      "tooltip": [
+        "This increases the \"amplitude\" of waves as an exponential factor. In simpler terms, this is a \"to the power of\" modifier.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make the water MUCH choppier.",
+        "<color=#FFFF00>WARNING</color> A value greater than 2 may cause issues"
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Wave Height Multiplier",
+      "name": "windSpeedMul",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "enviro",
+      "member": "windSpeedMul",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the height of waves.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make the waves taller.",
+        "<color=#FFFF00>WARNING</color> A value of 0 may cause issues"
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Wave Height Exponential",
+      "name": "windSpeedExp",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "enviro",
+      "member": "windSpeedExp",
+      "memberFallback": 1,
+      "tooltip": [
+        "This increases the height of waves as an exponential factor. In simpler terms, this is a \"to the power of\" modifier.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make the short waves shorter and tall waves taller.",
+        "<color=#FFFF00>WARNING</color>: A value greater than 2 may cause issues"
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "slider",
+      "name": "windDirection",
+      "text": "Wind Direction",
+      "default": 0,
+      "range": {
+        "type": "custom",
+        "min": 0,
+        "max": 360
+      },
+      "access": "splitcustom",
+      "section": "enviro",
+      "member": "windDirection",
+      "tooltip": "<color=#007F00>[Host only]</color> This controls the direction the wind pushes the raft.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "section",
+      "text": "Player",
+      "name": "player",
+      "tooltip": "Settings that control the player's inventory, stats and some other behaviours."
+    },
+    {
+      "type": "combobox",
+      "text": "Keep Inventory On Respawn",
+      "name": "keepInventory",
+      "default": "Default",
+      "values": [ "Default", "Always Keep Items", "Drop Lost Items" ],
+      "access": "split",
+      "section": "player",
+      "member": "keepInventory",
+      "tooltip": [
+        "This changes what happens to the items in your inventory when you respawn.",
+        "• Default = This is the vanilla behaviour.",
+        "• Always Keep Items = This makes it so you will keep your whole inventory.",
+        "• Drop Lost Items = This makes it so items that were lost by respawn are dropped on the ground, where you died, instead. It is recommended to increase the despawn time using the <color=#00FFFF>Dropped Item Despawn Multiplier</color> setting if you use this option because dropped items despawn very quickly."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "section",
+      "text": "  Drop Lost Items",
+      "name": "player-drop",
+      "section": "player",
+      "tooltip": [
+        "Settings used by the Drop Lost Items mode for the <color=#00FFFF>Keep Inventory On Respawn</color> setting.",
+        "",
+        "These are not for every item, just the items that would have been lost."
+      ]
+    },
+    {
+      "type": "checkbox",
+      "text": "   Always Drop Special Items",
+      "name": "alwaysSpecial",
+      "default": false,
+      "access": "split",
+      "section": "player-drop",
+      "member": "alwaysSpecial",
+      "tooltip": "This makes it so that special items (tools and equipment) will ignore the <color=#00FFFF>Drop Chance</color> setting and always drop instead of being lost or damaged.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "slider",
+      "name": "dropChance",
+      "text": "   Drop Chance",
+      "default": 1,
+      "range": {
+        "type": "percent",
+        "min": 0,
+        "max": 1
+      },
+      "access": "split",
+      "section": "player-drop",
+      "member": "dropChance",
+      "tooltip": "The chance of a lost item dropping when you respawn.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "seperator",
+      "section": "player-drop"
+    },
+    {
+      "type": "input",
+      "text": "Override Respawn Items Lost",
+      "name": "deathItemLoss",
+      "mode": "DecimalNumber",
+      "default": "",
+      "access": "split",
+      "section": "player",
+      "member": "deathItemLoss",
+      "memberFallback": -1,
+      "tooltip": [
+        "Overrides the portion of items lost when respawning.",
+        "A blank value will be the same as vanilla (about 33%). A value of 0.5 will keep half you items. A value of 0 will keep all your items.",
+        "<color=#FFFF00>NOTE</color>: This setting only affects gamemodes where you lose only part of your inventory on respawn."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Override Respawn Item Uses Lost",
+      "name": "deathUseLoss",
+      "mode": "DecimalNumber",
+      "default": "",
+      "access": "split",
+      "section": "player",
+      "member": "deathUseLoss",
+      "memberFallback": -1,
+      "tooltip": [
+        "Overrides the portion of item durability lost when respawning.",
+        "A blank value will be the same as vanilla (about 50%). A value of 0.5 will makes items lose half their remaining durability. A value of 0 will makes items lose none of their durability.",
+        "<color=#FFFF00>NOTE</color>: This setting only affects gamemodes where you lose only part of your inventory on respawn."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Dropped Item Despawn Multiplier",
+      "name": "dropDespawn",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "dropDespawn",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the time it takes for items dropped by players to despawn.",
+        "A value of 1 will be the same as vanilla (about 5 minutes). Higher values will make it take longer to despawn.",
+        "<color=#FFFF00>NOTE</color>: This setting only affects items at the time they are dropped, changing this value will not affect items that have already been dropped.",
+        "<color=#FFFF00>NOTE 2</color>: It is recommend for all players in a multiplayer to have this set the same. Once an item has despawned on for the host, other players will not be able to pick that item up even if it hasn't despawned for them yet."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow Respawn In Hardmode",
+      "name": "hardRespawn",
+      "default": false,
+      "access": "split",
+      "section": "player",
+      "member": "hardRespawn",
+      "tooltip": "This allows you to respawn in gamemodes that don't normally allow respawning.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Hunger Depletion Rate Multiplier",
+      "name": "hungerRate",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "hungerRate",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the rate that you lose hunger.",
+        "A value of 1 will be the same as vanilla. Higher values will make you get hungry faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Thirst Depletion Rate Multiplier",
+      "name": "thirstRate",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "thirstRate",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the rate that you lose thirst.",
+        "A value of 1 will be the same as vanilla. Higher values will make you get thirsty faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "combobox",
+      "text": "Oxygen Regen Mode",
+      "name": "oxygenMode",
+      "values": [ "Vanilla", "Better Vanilla", "Linear" ],
+      "default": "Vanilla",
+      "access": "split",
+      "section": "player",
+      "member": "oxygenMode",
+      "tooltip": [
+        "This changes how the oxygen bar regenerates while keeping the overall time taken to regen about the same.",
+        "• Vanilla = This is the vanilla behaviour.",
+        "• Better Vanilla = This is a non-linear equation, very similar to the vanilla behaviour but does not have the framerate vulnerabilities.",
+        "• Linear = Completely changes the regeneration to a simple linear equation. Total time taken to regen a full bar of oxygen should still be about the same."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Oxygen Regen Multiplier",
+      "name": "oxyGenSpeed",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "oxyGenSpeed",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the rate that you regenerate oxygen.",
+        "A value of 1 will be the same as vanilla. Higher values will make you replenish oxygen faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Oxygen Loss Multiplier",
+      "name": "oxyLossSpeed",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "oxyLossSpeed",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the rate that you lose oxygen.",
+        "A value of 1 will be the same as vanilla. Higher values will make you lose oxygen faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Passive Health Regen Multiplier",
+      "name": "healthRegen",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "healthRegen",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the rate that you regenerate health from having high enough hunger, thirst and oxygen.",
+        "A value of 1 will be the same as vanilla. Higher values will make you regenerate health faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Override ''Bad'' Wellbeing Threashold",
+      "name": "unhealthyOverride",
+      "mode": "DecimalNumber",
+      "default": "",
+      "access": "split",
+      "section": "player",
+      "member": "unhealthyOverride",
+      "memberFallback": "NaN",
+      "tooltip": [
+        "This overrides the threashold that a stat must be to be considered \"healthy\".",
+        "• If health, hunger or thirst is below this value, your screen will start going grey.",
+        "• If hunger or thirst is below this value you will: not passively regenerate health; swim about 30% slower; lose oxygen about twice as fast; walk at crouching speed (about 40% less than walking) and be unable to run.",
+        "• If hunger and thirst are below this value, you start losing health over time.",
+        "• If health is below this value, your passive health regeneration will be 3 times faster.",
+        "A blank value will be the same as vanilla (about 15% or 0.15)."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Player Use Distance Multiplier",
+      "name": "playerReach",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "playerReach",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the max distance you can interact with stuff from.",
+        "A value of 1 will be the same as vanilla. Higher values will allow you to reach further."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Timeless Hearty Stew",
+      "name": "permHearty",
+      "default": false,
+      "access": "split",
+      "section": "player",
+      "member": "permHearty",
+      "tooltip": "Makes it so the effect of the Hearty Stew stays until it gets used instead of disappearing after a certain amount of time.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "invincible",
+      "text": "Invinciblity",
+      "default": false,
+      "access": "split",
+      "section": "player",
+      "member": "invincible",
+      "tooltip": "Makes you immune to damage. This does not prevent you from healing.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "section",
+      "text": "Graphics",
+      "name": "graphic",
+      "tooltip": "Settings that affect your camera view."
+    },
+    {
+      "type": "checkbox",
+      "name": "fullLook",
+      "text": "Allow Looking Straight Up/Down",
+      "default": false,
+      "section": "graphic",
+      "member": "fullLook",
+      "tooltip": "Allows you to look staight up and down.",
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "FOV Override",
+      "name": "FOVOverride",
+      "mode": "IntegerNumber",
+      "default": "-1",
+      "section": "graphic",
+      "member": "FOVOverride",
+      "memberFallback": -1,
+      "tooltip": [
+        "Overrides the game's <color=#00FFFF>FOV</color> setting, this setting allows you to set it much higher and lower than the normal setting",
+        "A value of 0 or less will be the same as vanilla."
+      ],
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Water Fadeout Rate",
+      "name": "waterFade",
+      "mode": "DecimalNumber",
+      "default": "",
+      "section": "graphic",
+      "member": "waterFade",
+      "memberFallback": -1,
+      "tooltip": [
+        "This controls the speed that the water drips on the screen will fade out after existing water.",
+        "A blank value will be the same as vanilla (equivilent to about 0.98). Lower values will make the water fade out faster. A value of 1 will make the water never fade."
+      ],
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Gradual Bad Health Visuals",
+      "name": "gradualUnhealthy",
+      "default": false,
+      "section": "graphic",
+      "member": "gradualUnhealthy",
+      "tooltip": "This makes it so the visual effects of being hungry, thrist or badly injured will gradually become more obvious as your stats get worse.",
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Fog Distance Multiplier",
+      "name": "fogDistance",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "graphic",
+      "member": "fogDistance",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the distance that the fog appears.",
+        "A value of 1 will be the same as vanilla. Higher values will make the fog appear further away."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Render Distance Multiplier",
+      "name": "farClip",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "graphic",
+      "member": "farClip",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the max distance objects will be visible.",
+        "A value of 1 will be the same as vanilla. Higher values will allow you see further."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "LOD Distance Multiplier",
+      "name": "LODBias",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "graphic",
+      "member": "LODBias",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies LOD distance threadsholds.",
+        "A value of 1 will be the same as vanilla. Higher values will make you see a higher \"Level of Detail\" on objects far away."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Binocular Fog Distance Multiplier",
+      "name": "binoFogDistance",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "graphic",
+      "member": "binoFogDistance",
+      "memberFallback": 1,
+      "tooltip": "This is the same as the <color=#00FFFF>Fog Distance Multiplier</color> setting but only takes effect when using binoculars.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Binocular Render Distance Multiplier",
+      "name": "binoFarClip",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "graphic",
+      "member": "binoFarClip",
+      "memberFallback": 1,
+      "tooltip": "This is the same as the <color=#00FFFF>Render Distance Multiplier</color> setting but only takes effect when using binoculars.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Binocular LOD Distance Multiplier",
+      "name": "binoLODBias",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "graphic",
+      "member": "binoLODBias",
+      "memberFallback": 1,
+      "tooltip": "This is the same as the <color=#00FFFF>LOD Distance Multiplier</color> setting but only takes effect when using binoculars.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "disableBinoOverlay",
+      "text": "Disable Binoculars Overlay",
+      "default": false,
+      "section": "graphic",
+      "member": "disableBinoOverlay",
+      "tooltip": "This disables the dark screen overlay caused by using binoculars.",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "firstpersonEquipment",
+      "text": "Disable Firstperson Equipment",
+      "default": false,
+      "section": "graphic",
+      "member": "firstpersonEquipment",
+      "tooltip": "This disables equipment you're wearing, like hats, appearing in the firstperson camera.",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "rotateWithRaft",
+      "text": "Rotate Camera With Raft",
+      "default": false,
+      "access": "split",
+      "section": "graphic",
+      "member": "rotateWithRaft",
+      "tooltip": "This makes it so when you're standing on the raft, your camera will rotate with the raft, similar to when you're placing something.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "section",
+      "text": "Islands",
+      "name": "island"
+    },
+    {
+      "type": "checkbox",
+      "name": "tikiFix",
+      "text": "Better Tiki Random",
+      "default": false,
+      "access": "splitcustom",
+      "section": "island",
+      "member": "tikiFix",
+      "tooltip": "<color=#007F00>[Host only]</color> This will make it so when the game generates treasure spots on islands, if it tries to generate a tiki piece dig spot, the game will check what and how many tiki peices you have already and aim to generate the one(s) you have the least of.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Trade Posts Sell Blueprints",
+      "name": "buyBlueprints",
+      "default": false,
+      "access": "split",
+      "section": "island",
+      "member": "buyBlueprints",
+      "tooltip": [
+        "This will make it so trade posts sell every possible blueprint. The price of the blueprints is determined by certain properties of the item the blueprint unlocks.",
+        "<color=#FFFF00>NOTE</color>: These blueprints will only be purchasable if the host also has this setting enabled."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Client-Side Trading Post Exp Multiplier",
+      "name": "sellExp",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "island",
+      "member": "sellExp",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of trade exp you earn by selling items at trading posts. This setting will only affect exp earned by you.",
+        "<color=#FFFF00>NOTE</color>: This stacks with the effects of the <color=#00FFFF>Server-Side Trading Post Exp Multiplier</color> setting.",
+        "A value of 1 will be the same as vanilla. Higher values will give you more exp."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Server-Side Trading Post Exp Multiplier",
+      "name": "hostSellExp",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "splitcustom",
+      "section": "island",
+      "member": "hostSellExp",
+      "memberFallback": 1,
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies the amount of trade exp earned by selling items at trading posts. This setting will affect exp earned by everyone in the multiplayer.",
+        "<color=#FFFF00>NOTE</color>: This stacks with the effects of the <color=#00FFFF>Client-Side Trading Post Exp Multiplier</color> setting.",
+        "A value of 1 will be the same as vanilla. Higher values will give you more exp."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "unlimitedTrade",
+      "text": "Unlimited Trading Post Stock",
+      "default": false,
+      "access": "split",
+      "section": "island",
+      "member": "unlimitedTrade",
+      "tooltip": [
+        "This will make it so trading posts will never run out of stock of any item.",
+        "<color=#FFFF00>NOTE</color>: If this is used by the world host it will affect all players. When used by a non-host, it will only affect them"
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Computer Puzzle Time Multiplier",
+      "name": "puzzleTime",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "island",
+      "member": "puzzleTime",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies amount of time you have to complete the \"Computer Puzzle\" in [STORY LOCATION REDACTED].",
+        "<color=#FFFF00>NOTE</color>: The actual time you have to complete the puzzle is controlled by the host, however each player will <i>see</i> the timer modified by their own settings so it's best, but not nessasary, to set all players to the same setting.",
+        "A value of 1 will be the same as vanilla. Higher values will give you more time."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Free Vending Machines",
+      "name": "freeVending",
+      "default": false,
+      "access": "splitcustom",
+      "section": "island",
+      "member": "freeVending",
+      "tooltip": "<color=#007F00>[Host only]</color> This makes vending machienes not cost or require any tokens. This will affect all players.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "section",
+      "text": "Menus",
+      "name": "menus",
+      "tooltip": "Settings that affect various menus"
+    },
+    {
+      "type": "checkbox",
+      "text": "Allow RML Console While Paused",
+      "name": "pausedConsoleFix",
+      "default": false,
+      "section": "menus",
+      "member": "pausedConsoleFix",
+      "tooltip": "This makes it so the RML console and mod manager actually appears when you open it while the game is paused."
+    },
+    {
+      "type": "input",
+      "text": "Max RML Console Lines Override",
+      "name": "consoleLines",
+      "mode": "IntegerNumber",
+      "default": "-1",
+      "section": "menus",
+      "member": "consoleLines",
+      "memberFallback": -1,
+      "tooltip": [
+        "This changes the max number of entries that stay in the RML console.",
+        "<color=#FFFF00>NOTE</color>: The actual time you have to complete the puzzle is controlled by the host, however each player will <i>see</i> the timer modified by their own settings so it's best, but not nessasary, to set all players to the same setting.",
+        "A negative value will be left as the default (about 100)."
+      ]
+    },
+    {
+      "type": "checkbox",
+      "name": "reverseScroll",
+      "text": "Invert Hotbar Scroll",
+      "default": false,
+      "section": "menus",
+      "member": "reverseScroll",
+      "tooltip": "This makes it so scrolling to change selected hotbar slot moves the opposite direction."
+    },
+    {
+      "type": "combobox",
+      "text": "Default Multiplayer Mode",
+      "name": "selectedMulti",
+      "values": [ "Friends Can Join", "Nobody Can Join", "Everyone Can Join" ],
+      "default": "Friends Can Join",
+      "access": "global",
+      "section": "menus",
+      "member": "selectedMulti",
+      "memberRealtime": true,
+      "tooltip": "This changes the default selected Multiplayer Mode when loading a world or creating a new world."
+    },
+    {
+      "type": "checkbox",
+      "name": "storeMulti",
+      "text": "Auto Update Default Multiplayer Mode",
+      "default": false,
+      "access": "global",
+      "section": "menus",
+      "member": "storeMulti",
+      "tooltip": "This makes it so if you select a Multiplayer Mode in the load game or new game menu, the <color=#00FFFF>Default Multiplayer Mode</color> setting will automatically change to and remember the selected option."
+    },
+    {
+      "type": "section",
+      "text": "Bugfixes",
+      "name": "bugfix",
+      "tooltip": "Settings that aim to fix various bugs or performance issues"
+    },
+    {
+      "type": "checkbox",
+      "name": "quickMoveFreeze",
+      "text": "Shift-Move Freeze Fix",
+      "default": true,
+      "section": "bugfix",
+      "member": "quickMoveFreeze",
+      "tooltip": "This fixes a game freeze that can happen when you shift-click an item to quick move it between inventories when mods have changed max stack sizes."
+    },
+    {
+      "type": "combobox",
+      "text": "Trash Floating Update Mode",
+      "name": "trashLagMode",
+      "values": [ "Vanilla", "Interval", "No Movement" ],
+      "default": "Vanilla",
+      "access": "split",
+      "section": "bugfix",
+      "member": "trashLagMode",
+      "tooltip": [
+        "When there is a LOT of trash in the ocean, the trash's movement and water detection can cause a lot of lag. This can be used to use alternative movement and detection patterns to improve FPS.",
+        "• Vanilla = This is the vanilla behaviour.",
+        "• Interval = This will stagger the movement and or water height update checks based on the <color=#00FFFF>Interval Update Settings</color>.",
+        "• No Movement = This will completely disable the movement of the trash on the ocean making it all sit at the same level. This will get the best FPS however it is recommended to use the game's <color=#00FFFF>Motion Sickness Mode</color> with this otherwise you may run into some issues collecting trash with nets or your hook."
+      ]
+    },
+    {
+      "type": "section",
+      "text": "  Interval Update Settings",
+      "name": "bugfix-trash",
+      "section": "bugfix",
+      "tooltip": "Settings that control how the Interval mode for the Trash Floating Update Mode setting behaves."
+    },
+    {
+      "type": "slider",
+      "name": "trashLagFix",
+      "text": "   Water Sample Interval",
+      "default": 0.5,
+      "range": {
+        "type": "custom",
+        "min": 0.1,
+        "max": 1
+      },
+      "section": "bugfix-trash",
+      "member": "trashLagFix",
+      "tooltip": "This controls how often the trash will \"sample\" or check the water height. Higher intervals will mean less lag."
+    },
+    {
+      "type": "input",
+      "text": "   Position Update Steps",
+      "name": "trashLagInterval",
+      "mode": "IntegerNumber",
+      "default": "1",
+      "section": "bugfix-trash",
+      "member": "trashLagInterval",
+      "memberFallback": 1,
+      "tooltip": [
+        "This makes it so the physical position of the trash only updates every few frames instead of every frame to reduce the processing of constantly moving all the trash.",
+        "",
+        " This will make the trash look like it's at a lower framerate than the game."
+      ]
+    },
+    {
+      "type": "slider",
+      "name": "trashLagThreshold",
+      "text": "   Position Update Threshold",
+      "default": 0,
+      "range": {
+        "min": 0,
+        "max": 0.5,
+        "decimals": 3
+      },
+      "section": "bugfix-trash",
+      "member": "trashLagThreshold",
+      "tooltip": "This makes it so the physical position of the trash only updates if the position it's trying to move to is a big enough movement. This can reduce how often the trash is moving without strictly limiting the framerate of the trash. However it will still move often if the water is moving a lot."
+    },
+    {
+      "type": "seperator",
+      "section": "bugfix-trash"
+    },
+    {
+      "type": "checkbox",
+      "name": "hungerRateFix",
+      "text": "Hunger Rate Fix",
+      "default": true,
+      "section": "bugfix",
+      "member": "hungerRateFix",
+      "tooltip": "By default, both the Hunger and Thirst bars are controlled by the \"thirstDecrementRateMultiplier\" instead of hunger being controlled by the \"foodDecrementRateMultiplier\". This fixes that"
+    },
+    {
+      "type": "checkbox",
+      "name": "roachPeaceful",
+      "text": "Roach/Scuttler Peaceful Fix",
+      "default": true,
+      "section": "bugfix",
+      "member": "roachPeaceful",
+      "tooltip": "<color=#007F00>[Host only]</color> This fixes the Scuttlers in [STORY LOCATION REDACTED] from being aggressive when playing on peaceful difficulty."
+    },
+    {
+      "type": "checkbox",
+      "name": "radarFix",
+      "text": "Radar ''Ghost'' Fix",
+      "default": true,
+      "section": "bugfix",
+      "member": "radarFix",
+      "tooltip": "There is a minor glitch with the radar where the island that has most recently despawned does not disappear from the radar until another island's \"blip\" is added. This fixes that issue."
+    },
+    {
+      "type": "checkbox",
+      "name": "netDriftFix",
+      "text": "Item Net Drift Fix",
+      "default": true,
+      "section": "bugfix",
+      "member": "netDriftFix",
+      "tooltip": "This fixes the glitch where the contents of the item nets will gradually move away from the raft the longer you're playing a world."
+    },
+    {
+      "type": "button",
+      "text": "Reset World Settings To Globals",
+      "name": "splitReset",
+      "access": "world",
+      "tooltip": "This will reset all world settings back to the global values you've set."
     },
     {
       "type": "button",
       "text": "Reset Settings To Defaults",
-      "name": "reset"
+      "name": "reset",
+      "tooltip": "This will reset all settings to the default values."
     }
   ] 
 }
