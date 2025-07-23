@@ -438,7 +438,7 @@ namespace MiscCheats
         public static GameObject consoleItemPrefab;
         public static Transform consoleItemParent;
         public static List<Object> createdObjects = new List<Object>();
-        public void Start()
+        public void Awake()
         {
             instance = this;
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -453,23 +453,14 @@ namespace MiscCheats
             scrappedGlass.settings_Inventory.DisplayName = "Scrapped Glass";
             scrappedGlass.SetRecipe(new CostMultiple[0], CraftingCategory.Hidden, 1);
             RAPI.RegisterItem(scrappedGlass);
-            Patch_WaveCalculatorCreate.InitializeSpectrums();
-            if (ComponentManager<CanvasHelper>.Value)
-                Patch_CreateHUD.Prefix(ComponentManager<CanvasHelper>.Value);
-            foreach (var t in Resources.FindObjectsOfTypeAll<HarvestableTree>())
-                if (t && t.PickupItem)
-                    Patch_NewPickupItem.Prefix(t.PickupItem);
             (harmony = new Harmony("com.aidanamite.LotsOLittleMods")).PatchAll();
-            roachPeaceful = roachPeaceful;
-            netDriftFix = netDriftFix;
+            OnEventAttribute.CallAll<OnModLoad>();
             Log("Mod has been loaded!");
         }
 
         public void OnModUnload()
         {
-            Patch_CreateHUD.Destroy();
-            Patch_WaterCameraEffects.TryRevertAll();
-            Patch_HookArea.TryRevertAll();
+            harmony?.UnpatchAll(harmony.Id);
             foreach (var o in createdObjects)
                 if (o)
                 {
@@ -477,26 +468,15 @@ namespace MiscCheats
                         ItemManager.GetAllItems().RemoveAll(x => x.UniqueIndex == i.UniqueIndex);
                     Destroy(o);
                 }
-            foreach (var b in UncraftButtonUpdater.all.ToArray())
-                if (b)
-                    Patch_UncraftButton.RemoveButton(b);
-            harmony?.UnpatchAll(harmony.Id);
+            OnEventAttribute.CallAll<OnModUnload>();
             SceneManager.sceneLoaded -= OnSceneLoaded;
             if (boostedStacks)
             {
                 boostedStacks = false;
                 UpdateStackSizes();
             }
-            Patch_WaveCalculatorCreate.UnmodifySpectrums();
-            if (ComponentManager<ObjectSpawnerManager>.Value)
-                TrashFloater.Get(ComponentManager<ObjectSpawnerManager>.Value).DoNotUpdate();
-            TrashFloater.Clear();
-            PerItemFloater.Clear();
-            roachPeaceful = false;
             if (lastCam) lastCam.farClipPlane = prevFarClip;
             if (lastQuality != int.MinValue) QualitySettings.lodBias = prevLOD;
-            foreach (var r in FindObjectsOfType<Reciever>())
-                r.CheckSignal();
             Log("Mod has been unloaded!");
         }
 
@@ -577,7 +557,7 @@ namespace MiscCheats
         {
             if (SettingName == "clearTrash")
             {
-                if (Index == 1)
+                if (Index == 1 && !Raft_Network.IsHost)
                 {
                     Debug.LogError($"[{modlistEntry.jsonmodinfo.name}]: [Clear and Spawn Trash Button] Only the host can spawn trash");
                     return;
@@ -842,7 +822,7 @@ namespace MiscCheats
                 if (ne)
                 {
                     var j = ne.SharkCount;
-                    while (j++ + Patch_DelayedSharkSpawn.pendingCount <= sharkCount)
+                    while (j++ + Patch_DelayedSharkSpawn.pendingCount < sharkCount)
                         ne.StartCoroutine(ne.CreateShark(sharkExtraRespawn, ne.GetSharkSpawnPosition(), AI_NetworkBehaviourType.Shark));
                 }
             }
@@ -888,6 +868,43 @@ namespace MiscCheats
         Distance,
         Area
     }
+
+    public class OnModUnload : OnEventAttribute { }
+
+    public class OnModLoad : OnEventAttribute { }
+
+    public class OnEventAttribute : Attribute
+    {
+        public static void CallAll<T>() where T : OnEventAttribute
+        {
+            void DoType(Type type)
+            {
+                if (!type.ContainsGenericParameters)
+                    foreach (var m in type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                        if (!m.ContainsGenericParameters && m.GetParameters().Length == 0)
+                        {
+                            foreach (var a in m.GetCustomAttributes(false))
+                                if (a is T)
+                                {
+                                    try
+                                    {
+                                        m.Invoke(null, Array.Empty<object>());
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Debug.LogError(e);
+                                    }
+                                    break;
+                                }
+                        }
+                foreach (var t in type.GetNestedTypes(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                    DoType(t);
+            }
+            foreach (var t in typeof(Main).Assembly.GetTypes())
+                DoType(t);
+        }
+    }
+
     [HarmonyPatch(typeof(RemovePlaceables), "ReturnItemsFromBlock")]
     static class Patch_ReturnItemsFromBlock
     {
@@ -1495,6 +1512,13 @@ namespace MiscCheats
         static bool RecieverDistanceOK(bool original) => original && !Main.instance.antennaAnyDistReciever;
         static bool RecieverHeightOK(bool original) => original || Main.instance.antennaAnywhere;
         static bool AntennaDistanceOK(bool original) => original && !Main.instance.antennaAnyDistAntenna;
+
+        [OnModUnload]
+        static void OnUnload()
+        {
+            foreach (var r in Object.FindObjectsOfType<Reciever>())
+                r.CheckSignal();
+        }
     }
     [HarmonyPatch(typeof(Reciever), "HasCorrectAltitude", MethodType.Getter)]
     static class Patch_RecieverValid
@@ -2541,6 +2565,14 @@ namespace MiscCheats
         {
             button.interactable = recipeBox.ItemToCraft && inventory.GetItemCount(recipeBox.ItemToCraft) >= recipeBox.ItemToCraft.settings_recipe.AmountToCraft;
         }
+
+        [OnModUnload]
+        static void OnUnload()
+        {
+            foreach (var b in all.ToArray())
+                if (b)
+                    Patch_UncraftButton.RemoveButton(b);
+        }
     }
 
     [HarmonyPatch(typeof(Battery), "Update", typeof(int))]
@@ -2564,6 +2596,7 @@ namespace MiscCheats
             windSpeed = EditValue(windSpeed, Main.instance.windSpeedMul, Main.instance.windSpeedExp);
         }
 
+        [OnModLoad]
         public static void InitializeSpectrums()
         {
             foreach (var p in Resources.FindObjectsOfTypeAll<WaterProfile>())
@@ -2589,6 +2622,7 @@ namespace MiscCheats
             MarkDirty();
         }
 
+        [OnModUnload]
         public static void UnmodifySpectrums()
         {
             foreach (var r in spectrums)
@@ -2964,7 +2998,14 @@ namespace MiscCheats
     [HarmonyPatch(typeof(PickupItem),"Start")]
     static class Patch_NewPickupItem
     {
-        public static void Prefix(PickupItem __instance) => Patch_Pickup.TreeData.Get(__instance);
+        static void Prefix(PickupItem __instance) => Patch_Pickup.TreeData.Get(__instance);
+
+        static void OnLoad()
+        {
+            foreach (var t in Resources.FindObjectsOfTypeAll<HarvestableTree>())
+                if (t && t.PickupItem)
+                    Prefix(t.PickupItem);
+        }
     }
 
     [HarmonyPatch]
@@ -3230,6 +3271,14 @@ namespace MiscCheats
             g.SetActive(a);
         }
 
+        [OnModLoad]
+        public static void Init()
+        {
+            if (ComponentManager<CanvasHelper>.Value)
+                Prefix(ComponentManager<CanvasHelper>.Value);
+        }
+
+        [OnModUnload]
         public static void Destroy()
         {
             if (!ComponentManager<CanvasHelper>.Value)
@@ -3597,7 +3646,9 @@ namespace MiscCheats
             public float original = float.NaN;
             public float change = float.NaN;
         }
-        public static void TryRevertAll()
+
+        [OnModUnload]
+        static void TryRevertAll()
         {
             foreach (var m in Resources.FindObjectsOfTypeAll<Material>())
                 if (table.TryGetValue(m, out var d))
@@ -3671,7 +3722,9 @@ namespace MiscCheats
                     d.collider.size = Main.instance.hookArea * d.original;
                 return d;
             }
-            public static void TryRevertAll()
+
+            [OnModUnload]
+            static void TryRevertAll()
             {
                 foreach (var h in Resources.FindObjectsOfTypeAll<Hook>())
                     if (table.TryGetValue(h, out var d))
@@ -3681,7 +3734,6 @@ namespace MiscCheats
                     }
             }
         }
-        public static void TryRevertAll() => Data.TryRevertAll();
     }
 
     [HarmonyPatch]
@@ -3713,15 +3765,19 @@ namespace MiscCheats
     static class Patch_TrashSpawnerUpdate
     {
         public static bool Prewarm = false;
+        public static ConditionalWeakTable<ObjectSpawner_RaftDirection, SpawnerMemory> table = new ConditionalWeakTable<ObjectSpawner_RaftDirection, SpawnerMemory>();
 
         [HarmonyPatch("Update")]
         [HarmonyTranspiler]
         static IEnumerable<CodeInstruction> Update_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             var code = instructions.ToList();
-            code.Insert(
+            code.InsertRange(
                 code.FindIndex(x => x.operand is MethodInfo m && m.Name == "get_deltaTime") + 1,
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Methods), nameof(Methods.ModifyTime))));
+                new[] {
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Methods), nameof(Methods.ModifyTime)))
+                });
 
             code.Insert(
                 code.FindLastIndex(x => x.opcode == OpCodes.Ldfld && x.operand is FieldInfo f && f.Name == "spawnDelay") + 1,
@@ -3767,6 +3823,23 @@ namespace MiscCheats
             return code;
         }
 
+        [HarmonyPatch("Update")]
+        [HarmonyFinalizer]
+        static void Update_Finalizer(ObjectSpawner_RaftDirection __instance)
+        {
+            if (table.TryGetValue(__instance,out var data) && data.dirty && (Raft_Network.WorldHasBeenRecieved || GameManager.IsInNewGame))
+            {
+                data.dirty = false;
+                data.init = true;
+                data.last = Patch_RaftPosition.current;
+            }
+        }
+
+        [HarmonyPatch("SpawnNewItems")]
+        [HarmonyFinalizer]
+        static void SpawnNewItems_Finalizer(ObjectSpawner_RaftDirection __instance) => Update_Finalizer(__instance);
+
+
         [HarmonyPatch("RemoveItemsOutsideRange")]
         [HarmonyTranspiler]
         static IEnumerable<CodeInstruction> RemoveItemsOutsideRange_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator iL)
@@ -3780,10 +3853,12 @@ namespace MiscCheats
 
         static class Methods
         {
-            public static float ModifyTime(float original)
+            public static float ModifyTime(float original, ObjectSpawner_RaftDirection instance)
             {
+                var data = table.GetOrCreateValue(instance);
+                data.dirty = true;
                 if (Main.instance.trashMode != TrashMode.Vanilla)
-                    original = (Patch_RaftPosition.current - Patch_RaftPosition.last).XZOnly().magnitude / 2;
+                    original = data.init ? (Patch_RaftPosition.current - data.last).XZOnly().magnitude / 2 : 0;
                 return original * Main.instance.trashSpawn;
             }
             public static float ModifyDelay(float original) => Main.instance.trashMode == TrashMode.Area ? float.Epsilon : original;
@@ -3809,8 +3884,9 @@ namespace MiscCheats
                 if (Main.instance.trashMode == TrashMode.Area)
                 {
                     area = new SpawnArea();
-                    area.travel = (Patch_RaftPosition.current - Patch_RaftPosition.last).XZOnly();
-                    if (Prewarm && area.travel.sqrMagnitude == 0)
+                    var data = table.GetOrCreateValue(spawner);
+                    area.travel = data.init ? (Patch_RaftPosition.current - data.last).XZOnly() : Vector3.zero;
+                    if (Prewarm && area.travel == Vector3.zero)
                         area.travel = Vector3.forward;
                     area.sqrTravelDist = area.travel.sqrMagnitude;
                     if (area.sqrTravelDist == 0)
@@ -3850,7 +3926,7 @@ namespace MiscCheats
                         areaPerItem = 0.01f;
                     var itemCount = (int)(area.area / areaPerItem);
                     if (!Prewarm && float.IsFinite(spawnTimer))
-                        spawnTimer *= itemCount * areaPerItem / area.area;
+                        spawnTimer *= 1 - (itemCount * areaPerItem / area.area);
                     else
                         spawnTimer = 0;
                     return itemCount;
@@ -3894,6 +3970,13 @@ namespace MiscCheats
                     }
                 }
             }
+        }
+
+        public class SpawnerMemory
+        {
+            public bool dirty;
+            public bool init;
+            public Vector3 last;
         }
     }
 
@@ -4050,6 +4133,14 @@ namespace MiscCheats
                         if (f) f.enabled = true;
                     }
         }
+
+        [OnModUnload]
+        static void OnUnload()
+        {
+            if (ComponentManager<ObjectSpawnerManager>.Value)
+                Get(ComponentManager<ObjectSpawnerManager>.Value).DoNotUpdate();
+            Clear();
+        }
     }
     class PerItemFloater : ExtendedClass<PerItemFloater, PickupItem_Networked>
     {
@@ -4060,6 +4151,12 @@ namespace MiscCheats
         protected override void OnCreate(PickupItem_Networked instance)
         {
             floater = instance.GetComponent<WaterFloatSemih2>();
+        }
+
+        [OnModUnload]
+        static void OnUnload()
+        {
+            Clear();
         }
     }
     class PerformanceCounter
@@ -4156,13 +4253,11 @@ namespace MiscCheats
     static class Patch_RaftPosition
     {
         public static Vector3 current;
-        public static Vector3 last;
 
         [HarmonyPatch("Update")]
         [HarmonyPostfix]
         static void Update(Rigidbody ___body)
         {
-            last = current;
             current = ___body.transform.position;
         }
 
@@ -4171,7 +4266,9 @@ namespace MiscCheats
         static void OnWorldShift(Vector3 shift)
         {
             current -= shift;
-            last -= shift;
+            foreach (var s in Resources.FindObjectsOfTypeAll<ObjectSpawner_RaftDirection>())
+                if (Patch_TrashSpawnerUpdate.table.TryGetValue(s, out var data) && data.init)
+                    data.last -= shift;
         }
     }
 
@@ -4227,6 +4324,12 @@ namespace MiscCheats
             return code;
         }
         static EntityVariables EditFallback(EntityVariables original, AI_NetworkBehaviourType type) => original == null && type == AI_NetworkBehaviourType.Roach && Main.instance.roachPeaceful ? GameModeValueManager.GetDifficultyEntityVariableFromAINetworkBehaviourType(AI_NetworkBehaviourType.Rat) : original;
+
+        [OnModUnload]
+        static void OnUnload()
+        {
+            Main.instance.roachPeaceful = false;
+        }
     }
 
     [HarmonyPatch(typeof(BlockCreator), "CreateBlock")]
