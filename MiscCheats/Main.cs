@@ -424,6 +424,9 @@ namespace MiscCheats
                 if (_nd = value)
                     foreach (var block in BlockCreator.GetPlacedBlocks())
                         Patch_CreateBlock.Postfix(block);
+                else
+                    Patch_CreateBlock.UndoChanges();
+
             }
         }
         public bool gradualUnhealthy = false;
@@ -4010,6 +4013,7 @@ namespace MiscCheats
     {
         float next;
         int frames;
+
         public void DoUpdate()
         {
             if (Time.deltaTime == 0)
@@ -4029,7 +4033,7 @@ namespace MiscCheats
                     {
                         var i = items[ind];
                         var data = PerItemFloater.Get(i);
-                        if (data.state != 2)
+                        if (data.floater && data.state != 2)
                         {
                             data.state = 2;
                             if (data.floater.enabled)
@@ -4064,6 +4068,8 @@ namespace MiscCheats
                     {
                         var i = items[ind];
                         var data = PerItemFloater.Get(i);
+                        if (!data.floater)
+                            continue;
                         if (data.floater.enabled)
                             data.floater.enabled = false;
                         var p = i.transform.localPosition;
@@ -4099,6 +4105,8 @@ namespace MiscCheats
                     {
                         var i = items[ind];
                         var data = PerItemFloater.Get(i);
+                        if (!data.floater)
+                            continue;
                         var p = i.transform.localPosition;
                         if (data.state == 1)
                         {
@@ -4150,7 +4158,7 @@ namespace MiscCheats
         public int state;
         protected override void OnCreate(PickupItem_Networked instance)
         {
-            floater = instance.GetComponent<WaterFloatSemih2>();
+            floater = instance.GetComponentInParent<WaterFloatSemih2>();
         }
 
         [OnModUnload]
@@ -4343,13 +4351,28 @@ namespace MiscCheats
                 var body = collector.GetComponent<Rigidbody>();
                 if (!body)
                     return;
-                Object.DestroyImmediate(body);
+                body.isKinematic = true;
                 var p = __result.buildableItem.settings_buildable.GetBlockPrefab(__result.dpsType);
                 if (!p)
                     return;
                 var pChild = p.transform.Find(collector.transform.GetPathFrom(__result.transform));
                 if (pChild)
                     collector.transform.localPosition = pChild.localPosition;
+            }
+        }
+
+        [OnModUnload]
+        public static void UndoChanges()
+        {
+            foreach (var block in BlockCreator.GetPlacedBlocks())
+            {
+                var com = block.GetComponentInChildren<ItemCollector>();
+                if (!com)
+                    continue;
+                var bod = com.GetComponent<Rigidbody>();
+                if (!bod)
+                    continue;
+                bod.isKinematic = false;
             }
         }
     }
@@ -4820,7 +4843,7 @@ namespace MiscCheats
             if (!child)
                 throw new ArgumentNullException(nameof(child));
             if (child.parent == parent)
-                return "";
+                return child.name;
             var str = new StringBuilder();
             str.Append(child.name);
             var curr = child.parent;
