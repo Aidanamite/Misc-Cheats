@@ -316,6 +316,7 @@ namespace MiscCheats
         public float sharkRespawn = 1;
         public int seagullCount = -1;
         public float fuelConsumption = 1;
+        public float fuelConsumption2 = 1;
         public bool disableBinoOverlay = false;
         public int fruitTime = -1;
         bool _fe = false;
@@ -2732,7 +2733,7 @@ namespace MiscCheats
     [HarmonyPatch(typeof(Slot), "IncrementUses")]
     static class Patch_SpendItemUses
     {
-        static bool Prefix(int amountOfUsesToAdd) => !Main.instance.infiniteDurability || amountOfUsesToAdd > 0;
+        static bool Prefix(Slot __instance, int amountOfUsesToAdd) => amountOfUsesToAdd > 0 || !Main.instance.infiniteDurability || !(__instance.HasValidItemInstance() && __instance.itemInstance.BaseItemMaxUses != 1 && __instance.itemInstance.settings_consumeable.FoodType == FoodType.None);
     }
 
     [HarmonyPatch(typeof(Stat_Consumable), "LostPerSecond", MethodType.Getter)]
@@ -3256,6 +3257,20 @@ namespace MiscCheats
         }
     }
 
+    [HarmonyPatch(typeof(Fuel), "UpdateFuel")]
+    static class Patch_FuelUpdate
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = instructions.ToList();
+            code.Insert(
+                code.FindIndex(x => x.operand is MethodInfo m && m.Name == "get_deltaTime") + 1,
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_FuelUpdate), nameof(ModifyTime))));
+            return code;
+        }
+        static float ModifyTime(float original) => original * Main.instance.fuelConsumption2;
+    }
+
     [HarmonyPatch(typeof(CanvasHelper),"Awake")]
     static class Patch_CreateHUD
     {
@@ -3442,6 +3457,8 @@ namespace MiscCheats
     {
         static void Postfix(Reciever_Dot __instance, Image ___dotImage, Sprite ___dotSprite)
         {
+            if (__instance.chunkPoint == null || !__instance.chunkPoint.rule)
+                return;
             var t = __instance.chunkPoint.rule.ChunkPointType;
             if (t == ChunkPointType.Landmark_Small || t == ChunkPointType.Landmark_Pilot || t == ChunkPointType.Landmark_Boat || t == ChunkPointType.Landmark_FloatingRaft)
                 ___dotImage.sprite = Main.GetBlip(t,___dotSprite,
@@ -4365,15 +4382,16 @@ namespace MiscCheats
         public static void UndoChanges()
         {
             foreach (var block in BlockCreator.GetPlacedBlocks())
-            {
-                var com = block.GetComponentInChildren<ItemCollector>();
-                if (!com)
-                    continue;
-                var bod = com.GetComponent<Rigidbody>();
-                if (!bod)
-                    continue;
-                bod.isKinematic = false;
-            }
+                if (block)
+                {
+                    var com = block.GetComponentInChildren<ItemCollector>();
+                    if (!com)
+                        continue;
+                    var bod = com.GetComponent<Rigidbody>();
+                    if (!bod)
+                        continue;
+                    bod.isKinematic = false;
+                }
         }
     }
 
