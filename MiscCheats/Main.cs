@@ -434,6 +434,7 @@ namespace MiscCheats
         public bool alwaysSpecial = false;
         public float dropChance = 1;
         public float dropDespawn = 1;
+        public float wideInteraction = 0;
 
         public bool AllowSharkAttack => ComponentManager<RaftBounds>.Value.FoundationCount >= sharkAttackThresholdMin && (sharkAttackThresholdMax < 0 || sharkAttackThresholdMax >= ComponentManager<RaftBounds>.Value.FoundationCount);
         public bool UsingBino => ComponentManager<CanvasHelper>.Value && ComponentManager<CanvasHelper>.Value.binocularImage && ComponentManager<CanvasHelper>.Value.binocularImage.activeSelf;
@@ -4528,6 +4529,65 @@ namespace MiscCheats
             if (Main.instance.gradualUnhealthy)
                 return original * (instance.stat_health.NormalValue / Patch_WellBeingThreashold.Methods.ModifyBadLimit(Stat_WellBeing.WellBeingLimit));
             return original;
+        }
+    }
+
+    [HarmonyPatch(typeof(Helper), "FindInteractable")]
+    static class Patch_FindInteractable
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions,ILGenerator iL)
+        {
+            var code = instructions.ToList();
+            var loc = iL.DeclareLocal(typeof(bool));
+            var rlbl = iL.DefineLabel();
+            code[0].labels.Add(rlbl);
+            code.InsertRange(0, new[] {
+                new CodeInstruction(OpCodes.Ldc_I4_0),
+                new CodeInstruction(OpCodes.Stloc, loc)
+            });
+            for (int i = code.Count - 1; i >= 0; i--)
+                if (code[i].operand is MethodInfo m && m.Name == "Raycast")
+                {
+                    var lbl = iL.DefineLabel();
+                    var lbl2 = iL.DefineLabel();
+                    code[i].labels.Add(lbl2);
+                    code.Insert(i + 1, new CodeInstruction(OpCodes.Nop) { labels = { lbl } });
+                    code.InsertRange(i, new[]
+                    {
+                        new CodeInstruction(OpCodes.Ldloc,loc),
+                        new CodeInstruction(OpCodes.Brfalse_S,lbl2),
+                        new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_FindInteractable), nameof(Spherecast), m.GetParameters().Select(x => x.ParameterType).ToArray())),
+                        new CodeInstruction(OpCodes.Br_S,lbl)
+                    });
+                }
+                else if (code[i].opcode == OpCodes.Ret)
+                {
+                    var lbl = iL.DefineLabel();
+                    code[i].labels.Add(lbl);
+                    code.InsertRange(i, new[]
+                    {
+                        new CodeInstruction(OpCodes.Ldloca,loc),
+                        new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_FindInteractable), nameof(AllowReturn))),
+                        new CodeInstruction(OpCodes.Brtrue_S,lbl),
+                        new CodeInstruction(OpCodes.Pop),
+                        new CodeInstruction(OpCodes.Br,rlbl)
+                    });
+                }
+            return code;
+        }
+
+        static bool Spherecast(Ray ray, out RaycastHit hitInfo, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction)
+            => Physics.SphereCast(ray, Main.instance.wideInteraction, out hitInfo, maxDistance, layerMask, queryTriggerInteraction);
+
+        static bool Spherecast(Vector3 origin, Vector3 direction, out RaycastHit hitInfo, float maxDistance, int layerMask, QueryTriggerInteraction queryTriggerInteraction)
+            => Physics.SphereCast(origin, Main.instance.wideInteraction, direction, out hitInfo, maxDistance, layerMask, queryTriggerInteraction);
+
+        static bool AllowReturn(ref bool doingRepeat)
+        {
+            if (doingRepeat || Main.instance.wideInteraction <= 0)
+                return true;
+            doingRepeat = true;
+            return false;
         }
     }
 
