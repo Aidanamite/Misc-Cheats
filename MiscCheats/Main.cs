@@ -3187,6 +3187,10 @@ namespace MiscCheats
     static class Patch_DelayedSharkSpawn
     {
         public static int pendingCount;
+        static void Prefix(ref float timeDelay)
+        {
+            timeDelay *= Main.instance.sharkRespawn;
+        }
         static void Postfix(ref IEnumerator __result)
         {
             __result = new Wrapper(__result);
