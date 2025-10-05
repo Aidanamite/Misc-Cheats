@@ -2,7 +2,7 @@
   "name": "Misc Cheats and Tweaks",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -1934,6 +1934,32 @@
       "tooltip": "Widens the interaction raycast to make things easier."
     },
     {
+      "type": "checkbox",
+      "name": "swimSprint",
+      "text": "Can Sprint While Swimming",
+      "default": false,
+      "access": "split",
+      "section": "player",
+      "member": "swimSprint",
+      "tooltip": "Makes it so you can sprint while swimming.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Swim Sprint Multiplier Override",
+      "name": "swimSprintSpeed",
+      "mode": "DecimalNumber",
+      "default": "",
+      "section": "player",
+      "member": "swimSprintSpeed",
+      "memberFallback": 0,
+      "tooltip": [
+        "Overrides the sprint speed multiplier while swimming.",
+        "A blank value or a value of 0 or less will be the same as vanilla."
+      ]
+    },
+    {
       "type": "section",
       "text": "Graphics",
       "name": "graphic",
@@ -2112,6 +2138,23 @@
       "member": "rotateWithRaft",
       "tooltip": "This makes it so when you're standing on the raft, your camera will rotate with the raft, similar to when you're placing something.",
       "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Shadow Resolution Override",
+      "name": "shadowResolution",
+      "mode": "IntegerNumber",
+      "default": "",
+      "max": 2,
+      "section": "graphic",
+      "member": "shadowResolution",
+      "memberFallback": 0,
+      "tooltip": [
+        "Overrides the shadow resolution of sky light.",
+        "A blank value will be the same as vanilla (equivelent value will vary but will be no more than 11 = 4096x4096).",
+        "Can be any number from 1 to 15, each increase of 1 will double the resolution. (1 = 2x2, 5 = 32x32, 9 = 1024x1024)"
+      ],
       "resetButton": true
     },
     {

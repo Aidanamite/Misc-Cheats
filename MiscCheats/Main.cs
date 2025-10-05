@@ -435,6 +435,9 @@ namespace MiscCheats
         public float dropChance = 1;
         public float dropDespawn = 1;
         public float wideInteraction = 0;
+        public bool swimSprint = false;
+        public float swimSprintSpeed = 0;
+        public byte shadowResolution = 0;
 
         public bool AllowSharkAttack => ComponentManager<RaftBounds>.Value.FoundationCount >= sharkAttackThresholdMin && (sharkAttackThresholdMax < 0 || sharkAttackThresholdMax >= ComponentManager<RaftBounds>.Value.FoundationCount);
         public bool UsingBino => ComponentManager<CanvasHelper>.Value && ComponentManager<CanvasHelper>.Value.binocularImage && ComponentManager<CanvasHelper>.Value.binocularImage.activeSelf;
@@ -841,6 +844,13 @@ namespace MiscCheats
                     TrashFloater.Get(spawner).DoNotUpdate();
                 else
                     TrashFloater.Get(spawner).DoUpdate();
+            }
+
+            if (ComponentManager<AzureSkyController>.Value && ComponentManager<AzureSkyController>.Value.m_lightComponent)
+            {
+                var res = shadowResolution > 0 ? 1 << (shadowResolution < 16 ? shadowResolution : 15) : -1;
+                if (ComponentManager<AzureSkyController>.Value.m_lightComponent.shadowCustomResolution != res)
+                    ComponentManager<AzureSkyController>.Value.m_lightComponent.shadowCustomResolution = res;
             }
         }
 
@@ -4592,6 +4602,40 @@ namespace MiscCheats
                 return true;
             doingRepeat = true;
             return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(PersonController), "WaterControll")]
+    static class Patch_WaterControl
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = instructions.ToList();
+            code.InsertRange(
+                code.FindIndex(x => x.operand is MethodInfo m && m.Name == "get_WaterVelocityModifier") + 1,
+                new[] {
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new CodeInstruction(OpCodes.Ldflda,AccessTools.Field(typeof(PersonController),"runToggled")),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_WaterControl), nameof(ModifySwimSpeed)))
+                });
+            return code;
+        }
+        static float ModifySwimSpeed(float original, PersonController controller, ref bool runToggled)
+        {
+            if (!Main.instance.swimSprint)
+                return original;
+            if (ComponentManager<Settings>.Value.controls.RunToggle)
+            {
+                if (MyInput.GetButtonDown("Sprint") && CanvasHelper.ActiveMenu == MenuType.None)
+                    runToggled = !runToggled;
+                controller.sprinting = runToggled && controller.moving;
+            }
+            else
+                controller.sprinting = MyInput.GetButton("Sprint") && CanvasHelper.ActiveMenu == MenuType.None && controller.moving;
+            if (controller.sprinting)
+                return original * (Main.instance.swimSprintSpeed > 0 ? Main.instance.swimSprintSpeed : (controller.sprintSpeed / controller.normalSpeed));
+            return original;
         }
     }
 
