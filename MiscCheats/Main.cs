@@ -22,6 +22,8 @@ using UnityEngine.AzureSky;
 using UnityEngine.Experimental.Rendering;
 using System.Text;
 using System.Runtime.InteropServices;
+using UnityEngine.Networking;
+using static UnityEngine.Random;
 
 
 namespace MiscCheats
@@ -392,6 +394,16 @@ namespace MiscCheats
             get => animalSpecs.GetOrDefault(specSelect).IsPassive;
             set => animalSpecs.GetOrCreate(specSelect).IsPassive = value;
         }
+        public float specDamageTaken
+        {
+            get => animalSpecs.GetOrDefault(specSelect).DamageTaken;
+            set => animalSpecs.GetOrCreate(specSelect).DamageTaken = value;
+        }
+        public float specDamageDealt
+        {
+            get => animalSpecs.GetOrDefault(specSelect).DamageDealt;
+            set => animalSpecs.GetOrCreate(specSelect).DamageDealt = value;
+        }
         public bool quickMoveFreeze = true;
         public TrashLagMode trashLagMode = TrashLagMode.Vanilla;
         public float trashLagFix = 0;
@@ -438,6 +450,14 @@ namespace MiscCheats
         public bool swimSprint = false;
         public float swimSprintSpeed = 0;
         public byte shadowResolution = 0;
+        public bool disableBaitConsumption = false;
+        public int fishingLoot = 1;
+        public FishingRodDurabilityMode fishingDur = FishingRodDurabilityMode.NoChange;
+        public SprinklerRequirementMode sprinklerMode = SprinklerRequirementMode.Default;
+        public float gravityMultiplier = 1;
+        public float jumpMultiplier = 1;
+        public float hookSpeedMultiplier = 1;
+        public bool deathSettings = true;
 
         public bool AllowSharkAttack => ComponentManager<RaftBounds>.Value.FoundationCount >= sharkAttackThresholdMin && (sharkAttackThresholdMax < 0 || sharkAttackThresholdMax >= ComponentManager<RaftBounds>.Value.FoundationCount);
         public bool UsingBino => ComponentManager<CanvasHelper>.Value && ComponentManager<CanvasHelper>.Value.binocularImage && ComponentManager<CanvasHelper>.Value.binocularImage.activeSelf;
@@ -615,7 +635,7 @@ namespace MiscCheats
                         ComponentManager<Raft_Network>.Value.SendP2P(ComponentManager<Raft_Network>.Value.HostID, m, NetworkChannel.Channel_Game);
                 }
             }
-            if (SettingName == "unlearning")
+            else if (SettingName == "unlearning")
             {
                 if (Index == 0)
                 {
@@ -694,13 +714,54 @@ namespace MiscCheats
                     ExtraSettingsAPI_ResetSplitSetting("animalSpecs");
                 else
                     ExtraSettingsAPI_ResetSetting("animalSpecs");
-
+            }
+            else if ((SettingName == "respawn" || SettingName == "revive") && Player.LocalPlayerIsDead)
+            {
+                var player = RAPI.GetLocalPlayer();
+                var msg = new Message_NetworkBehaviour(Messages.Respawn_Start, player);
+                if (Raft_Network.IsHost)
+                    ComponentManager<Raft_Network>.Value.RPC(msg, Target.Other, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
+                else
+                {
+                    Patch_HandleMessage.ignores.Add(x => x.Type == Messages.Respawn_Start && x.ObjectIndex == player.ObjectIndex);
+                    player.SendP2P(msg, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
+                }
+                if (SettingName == "respawn")
+                {
+                    var bed = BedManager.FindClosestBedToPlayer(player);
+                    var edit = new[] { Traverse.Create(bed).Field<float>("healthPercentage"), Traverse.Create(bed).Field<float>("hungerPercentage"), Traverse.Create(bed).Field<float>("thirstPercentage") }.Select(x => (x, x.Value));
+                    if (Index == 2)
+                        foreach (var i in edit) i.x.Value = 100;
+                    player.PlayerScript.StartRespawn(bed, Index == 0);
+                    if (Index == 2)
+                        foreach (var i in edit) i.x.Value = i.Value;
+                }
+                else
+                {
+                    if (!Raft_Network.IsHost)
+                        Patch_HandleMessage.ignores.Add(x => x.Type == Messages.Respawn_Complete && x.ObjectIndex == player.ObjectIndex);
+                    player.PlayerScript.RespawnWithoutBed(Index == 0);
+                    msg = new Message_NetworkBehaviour(Messages.Respawn_Complete, player);
+                    if (Raft_Network.IsHost)
+                        ComponentManager<Raft_Network>.Value.RPC(msg, Target.Other, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
+                    else
+                        player.SendP2P(msg, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
+                    if (Index == 2)
+                    {
+                        player.Stats.stat_health.SetToMaxValue();
+                        player.Stats.stat_hunger.Normal.SetToMaxValue();
+                        player.Stats.stat_thirst.Normal.SetToMaxValue();
+                    }
+                }
+                ComponentManager<Settings>.Value.Close();
             }
         }
         public bool ExtraSettingsAPI_HandleSettingVisible(string SettingName, bool IsInWorld)
         {
             if (SettingName == "unlearning")
                 return ComponentManager<Raft_Network>.Value && ComponentManager<Raft_Network>.Value.remoteUsers.All(x => x.Value.IsLocalPlayer);
+            if (SettingName == "respawn" || SettingName == "revive")
+                return Player.LocalPlayerIsDead;
             return !IsInWorld || Raft_Network.IsHost;
         }
 
@@ -852,6 +913,11 @@ namespace MiscCheats
                 if (ComponentManager<AzureSkyController>.Value.m_lightComponent.shadowCustomResolution != res)
                     ComponentManager<AzureSkyController>.Value.m_lightComponent.shadowCustomResolution = res;
             }
+
+            if (deathSettings && CanvasHelper.ActiveMenu == MenuType.DeathMenu && Input.GetKeyDown(KeyCode.Escape))
+            {
+                ComponentManager<Settings>.Value.Toggle();
+            }
         }
 
         static Dictionary<ChunkPointType, (Sprite sprite, float color)> chunkBlips = new Dictionary<ChunkPointType, (Sprite, float)>();
@@ -996,6 +1062,13 @@ namespace MiscCheats
         OnBreak,
         Disabled
     }
+    public enum FishingRodDurabilityMode
+    {
+        NoChange,
+        Unbaited,
+        Baited,
+        Disabled
+    }
     public enum OxygenRegenMode
     {
         Vanilla,
@@ -1013,6 +1086,14 @@ namespace MiscCheats
         Default,
         KeepInventory,
         DropItems
+    }
+    [Flags]
+    public enum SprinklerRequirementMode
+    {
+        Default,
+        NoWaterNeeded,
+        NoBatteryNeeded,
+        NoRequirements
     }
     public class AnimalSpecs : IDictionary<AI_NetworkBehaviourType,AnimalSpec>, IDictionary<string,string>, IDictionary<string, AnimalSpec>, IEnumerable<KeyValuePair<string, AnimalSpec>>
     {
@@ -1097,15 +1178,98 @@ namespace MiscCheats
     {
         public bool IsPassive;
         public bool IsDisabled;
+        public float DamageTaken = 1;
+        public float DamageDealt = 1;
         public static AnimalSpec Default = new AnimalSpec();
         public AnimalSpec() { }
         public AnimalSpec(string value) => Parse(value);
         public void Parse(string value)
         {
-            IsDisabled = value?.Length > 0 && value[0] == '1';
-            IsPassive = value?.Length > 1 && value[1] == '1';
+            if (string.IsNullOrEmpty(value))
+            {
+                IsDisabled = false;
+                IsPassive = false;
+                DamageTaken = 1;
+                DamageDealt = 1;
+                return;
+            }
+            unsafe
+            {
+                fixed (char* p = value)
+                {
+                    var pointer = (byte*)p;
+                    var end = (byte*)(p + value.Length);
+                    IsDisabled = SafeRead(ref pointer, end, '0') == '1';
+                    IsPassive = SafeRead(ref pointer, end, '0') == '1';
+                    DamageTaken = SafeRead(ref pointer, end, 1f);
+                    DamageDealt = SafeRead(ref pointer, end, 1f);
+                }
+            }
         }
-        public override string ToString() => $"{(IsDisabled ? '1' : '0')}{(IsPassive ? '1' : '0')}";
+        public override string ToString() => new DataStringBuilder()
+            .Append(IsDisabled ? '1' : '0')
+            .Append(IsPassive ? '1' : '0')
+            .Append(DamageTaken)
+            .Append(DamageDealt)
+            .ToString();
+
+        static unsafe T SafeRead<T>(ref byte* pointer, byte* end, T fallback = default) where T : struct
+        {
+            if (pointer >= end)
+                return fallback;
+            var ret = (pointer + Marshal.SizeOf<T>() <= end) ? Marshal.PtrToStructure<T>((IntPtr)pointer) : fallback;
+            pointer += Marshal.SizeOf<T>();
+            return ret;
+        }
+        
+    }
+
+    public class DataStringBuilder
+    {
+        List<Writer> data = new List<Writer>();
+        int size;
+        public DataStringBuilder Append<T>(T value) where T : struct
+        {
+            var writer = new Writer<T>(value);
+            size += writer.Size;
+            data.Add(writer);
+            return this;
+        }
+        public override string ToString()
+        {
+            var sSize = size / sizeof(char);
+            if ((size % sizeof(char)) != 0)
+                sSize++;
+            var result = new string('\n', sSize);
+            unsafe
+            {
+                fixed (char* c = result)
+                {
+                    var pointer = (byte*)c;
+                    foreach (var writer in data)
+                        writer.Write(ref pointer);
+                }
+            }
+            return result;
+        }
+
+
+        abstract class Writer
+        {
+            public readonly int Size;
+            public Writer(int size) => Size = size;
+            public abstract unsafe void Write(ref byte* pointer);
+        }
+        class Writer<T> : Writer where T : struct
+        {
+            public readonly T Value;
+            public unsafe Writer(T value) : base(Marshal.SizeOf<T>()) => Value = value;
+            public override unsafe void Write(ref byte* pointer)
+            {
+                Marshal.StructureToPtr(Value, (IntPtr)pointer, false);
+                pointer += Size;
+            }
+        }
     }
 
     [HarmonyPatch(typeof(BlockCreator), "UpgradeBlock")]
@@ -1434,39 +1598,83 @@ namespace MiscCheats
     [HarmonyPatch]
     static class Patch_PickingUp
     {
-        public static bool calling = false;
+        public static int calling = 0;
 
         [HarmonyPatch(typeof(Pickup), "AddItemToInventory")]
         [HarmonyPrefix]
-        static void Prefix_AddItemToInventory(PickupItem item)
+        static void Prefix_AddItemToInventory(PickupItem item, out bool __state)
         {
             if (!item.GetComponent<DropItem>() && !item.GetComponent<Arrow>())
             {
-                calling = Main.instance.itemLooting != 1;
+                if (__state = Main.instance.itemLooting != 1)
+                    calling++;
                 if (Main.instance.itemLooting != 1 && item.itemInstance != null && item.itemInstance.Valid)
                     item.itemInstance.Amount = item.itemInstance.Amount.Multiply(Main.instance.itemLooting);
             }
+            else
+                __state = false;
         }
 
         [HarmonyPatch(typeof(Pickup), "AddItemToInventory")]
         [HarmonyFinalizer]
-        static void Postfix_AddItemToInventory() => calling = false;
+        static void Postfix_AddItemToInventory(bool __state) { if (__state) calling--; }
 
         [HarmonyPatch(typeof(YieldHandler), "CollectYield")]
         [HarmonyPrefix]
-        static void Prefix_CollectYield() => calling = true;
+        static void Prefix_CollectYield() => calling++;
 
         [HarmonyPatch(typeof(YieldHandler), "CollectYield")]
         [HarmonyFinalizer]
-        static void Postfix_CollectYield() => calling = false;
+        static void Postfix_CollectYield() => calling--;
 
         [HarmonyPatch(typeof(HarvestableTree), "Harvest")]
         [HarmonyPrefix]
-        static void Prefix_Harvest() => calling = Main.instance.itemLooting != 1;
+        static void Prefix_Harvest(out bool __state) { if (__state = Main.instance.itemLooting != 1) calling++; }
 
         [HarmonyPatch(typeof(HarvestableTree), "Harvest")]
         [HarmonyPostfix]
-        static void Postfix_Harvest() => calling = false;
+        static void Postfix_Harvest(bool __state) { if (__state) calling--; }
+    }
+
+    [HarmonyPatch(typeof(FishingRod), "PullItemsFromSea")]
+    static class Patch_CollectingFishingItems
+    {
+        public static int calling = 0;
+        static void Prefix() => calling++;
+        static void Finalizer() => calling--;
+
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions,ILGenerator iL)
+        {
+            var code = instructions.ToList();
+            var loc = iL.DeclareLocal(typeof(bool));
+            code.InsertRange(0, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld,AccessTools.Field(typeof(FishingRod),"fishingBaitHandler")),
+                new CodeInstruction(OpCodes.Call,AccessTools.Method(typeof(FishingBaitHandler),nameof(FishingBaitHandler.HasBaitOfCurrentType))),
+                new CodeInstruction(OpCodes.Stloc,loc)
+            });
+            code.InsertRange(
+                code.FindIndex(x => x.operand is MethodInfo m && m.Name == "RemoveDurabillityFromHotSlot"),
+                new[]
+                {
+                    new CodeInstruction(OpCodes.Ldloc,loc),
+                    new CodeInstruction(OpCodes.Call,AccessTools.Method(typeof(Patch_CollectingFishingItems),nameof(ModifyDurabilityLoss)))
+                });
+            code.Insert(
+                code.FindIndex(x => x.operand is MethodInfo m && m.Name == "AddItem"),
+                new CodeInstruction(OpCodes.Call,AccessTools.Method(typeof(Patch_CollectingFishingItems),nameof(ModifyItemAmount))));
+            return code;
+        }
+        static int ModifyDurabilityLoss(int original,bool usedBait)
+        {
+            return (Main.instance.fishingDur == FishingRodDurabilityMode.Disabled
+                || (Main.instance.fishingDur == FishingRodDurabilityMode.Unbaited && usedBait)
+                || (Main.instance.fishingDur == FishingRodDurabilityMode.Baited && !usedBait))
+                ? 0
+                : original;
+        }
+        static int ModifyItemAmount(int original) => original * Main.instance.fishingLoot;
     }
 
     [HarmonyPatch(typeof(PlayerInventory), "AddItem")]
@@ -1475,13 +1683,14 @@ namespace MiscCheats
         [HarmonyPatch(new[] { typeof(string), typeof(int) })]
         static void Prefix(ref int amount)
         {
-            if (Patch_PickingUp.calling)
+            if (Patch_PickingUp.calling != 0)
                 amount = amount.Multiply(Main.instance.itemLooting);
         }
     }
 
     [HarmonyPatch]
-    static class Patch_Respawn {
+    static class Patch_Respawn
+    {
         [HarmonyPatch(typeof(Player), "StartRespawn")]
         [HarmonyPrefix]
         static void StartRespawn(ref bool clearInventory)
@@ -1893,10 +2102,12 @@ namespace MiscCheats
                 new CodeInstruction(OpCodes.Ldarg_0) { labels = lbl },
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_HookUpdate), nameof(OverrideLockHook)))
             });
+            code.Insert(code.FindIndex(x => x.operand is FieldInfo f && f.Name == "pullSpeed") + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_HookUpdate), nameof(ModifyPullSpeed))));
             return code;
         }
 
         public static bool OverrideLockHook(bool original, Hook hook) => original || (Main.instance.forceMining && hook.throwable.InHand && MyInput.GetButton("RMB"));
+        public static float ModifyPullSpeed(float original) => original * Main.instance.hookSpeedMultiplier;
     }
 
     [HarmonyPatch(typeof(Hook), "HandleGathering")]
@@ -2769,32 +2980,98 @@ namespace MiscCheats
     [HarmonyPatch]
     static class Patch_ValidTarget
     {
+        static Queue<AI_NetworkBehaviourType> context = new Queue<AI_NetworkBehaviourType>();
+        public static AI_NetworkBehaviourType CurrentContext => context.TryPeek(out var val) ? val : AI_NetworkBehaviourType.None;
         static IEnumerable<MethodBase> TargetMethods()
         {
-            yield return AccessTools.Method(typeof(AI_StateMachine), "Update");
-            yield return AccessTools.Method(typeof(AI_Component), "Update");
+            foreach (var type in typeof(Raft).Assembly.GetTypes())
+                if (!type.ContainsGenericParameters
+                    && (typeof(AI_StateMachine).IsAssignableFrom(type) || typeof(AI_Component).IsAssignableFrom(type) || typeof(AI_State).IsAssignableFrom(type)))
+                    foreach (var method in type.GetMethods(~BindingFlags.Default))
+                        if (!method.ContainsGenericParameters && !method.IsStatic)
+                            yield return method;
         }
-        static void Prefix(object __instance, ref List<Player> __state)
+        static void Prefix(object __instance, ref (bool,List<Player>) __state)
         {
-            __state = new List<Player>();
+            __state = (false,new List<Player>());
+            var type = (
+                __instance is AI_StateMachine machine
+                ? machine
+                : (
+                    __instance is AI_State state
+                    ? state
+                    : (((AI_Component)__instance).connectedState)
+                ).stateMachine) is AI_StateMachine_Animal animal
+                ? animal.networkBehaviour.behaviourType
+                : AI_NetworkBehaviourType.None;
+            if (type != 0)
+            {
+                __state.Item1 = true;
+                context.Enqueue(type);
+            }
             var passive =
                 Main.instance.invisible
                 || (
-                    (__instance is AI_StateMachine machine ? machine : ((AI_Component)__instance).connectedState.stateMachine) is AI_StateMachine_Animal animal
-                    && Main.instance.animalSpecs.GetOrCreate(animal.networkBehaviour.behaviourType).IsPassive
+                    type != AI_NetworkBehaviourType.None
+                    && Main.instance.animalSpecs.GetOrCreate(type).IsPassive
                 );
             foreach (Network_Player player in ComponentManager<Raft_Network>.Value.remoteUsers.Values)
                 if (!player.PlayerScript.IsDead && (passive || (Main.instance.invisibleHost && player.IsLocalPlayer)))
                 {
                     player.PlayerScript.IsDead = true;
-                    __state.Add(player.PlayerScript);
+                    __state.Item2.Add(player.PlayerScript);
                     break;
                 }
         }
-        static void Finalizer(List<Player> __state)
+        static void Finalizer(ref (bool, List<Player>) __state)
         {
-            foreach (Player player in __state)
+            if (__state.Item1)
+            {
+                __state.Item1 = false;
+                context.Dequeue();
+            }
+            foreach (Player player in __state.Item2)
                 player.IsDead = false;
+        }
+    }
+
+    [HarmonyPatch(typeof(Network_Host), "DamageEntity")]
+    static class Patch_DamageEntity
+    {
+        public static void Prefix(Network_Entity entity, ref float damage)
+        {
+            if (Main.instance.invincible && entity is PlayerStats && entity.GetComponent<Network_Player>().IsLocalPlayer)
+                damage = 0;
+            var attacker = Patch_ValidTarget.CurrentContext;
+            if (attacker != AI_NetworkBehaviourType.None)
+                damage *= Main.instance.animalSpecs.GetOrCreate(attacker).DamageDealt;
+            var ai = entity.GetComponentInChildren<AI_NetworkBehaviour>();
+            if (ai && ai.behaviourType != AI_NetworkBehaviourType.None)
+                damage *= Main.instance.animalSpecs.GetOrCreate(ai.behaviourType).DamageTaken;
+        }
+    }
+
+    [HarmonyPatch(typeof(Network_Host_Entities), "Deserialize")]
+    static class Patch_DamageEntityNetwork
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = instructions.ToList();
+            code.InsertRange(
+                code.FindIndex(
+                    code.FindLastIndex(x => x.operand is MethodInfo m && m.Name == "GetNetworkIDFromObjectIndex"),
+                    x => x.opcode == OpCodes.Stloc_S),
+                new[] {
+                    new CodeInstruction(OpCodes.Ldarg_1),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_DamageEntityNetwork), nameof(MaybeEditMessage)))
+                }
+            );
+            return code;
+        }
+        static Network_Entity MaybeEditMessage(Network_Entity entity, Message_NetworkBehaviour msg)
+        {
+            Patch_DamageEntity.Prefix(entity, ref (msg as Message_NetworkEntity_Damage).damage);
+            return entity;
         }
     }
 
@@ -2810,16 +3087,6 @@ namespace MiscCheats
                 Debug.Log("Send remove signal to " + __instance);
                 NetworkIDManager.SendIDBehaviourDead(__instance.ObjectIndex, typeof(AI_NetworkBehaviour), true);
             }
-        }
-    }
-
-    [HarmonyPatch(typeof(Network_Entity),"Damage")]
-    static class Patch_DamageEntity
-    {
-        static void Prefix(Network_Entity __instance, ref float damage)
-        {
-            if (Main.instance.invincible && __instance is PlayerStats && __instance.GetComponent<Network_Player>().IsLocalPlayer)
-                damage = 0;
         }
     }
 
@@ -3024,13 +3291,14 @@ namespace MiscCheats
     }
 
     [HarmonyPatch]
-    static class Patch_LookYMinMax
+    static class Patch_GravityLookYMinMax
     {
         static IEnumerable<MethodBase> TargetMethods()
         {
             yield return AccessTools.Method(typeof(MouseLook), "SetTargetRotYToCurrentRotation");
             yield return AccessTools.Method(typeof(MouseLook), "Update");
             yield return AccessTools.Method(typeof(PersonController), "GroundControll");
+            yield return AccessTools.Method(typeof(PersonController), "Update");
             yield break;
         }
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -3040,14 +3308,41 @@ namespace MiscCheats
                 if (code[i].opcode == OpCodes.Ldfld && code[i].operand is FieldInfo f)
                 {
                     if (f.Name == "minimumY")
-                        code.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_LookYMinMax), nameof(EditMin))));
+                        code.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_GravityLookYMinMax), nameof(EditMin))));
                     else if (f.Name == "maximumY")
-                        code.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_LookYMinMax), nameof(EditMax))));
+                        code.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_GravityLookYMinMax), nameof(EditMax))));
+                    else if (f.Name == "gravity")
+                        code.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_GravityLookYMinMax), nameof(EditGravity))));
                 }
             return code;
         }
         static float EditMin(float original) => Main.instance.fullLook ? -90 : original;
         static float EditMax(float original) => Main.instance.fullLook ? 90 : original;
+        static float EditGravity(float original) => Main.instance.gravityMultiplier * original;
+    }
+
+    [HarmonyPatch]
+    static class Patch_JumpHeight
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(PersonController), "GroundControll");
+            yield return AccessTools.Method(typeof(PersonController), "WaterControll");
+            yield return AccessTools.Method(typeof(ZiplinePlayer), "DetachFromCurrentZipline");
+            yield break;
+        }
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = instructions.ToList();
+            for (int i = code.Count - 1; i >= 0; i--)
+                if (code[i].opcode == OpCodes.Ldfld && code[i].operand is FieldInfo f)
+                {
+                    if (f.Name == "jumpSpeed")
+                        code.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_JumpHeight), nameof(EditJump))));
+                }
+            return code;
+        }
+        static float EditJump(float original) => Main.instance.jumpMultiplier * original;
     }
 
     [HarmonyPatch(typeof(AzureSkyController))]
@@ -4636,6 +4931,77 @@ namespace MiscCheats
             if (controller.sprinting)
                 return original * (Main.instance.swimSprintSpeed > 0 ? Main.instance.swimSprintSpeed : (controller.sprintSpeed / controller.normalSpeed));
             return original;
+        }
+    }
+
+    [HarmonyPatch(typeof(FishingBaitHandler),"ConsumeBait")]
+    static class Patch_ConsumeBait
+    {
+        static bool Prefix() => !Main.instance.disableBaitConsumption;
+    }
+
+    [HarmonyPatch(typeof(Sprinkler), "CanWater", MethodType.Getter)]
+    static class Patch_SprinklerFunctional
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var code = instructions.ToList();
+            code.Insert(
+                code.FindIndex(x => x.operand is MethodInfo m && m.Name == "get_CurrentTankAmount") + 1,
+                new CodeInstruction(OpCodes.Call,AccessTools.Method(typeof(Patch_SprinklerFunctional),nameof(OverrideTankAmount)))
+            );
+            code.Insert(
+                code.FindIndex(x => x.operand is MethodInfo m && m.Name == "get_CanGiveElectricity") + 1,
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_SprinklerFunctional), nameof(OverrideHasPower)))
+            );
+            return code;
+        }
+
+        static float OverrideTankAmount(float original) => Main.instance.sprinklerMode.HasFlag(SprinklerRequirementMode.NoWaterNeeded) ? float.PositiveInfinity : original;
+        static bool OverrideHasPower(bool original) => original || Main.instance.sprinklerMode.HasFlag(SprinklerRequirementMode.NoBatteryNeeded);
+    }
+
+    [HarmonyPatch(typeof(NetworkUpdateManager), "Deserialize")]
+    static class Patch_HandleMessage
+    {
+        public static List<Predicate<Message_NetworkBehaviour>> ignores = new List<Predicate<Message_NetworkBehaviour>>();
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator iL)
+        {
+            var code = instructions.ToList();
+            var ind = code.FindLastIndex(x => x.operand is MethodInfo m && m.Name == "Deserialize");
+            var lbl1 = iL.DefineLabel();
+            var lbl2 = iL.DefineLabel();
+            code.InsertRange(
+                ind + 1,
+                new[] {
+                    new CodeInstruction(OpCodes.Br_S, lbl2),
+                    new CodeInstruction(OpCodes.Nop) { labels = { lbl1 } },
+                    new CodeInstruction(OpCodes.Pop),
+                    new CodeInstruction(OpCodes.Pop),
+                    new CodeInstruction(OpCodes.Pop),
+                    new CodeInstruction(OpCodes.Ldc_I4_0),
+                    new CodeInstruction(OpCodes.Nop) { labels = { lbl2 } }
+                }
+            );
+            code.InsertRange(
+                ind,
+                new[] {
+                    new CodeInstruction(OpCodes.Ldloc_3),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_HandleMessage), nameof(ShouldProcessMessage))),
+                    new CodeInstruction(OpCodes.Brfalse_S, lbl1)
+                }
+            );
+            return code;
+        }
+        static bool ShouldProcessMessage(Message_NetworkBehaviour message)
+        {
+            for (int i = 0; i < ignores.Count; i++)
+                if (ignores[i](message))
+                {
+                    ignores.RemoveAt(i);
+                    return false;
+                }
+            return true;
         }
     }
 

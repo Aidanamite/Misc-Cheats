@@ -2,7 +2,7 @@
   "name": "Misc Cheats and Tweaks",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.5.6",
+  "version": "1.6.0",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -12,6 +12,30 @@
   "isModPermanent": false,
   "excludedFiles": [],
   "modSettings": [
+    {
+      "type": "multibutton",
+      "buttons": [ "Respawn", "Respawn w/Inventory", "Respawn w/Stats & Inventory" ],
+      "name": "respawn",
+      "access": "worldcustom",
+      "tooltip": [
+        "All these buttons work even in hardmode",
+        "• Respawn = Basic respawn.",
+        "• Respawn w/Inventory = Respawn and keep inventory.",
+        "• Respawn w/Stats & Inventory = Respawn, keep inventory and set stats to max."
+      ]
+    },
+    {
+      "type": "multibutton",
+      "buttons": [ "Revive", "Revive w/Inventory", "Revive w/Stats & Inventory" ],
+      "name": "revive",
+      "access": "worldcustom",
+      "tooltip": [
+        "All these buttons work even in hardmode",
+        "• Revive = Same as respawn but doesn't take you back to the raft/bed.",
+        "• Revive w/Inventory = Revive and keep inventory.",
+        "• Revive w/Stats & Inventory = Revive, keep inventory and set stats to max."
+      ]
+    },
     {
       "type": "section",
       "text": "Animals",
@@ -279,6 +303,34 @@
       "tooltip": "<color=#007F00>[Host only]</color> Forces the animal to be passive towards all players."
     },
     {
+      "type": "input",
+      "name": "specDamageTaken",
+      "text": "   Damage Taken Multiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "globalcustom",
+      "section": "animal-spec",
+      "member": "specDamageTaken",
+      "memberFallback": 1,
+      "memberRealtime": true,
+      "dontSave": true,
+      "tooltip": "<color=#007F00>[Host only]</color> Multiplies the damage the animal takes."
+    },
+    {
+      "type": "input",
+      "name": "specDamageDealt",
+      "text": "   Damage Dealt Multiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "globalcustom",
+      "section": "animal-spec",
+      "member": "specDamageDealt",
+      "memberFallback": 1,
+      "memberRealtime": true,
+      "dontSave": true,
+      "tooltip": "<color=#007F00>[Host only]</color> Multiplies the damage the animal deals."
+    },
+    {
       "type": "multibutton",
       "buttons": [ "Revert to Global", "Reset to Default" ],
       "name": "specReset",
@@ -442,6 +494,23 @@
       "memberFallback": 1,
       "tooltip": [
         "This multiplies the amount of items you get from loot, this includes items floating on the water, items collected from islands and items collected from plants on your raft and animals.",
+        "A value of 1 will be the same as vanilla. Higher numbers will give you more items."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Fishing Loot Multiplier",
+      "name": "fishingLoot",
+      "mode": "IntegerNumber",
+      "default": "1",
+      "access": "split",
+      "section": "loot",
+      "member": "fishingLoot",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of items you get from fishing",
         "A value of 1 will be the same as vanilla. Higher numbers will give you more items."
       ],
       "splitResetButton": true,
@@ -638,10 +707,34 @@
       "section": "tool",
       "member": "axeDur",
       "tooltip": [
-        "This affects when the axe losses durability while breaking blocks on the raft.",
-        "• No Change = This is the vanilla behaviour. The axe will loose durability every time it visually \"hits\" the block.",
+        "This affects when the axe loses durability while breaking blocks on the raft.",
+        "• No Change = This is the vanilla behaviour. The axe will lose durability every time it visually \"hits\" the block.",
         "• Once on Break = The axe will loose 1 durability per block broken.",
         "• Disabled = The axe will not loose durability from breaking blocks."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "combobox",
+      "text": "Fishing Durability Loss",
+      "name": "fishingDur",
+      "default": "No Change",
+      "values": [
+        "No Change",
+        "Unbaited Fishing Only",
+        "Baited Fishing Only",
+        "Disabled"
+      ],
+      "access": "split",
+      "section": "tool",
+      "member": "fishingDur",
+      "tooltip": [
+        "This affects when fishing rods will lose durability.",
+        "• No Change = This is the vanilla behaviour. Lose durability every time.",
+        "• Unbaited Fishing Only = Only lose durability when fishing without special bait.",
+        "• Baited Fishing Only = Only lose durability when fishing with special bait.",
+        "• Disabled = Rods will not lose durability at all."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -790,6 +883,18 @@
       "resetButton": true
     },
     {
+      "type": "checkbox",
+      "text": "Disable Fishing Bait Consumption",
+      "name": "disableBaitConsumption",
+      "default": false,
+      "access": "split",
+      "section": "tool",
+      "member": "disableBaitConsumption",
+      "tooltip": "This makes it so fishing using bait doesn't use up the bait items.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
       "type": "input",
       "text": "Hook Area Multiplier",
       "name": "hookArea",
@@ -802,6 +907,23 @@
       "tooltip": [
         "This multiplies the area that a thrown hook will \"catch\" items floating on the ocean.",
         "A value of 1 will be the same as vanilla. Higher numbers will have a bigger area."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Hook Pull Speed Multiplier",
+      "name": "hookSpeedMultiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "tool",
+      "member": "hookSpeedMultiplier",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the speed that you pull your hook back towards you.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make it come back faster."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -1097,6 +1219,25 @@
       "tooltip": [
         "<color=#007F00>[Host only]</color> This multiplies the vertical reach of a sprinkler.",
         "A value of 1 will be the same as vanilla. Higher numbers will allow them to water blocks further from them."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "combobox",
+      "text": "Sprinkler Requirements",
+      "name": "sprinklerMode",
+      "default": "Default",
+      "values": [ "Default", "No Water Needed", "No Battery Needed", "No Requirements" ],
+      "access": "splitcustom",
+      "section": "block",
+      "member": "sprinklerMode",
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This changes what's required for sprinklers to function. They will still consume if provided to them, they just won't require them to function",
+        "• Default = This is the vanilla behaviour.",
+        "• No Water Needed = This makes it so they do not need to have water in their tank.",
+        "• No Battery Needed = This makes it so they do not need to have a battery or can have an empty battery.",
+        "• No Requirements = This makes it so they will always work regardless of having/lacking battery power or water."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -1960,6 +2101,41 @@
       ]
     },
     {
+      "type": "input",
+      "text": "Player Gravity Multiplier",
+      "name": "gravityMultiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "gravityMultiplier",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the gravity for your player. This only affects your own player.",
+        "A value of 1 will be the same as vanilla. Higher values will make you fall faster."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Jump Strength Multiplier",
+      "name": "jumpMultiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "jumpMultiplier",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the \"speed\" of your jumps. This only affects your own player.",
+        "A value of 1 will be the same as vanilla. Higher values will make you jump higher.",
+        "<color=#FFFF00>NOTE</color>: This setting does not multiply your jump height, it multiplies the vertical speed added to you when you jump."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
       "type": "section",
       "text": "Graphics",
       "name": "graphic",
@@ -2330,6 +2506,16 @@
       "section": "menus",
       "member": "storeMulti",
       "tooltip": "This makes it so if you select a Multiplayer Mode in the load game or new game menu, the <color=#00FFFF>Default Multiplayer Mode</color> setting will automatically change to and remember the selected option."
+    },
+    {
+      "type": "checkbox",
+      "name": "deathSettings",
+      "text": "Open Settings While Dead Using ESC",
+      "default": true,
+      "access": "global",
+      "section": "menus",
+      "member": "deathSettings",
+      "tooltip": "This makes it so if you press the escape key on the death screen it will open the settings."
     },
     {
       "type": "section",
