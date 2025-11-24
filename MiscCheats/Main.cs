@@ -147,6 +147,8 @@ namespace MiscCheats
         public bool invincibleScarecrow = false;
         public int FOVOverride = -1;
         public float timeSpeed = float.NaN;
+        public float dayLength = 1;
+        public float nightLength = 1;
         public bool pausedConsoleFix = false;
         public AxeDurabilityMode axeDur = AxeDurabilityMode.NoChange;
         public bool axeWeapon = false;
@@ -2182,20 +2184,72 @@ namespace MiscCheats
         static bool Prefix() => !Main.instance.invincibleScarecrow;
     }
 
-    [HarmonyPatch(typeof(UnityEngine.AzureSky.AzureSkyController), "Update")]
+    [HarmonyPatch(typeof(AzureSkyController), "Update")]
     static class Patch_UpdateSky
     {
+        static float sunrise = 4;
+        static float sunset = 20;
+
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             var code = instructions.ToList();
-            code.InsertRange(code.FindIndex(x => x.opcode == OpCodes.Ldfld && x.operand is FieldInfo m && m.Name == "m_timeProgression") + 1, new[]
+            code.InsertRange(code.FindIndex(x => x.opcode == OpCodes.Ldfld && x.operand is FieldInfo f && f.Name == "m_timeProgression") + 1, new[]
             {
+                new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_UpdateSky), nameof(OverrideTimeSpeed)))
             });
             return code;
         }
 
-        static float OverrideTimeSpeed(float original) => original == 0 || float.IsNaN( Main.instance.timeSpeed) ? original : Main.instance.timeSpeed;
+        static float OverrideTimeSpeed(float original, AzureSkyController instance)
+        {
+            if (original == 0 || Time.deltaTime == 0)
+                return 0;
+            if (!float.IsNaN(Main.instance.timeSpeed))
+                original = Main.instance.timeSpeed;
+            if (Main.instance.dayLength != 1 || Main.instance.nightLength != 1)
+            {
+                var dayL = Math.Max(Main.instance.dayLength, 0);
+                var nightL = Math.Max(Main.instance.nightLength, 0);
+                if (dayL == 0 && nightL == 0)
+                    return 0;
+                float getNewProgression(float hour, float progression)
+                {
+                    if (progression == 0)
+                        return 0;
+                    var isNight = hour < sunrise || hour >= sunset;
+                    if (nightL == 0)
+                    {
+                        if (hour < sunrise)
+                            return (sunrise - hour).SafeDivide(Time.deltaTime);
+                        else if (hour >= sunset)
+                            return float.PositiveInfinity;
+                    }
+                    else if (dayL == 0 && hour >= sunrise && hour < sunset)
+                        return (sunset - hour).SafeDivide(Time.deltaTime);
+
+                    var newProgression = progression.SafeDivide(isNight ? nightL : dayL);
+                    var nextTime = hour + newProgression * Time.deltaTime;
+                    if ((hour < sunrise && nextTime < sunrise) || (hour >= sunset && nextTime >= sunset) || (hour >= sunrise && nextTime >= sunrise && hour < sunset && nextTime < sunset))
+                        return newProgression;
+
+                    if (hour < sunrise)
+                    {
+                        newProgression = (sunrise - hour).SafeDivide(Time.deltaTime);
+                        return getNewProgression(sunrise, progression - newProgression * nightL) + newProgression;
+                    }
+                    if (hour < sunset)
+                    {
+                        newProgression = (sunset - hour).SafeDivide(Time.deltaTime);
+                        return getNewProgression(sunset, progression - newProgression * dayL) + newProgression;
+                    }
+                    // this should never be reached
+                    return newProgression;
+                }
+                return Math.Min(getNewProgression(instance.timeOfDay.hour, original),24f.SafeDivide(Time.deltaTime));
+            }
+            return original;
+        }
     }
 
     [HarmonyPatch]

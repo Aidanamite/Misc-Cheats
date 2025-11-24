@@ -2,7 +2,7 @@
   "name": "Misc Cheats and Tweaks",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -1669,6 +1669,42 @@
       "tooltip": [
         "<color=#007F00>[Host only]</color> This overrides how fast day-night time passes. The value is in in-game hours per IRL second. a value of 1 will make an in-game day take 24 seconds.",
         "A blank value will be the same as vanilla. Higher numbers will make days pass by faster.",
+        "<color=#007F00>[Non-host]</color> This setting should be set to the same as the host otherwise the day-night cycle will look jittery."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Daylight Length Multiplier",
+      "name": "dayLength",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "enviro",
+      "member": "dayLength",
+      "memberFallback": "1",
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies how long the daylight of each day-night cycle lasts.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make daylight pass by slower.",
+        "<color=#007F00>[Non-host]</color> This setting should be set to the same as the host otherwise the day-night cycle will look jittery."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Night Length Multiplier",
+      "name": "nightLength",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "enviro",
+      "member": "nightLength",
+      "memberFallback": "1",
+      "tooltip": [
+        "<color=#007F00>[Host only]</color> This multiplies how long the night of each day-night cycle lasts.",
+        "A value of 1 will be the same as vanilla. Higher numbers will make night pass by slower.",
         "<color=#007F00>[Non-host]</color> This setting should be set to the same as the host otherwise the day-night cycle will look jittery."
       ],
       "splitResetButton": true,
