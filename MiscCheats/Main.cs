@@ -921,6 +921,7 @@ namespace MiscCheats
                 ComponentManager<Settings>.Value.Toggle();
             }
         }
+        // Draw lines code for future features? currently doesn't draw *over* stuff. var mat = new Material(Shader.Find("UI/Default")); var c = Camera.main; var p = c.transform.position + c.transform.forward; var end = Time.time + 30; Camera.CameraCallback d = null; d = (x) => { if (x != c) return; mat.SetPass(0); GL.PushMatrix(); GL.MultMatrix(Matrix4x4.TRS(p, Quaternion.identity, Vector3.one)); GL.Begin(GL.LINES); GL.Color(Color.red); GL.Vertex(new Vector3(0,0,0)); GL.Vertex(new Vector3(0,1,0)); GL.End(); GL.PopMatrix(); if (Time.time >= end) Camera.onPostRender -= d; }; Camera.onPostRender += d;
 
         static Dictionary<ChunkPointType, (Sprite sprite, float color)> chunkBlips = new Dictionary<ChunkPointType, (Sprite, float)>();
         public static Sprite GetBlip(ChunkPointType type, Sprite original,float hue)
@@ -2251,7 +2252,7 @@ namespace MiscCheats
             return original;
         }
     }
-
+#if !RDS
     [HarmonyPatch]
     static class Patch_ConsoleDetectInput
     {
@@ -2317,6 +2318,7 @@ namespace MiscCheats
             return r;
         }
     }
+#endif
 
     [HarmonyPatch(typeof(Axe), nameof(Axe.OnAxeHit))]
     static class Patch_AxeHit
@@ -3206,6 +3208,7 @@ namespace MiscCheats
                             tikis.Add(p.Key);
                         else if (min > p.Value)
                         {
+                            min = p.Value;
                             tikis.Clear();
                             tikis.Add(p.Key);
                         }
