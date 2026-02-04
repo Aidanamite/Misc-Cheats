@@ -48,7 +48,11 @@ namespace MiscCheats
                 var i = value ? ItemManager.GetItemByIndex(294) : null;
                 foreach (var e in Resources.FindObjectsOfTypeAll<Placeable_BiofuelExtractor>())
                 {
+#if RAFT_BETA
+                    var l = e.honeyTank.acceptableTypes;
+#else
                     var l = Traverse.Create(e.honeyTank).Field("acceptableTypes").GetValue<List<Item_Base>>();
+#endif
                     if (value)
                         l.Add(i);
                     else
@@ -185,7 +189,11 @@ namespace MiscCheats
                     return;
                 _rb = value;
                 foreach (var r in Resources.FindObjectsOfTypeAll<SelectedRecipeBox>())
+#if RAFT_BETA
+                    if (r.initialized)
+#else
                     if (Traverse.Create(r).Field("initialized").GetValue<bool>())
+#endif
                         Patch_UncraftButton.TryAddButton(r);
             }
         }
@@ -424,7 +432,11 @@ namespace MiscCheats
                 foreach (var c in Resources.FindObjectsOfTypeAll<AI_Component_SeePlayerSwitchState>())
                     if (c.connectedState && c.GetComponentInParent<AI_NetworkBehaviour>() && c.GetComponentInParent<AI_NetworkBehaviour>().behaviourType == AI_NetworkBehaviourType.Roach)
                     {
+#if RAFT_BETA
+                        c.isThisTamed = false;
+#else
                         Traverse.Create(c).Field("isThisTamed").SetValue(false);
+#endif
                         c.Start();
                     }
             }
@@ -551,17 +563,27 @@ namespace MiscCheats
             if (!boostedStacks)
             {
                 foreach (var p in PrevStackSizes)
+#if RAFT_BETA
+                    p.Key.settings_Inventory.stackSize = p.Value;
+#else
                     Traverse.Create(p.Key.settings_Inventory).Field("stackSize").SetValue(p.Value);
+#endif
                 PrevStackSizes.Clear();
                 return;
             }
             foreach (var i in ItemManager.GetAllItems())
                 if (i.settings_Inventory.StackSize > 1 || i.MaxUses <= 1)
                 {
+#if RAFT_BETA
+                    if (!PrevStackSizes.ContainsKey(i))
+                        PrevStackSizes[i] = i.settings_Inventory.stackSize;
+                    i.settings_Inventory.stackSize = i.MaxUses > 1 ? Math.Min(int.MaxValue / i.MaxUses, short.MaxValue) : short.MaxValue;
+#else
                     var f = Traverse.Create(i.settings_Inventory).Field<int>("stackSize");
                     if (!PrevStackSizes.ContainsKey(i))
                         PrevStackSizes[i] = f.Value;
                     f.Value = i.MaxUses > 1 ? Math.Min(int.MaxValue / i.MaxUses, short.MaxValue) : short.MaxValue;
+#endif
                 }
         }
 
@@ -607,18 +629,30 @@ namespace MiscCheats
                 }
                 else if (Index == 1) { 
                     var l = new List<Message>();
+#if RAFT_BETA
+                    foreach (var i in ComponentManager<Inventory_ResearchTable>.Value.availableResearchItems)
+#else
                     foreach (var i in Traverse.Create(ComponentManager<Inventory_ResearchTable>.Value).Field("availableResearchItems").GetValue<Dictionary<Item_Base, AvaialableResearchItem>>())
+#endif
                         if (!i.Value.Researched && !i.Key.settings_recipe.IsBlueprint)
                         {
                             l.Add(new Message_ResearchTable_ResearchOrLearn(Messages.ResearchTable_Research, RAPI.GetLocalPlayer(), RAPI.GetLocalPlayer().steamID, i.Key.UniqueIndex));
                             if (Raft_Network.IsHost)
                                 ComponentManager<Inventory_ResearchTable>.Value.Research(i.Key, false);
                         }
+#if RAFT_BETA
+                    var m = new Message_Compound(l);
+                    if (Raft_Network.IsHost)
+                        ComponentManager<Raft_Network>.Value.RPC(m, Target.Other, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
+                    else
+                        ComponentManager<Raft_Network>.Value.SendP2P(ComponentManager<Raft_Network>.Value.HostID, m, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
+#else
                     var m = new Packet_Multiple(EP2PSend.k_EP2PSendReliable) { messages = l.ToArray() };
                     if (Raft_Network.IsHost)
                         ComponentManager<Raft_Network>.Value.RPC(m, Target.Other, NetworkChannel.Channel_Game);
                     else
                         ComponentManager<Raft_Network>.Value.SendP2P(ComponentManager<Raft_Network>.Value.HostID, m, NetworkChannel.Channel_Game);
+#endif
                 }
                 else if (Index == 2)
                 {
@@ -630,11 +664,19 @@ namespace MiscCheats
                             if (Raft_Network.IsHost)
                                 ComponentManager<Inventory_ResearchTable>.Value.ResearchBlueprint(i);
                         }
+#if RAFT_BETA
+                    var m = new Message_Compound(l);
+                    if (Raft_Network.IsHost)
+                        ComponentManager<Raft_Network>.Value.RPC(m, Target.Other, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
+                    else
+                        ComponentManager<Raft_Network>.Value.SendP2P(ComponentManager<Raft_Network>.Value.HostID, m, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
+#else
                     var m = new Packet_Multiple(EP2PSend.k_EP2PSendReliable) { messages = l.ToArray() };
                     if (Raft_Network.IsHost)
                         ComponentManager<Raft_Network>.Value.RPC(m, Target.Other, NetworkChannel.Channel_Game);
                     else
                         ComponentManager<Raft_Network>.Value.SendP2P(ComponentManager<Raft_Network>.Value.HostID, m, NetworkChannel.Channel_Game);
+#endif
                 }
             }
             else if (SettingName == "unlearning")
@@ -649,10 +691,17 @@ namespace MiscCheats
                     foreach (var i in ComponentManager<Inventory_ResearchTable>.Value.GetMenuItems())
                         if (i.Learned)
                         {
+#if RAFT_BETA
+                            i.learned = false;
+                            i.canvasgroup.alpha = 1;
+                            i.learnedText.gameObject.SetActive(false);
+                            i.learnButton.gameObject.SetActive(i.learnButton.interactable = i.SortBingoPercent == 1);
+#else
                             Traverse.Create(i).Field("learned").SetValue(false);
                             Traverse.Create(i).Field("canvasgroup").GetValue<CanvasGroup>().alpha = 1;
                             Traverse.Create(i).Field("learnedText").GetValue<Text>().gameObject.SetActive(false);
                             Traverse.Create(i).Field("learnButton").GetValue<Button>().gameObject.SetActive(Traverse.Create(i).Field("learnButton").GetValue<Button>().interactable = i.SortBingoPercent == 1);
+#endif
                             i.GetItem().settings_recipe.Learned = false;
                         }
                     ComponentManager<Inventory_ResearchTable>.Value.SortMenuItems();
@@ -665,7 +714,11 @@ namespace MiscCheats
                         return;
                     }
                     var h = new HashSet<int>();
+#if RAFT_BETA
+                    foreach (var i in ComponentManager<Inventory_ResearchTable>.Value.availableResearchItems)
+#else
                     foreach (var i in Traverse.Create(ComponentManager<Inventory_ResearchTable>.Value).Field("availableResearchItems").GetValue<Dictionary<Item_Base, AvaialableResearchItem>>())
+#endif
                         if (i.Value.Researched)
                         {
                             h.Add(i.Key.UniqueIndex);
@@ -674,14 +727,23 @@ namespace MiscCheats
                     ComponentManager<Inventory_ResearchTable>.Value.GetResearchedItems().RemoveAll(x => h.Contains(x.UniqueIndex));
                     foreach (var i in ComponentManager<Inventory_ResearchTable>.Value.GetMenuItems())
                     {
+#if RAFT_BETA
+                        foreach (var b in i.bingoMenuItems)
+#else
                         foreach (var b in Traverse.Create(i).Field("bingoMenuItems").GetValue<List<BingoMenuItem>>())
+#endif
                             if (b.BingoState)
                             {
                                 b.SetBingoState(false);
                                 b.SetSprite(b.BingoItem.settings_Inventory.Sprite);
                             }
+#if RAFT_BETA
+                        i.itemImage.color = new Color(1f, 1f, 1f, 0.5f);
+                        i.learnButton.gameObject.SetActive(i.learnButton.interactable = false);
+#else
                         Traverse.Create(i).Field("itemImage").GetValue<Image>().color = new Color(1f, 1f, 1f, 0.5f);
                         Traverse.Create(i).Field("learnButton").GetValue<Button>().gameObject.SetActive(Traverse.Create(i).Field("learnButton").GetValue<Button>().interactable = false);
+#endif
                     }
                     ComponentManager<Inventory_ResearchTable>.Value.SortMenuItems();
                 }
@@ -731,12 +793,27 @@ namespace MiscCheats
                 if (SettingName == "respawn")
                 {
                     var bed = BedManager.FindClosestBedToPlayer(player);
+#if RAFT_BETA
+                    var pHealth = bed.healthPercentage;
+                    var pHunger = bed.hungerPercentage;
+                    var pThirst = bed.thirstPercentage;
+                    if (Index == 2)
+                        bed.healthPercentage = bed.hungerPercentage = bed.thirstPercentage = 100;
+                    player.PlayerScript.StartRespawn(bed, Index == 0);
+                    if (Index == 2)
+                    {
+                        bed.healthPercentage = pHealth;
+                        bed.hungerPercentage = pHunger;
+                        bed.thirstPercentage = pThirst;
+                    }
+#else
                     var edit = new[] { Traverse.Create(bed).Field<float>("healthPercentage"), Traverse.Create(bed).Field<float>("hungerPercentage"), Traverse.Create(bed).Field<float>("thirstPercentage") }.Select(x => (x, x.Value));
                     if (Index == 2)
                         foreach (var i in edit) i.x.Value = 100;
                     player.PlayerScript.StartRespawn(bed, Index == 0);
                     if (Index == 2)
                         foreach (var i in edit) i.x.Value = i.Value;
+#endif
                 }
                 else
                 {
@@ -767,8 +844,13 @@ namespace MiscCheats
             return !IsInWorld || Raft_Network.IsHost;
         }
 
+#if RAFT_BETA
+        public override void WorldEvent_OnPlayerConnected(Network_UserId userid, RGD_Settings_Character characterSettings) => ExtraSettingsAPI_CheckSettingVisibility();
+        public override void WorldEvent_OnPlayerDisconnected(Network_UserId userid, DisconnectReason disconnectReason) => ExtraSettingsAPI_CheckSettingVisibility();
+#else
         public override void WorldEvent_OnPlayerConnected(CSteamID steamid, RGD_Settings_Character characterSettings) => ExtraSettingsAPI_CheckSettingVisibility();
         public override void WorldEvent_OnPlayerDisconnected(CSteamID steamid, DisconnectReason disconnectReason) => ExtraSettingsAPI_CheckSettingVisibility();
+#endif
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ExtraSettingsAPI_CheckSettingVisibility() { }
@@ -794,7 +876,7 @@ namespace MiscCheats
             {
                 var str = builder;
                 str.Clear();
-                var b = totalSize.Multiply(windDirection / 360) - 8;
+                var b = totalSize.Multiply(value / 360) - 8;
                 for (int i = 0; i <= 16; i++)
                 {
                     var ind = i + b % totalSize;
@@ -2097,7 +2179,11 @@ namespace MiscCheats
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             var code = instructions.ToList();
+#if RAFT_BETA
+            var ind = code.FindIndex(x => x.opcode == OpCodes.Stloc_S && (x.operand is LocalBuilder loc ? loc.LocalIndex : (x.operand as IConvertible).ToInt32(CultureInfo.InvariantCulture)) == 5);
+#else
             var ind = code.FindIndex(x => x.opcode == OpCodes.Stloc_3);
+#endif
             var lbl = code[ind].labels;
             code[ind].labels = new List<Label>();
             code.InsertRange(ind, new[]
@@ -2542,9 +2628,14 @@ namespace MiscCheats
         {
             if (Main.instance.permHearty && __instance.Asset.ApplyDeathPrevention)
             {
+#if RAFT_BETA
+                if (__instance.buffDisplayObject.progress > __instance.durationTimer)
+                    __instance.buffDisplayObject.progress = __instance.durationTimer;
+#else
                 var f = Traverse.Create(___buffDisplayObject).Field<float>("progress");
                 if (f.Value > ___durationTimer)
                     f.Value = ___durationTimer;
+#endif
                 __result = true;
                 return false;
             }
@@ -2692,7 +2783,11 @@ namespace MiscCheats
                     f.sizeDelta -= new Vector2(s, 0);
                 if (i)
                     i.offsetMax -= new Vector2(s, 0);
+#if RAFT_BETA
+                button.recipeBox.startRectHeight -= s;
+#else
                 Traverse.Create(button.recipeBox).Field<float>("startRectHeight").Value -= s;
+#endif
             }
             Object.Destroy(button.gameObject);
         }
@@ -2736,7 +2831,11 @@ namespace MiscCheats
                     f.sizeDelta += new Vector2(s, 0);
                 if (i)
                     i.offsetMax += new Vector2(s, 0);
-                Traverse.Create(__instance).Field<float>("startRectHeight").Value -= s;
+#if RAFT_BETA
+                __instance.startRectHeight += s;
+#else
+                Traverse.Create(__instance).Field<float>("startRectHeight").Value += s;
+#endif
             }
             Object.DestroyImmediate(u.GetComponentInChildren<I2.Loc.Localize>());
             u.GetComponentInChildren<Text>().text = "Uncraft";
@@ -2885,8 +2984,13 @@ namespace MiscCheats
             {
                 spectrums.Add(new WeakReference<WaterWavesSpectrum>(p.Data.Spectrum));
                 var mem = original.GetOrCreateValue(p.Data.Spectrum);
+#if RAFT_BETA
+                mem.amplitude = p.Data.Spectrum._Amplitude;
+                mem.windSpeed = p.Data.Spectrum._WindSpeed;
+#else
                 mem.amplitude = p.Data.Spectrum.GetAmplitude();
                 mem.windSpeed = p.Data.Spectrum.GetWindSpeed();
+#endif
             }
         }
 
@@ -2896,8 +3000,13 @@ namespace MiscCheats
                 if (spectrums[i].TryGetTarget(out var spectrum))
                 {
                     var mem = original.GetOrCreateValue(spectrum);
+#if RAFT_BETA
+                    spectrum._Amplitude = EditValue(mem.amplitude, Main.instance.amplitudeMul, Main.instance.amplitudeExp);
+                    spectrum._WindSpeed = EditValue(mem.windSpeed, Main.instance.windSpeedMul, Main.instance.windSpeedExp);
+#else
                     spectrum.SetAmplitude(EditValue(mem.amplitude, Main.instance.amplitudeMul, Main.instance.amplitudeExp));
                     spectrum.SetWindSpeed(EditValue(mem.windSpeed, Main.instance.windSpeedMul, Main.instance.windSpeedExp));
+#endif
                 }
                 else
                     spectrums.RemoveAt(i);
@@ -2910,8 +3019,13 @@ namespace MiscCheats
             foreach (var r in spectrums)
                 if (r.TryGetTarget(out var spectrum) && original.TryGetValue(spectrum,out var mem))
                 {
+#if RAFT_BETA
+                    spectrum._Amplitude = mem.amplitude;
+                    spectrum._WindSpeed = mem.windSpeed;
+#else
                     spectrum.SetAmplitude(mem.amplitude);
                     spectrum.SetWindSpeed(mem.windSpeed);
+#endif
                 }
             spectrums.Clear();
             MarkDirty();
@@ -3273,7 +3387,11 @@ namespace MiscCheats
                     if (data.items.Count > 0)
                     {
                         var time = data.lastCollect + Main.instance.fruitTime - Time.time;
+#if RAFT_BETA
+                        pickup.showingText = true;
+#else
                         Traverse.Create(pickup).Field("showingText").SetValue(true);
+#endif
                         if (time < 0)
                         {
                             ComponentManager<CanvasHelper>.Value.displayTextManager.ShowText(Helper.GetTerm("Game/Harvest", false), MyInput.Keybinds["Interact"].MainKey, 0, 1, true);
@@ -3310,7 +3428,11 @@ namespace MiscCheats
                             MaybeAddItem(c.item);
                 if (item.dropper)
                 {
+#if RAFT_BETA
+                    var asset = item.dropper.randomDropperAsset;
+#else
                     var asset = Traverse.Create(item.dropper).Field("randomDropperAsset").GetValue<SO_RandomDropper>();
+#endif
                     if (asset)
                         foreach (var i in asset.randomizer.GetAllItems<Item_Base>())
                             MaybeAddItem(i);
@@ -3962,12 +4084,21 @@ namespace MiscCheats
         {
             if (Main.instance.allowMultiEquipment)
             {
+#if RAFT_BETA
+                var light = equipment.lightSourceLight;
+                var allLamps = equipment.playerNetwork.GetComponentsInChildren<Equipment_HeadLight>();
+#else
                 var light = equipment.GetLight();
                 var allLamps = equipment.GetPlayer().GetComponentsInChildren<Equipment_HeadLight>();
+#endif
                 foreach (var l in allLamps)
                     if (l == equipment)
                         break;
+#if RAFT_BETA
+                    else if (l.lightSourceLight == light)
+#else
                     else if (l.GetLight() == light)
+#endif
                         return 0;
             }
             return original * Main.instance.lampDurability;
@@ -4767,7 +4898,7 @@ namespace MiscCheats
     public class Patch_ClearInventory
     {
         static void Prefix(Network_Player ___playerNetwork) => Patch_ResetSlot.player = ___playerNetwork;
-        static void Postfix() => Patch_ResetSlot.player = null;
+        static void Finalizer() => Patch_ResetSlot.player = null;
     }
 
     [HarmonyPatch(typeof(PlayerInventory), "ClearInventoryLeaveSome")]
@@ -5018,6 +5149,15 @@ namespace MiscCheats
         static bool OverrideHasPower(bool original) => original || Main.instance.sprinklerMode.HasFlag(SprinklerRequirementMode.NoBatteryNeeded);
     }
 
+#if RAFT_BETA
+    [HarmonyPatch(typeof(NetworkUpdateManager), "DeserializeSingleMessage")]
+    static class Patch_HandleMessage
+    {
+        public static List<Predicate<Message_NetworkBehaviour>> ignores = new List<Predicate<Message_NetworkBehaviour>>();
+        static bool Prefix(Message msg, Network_UserId remoteID)
+        {
+            if (msg is Message_NetworkBehaviour message)
+#else
     [HarmonyPatch(typeof(NetworkUpdateManager), "Deserialize")]
     static class Patch_HandleMessage
     {
@@ -5052,12 +5192,13 @@ namespace MiscCheats
         }
         static bool ShouldProcessMessage(Message_NetworkBehaviour message)
         {
-            for (int i = 0; i < ignores.Count; i++)
-                if (ignores[i](message))
-                {
-                    ignores.RemoveAt(i);
-                    return false;
-                }
+#endif
+                for (int i = 0; i < ignores.Count; i++)
+                    if (ignores[i](message))
+                    {
+                        ignores.RemoveAt(i);
+                        return false;
+                    }
             return true;
         }
     }
@@ -5248,12 +5389,20 @@ namespace MiscCheats
         }
         public static void SetRecipe(this Item_Base item, CostMultiple[] cost, CraftingCategory category = CraftingCategory.Resources, int amountToCraft = 1, bool learnedFromBeginning = false, string subCategory = null, int subCatergoryOrder = 0)
         {
+#if RAFT_BETA
+            item.settings_recipe.craftingCategory = category;
+            item.settings_recipe.amountToCraft = amountToCraft;
+            item.settings_recipe.learnedFromBeginning = learnedFromBeginning;
+            item.settings_recipe.subCategory = subCategory;
+            item.settings_recipe.subCatergoryOrder = subCatergoryOrder;
+#else
             Traverse recipe = Traverse.Create(item.settings_recipe);
             recipe.Field("craftingCategory").SetValue(category);
             recipe.Field("amountToCraft").SetValue(amountToCraft);
             recipe.Field("learnedFromBeginning").SetValue(learnedFromBeginning);
             recipe.Field("subCategory").SetValue(subCategory);
             recipe.Field("subCatergoryOrder").SetValue(subCatergoryOrder);
+#endif
             item.settings_recipe.NewCost = cost;
         }
 
@@ -5277,6 +5426,7 @@ namespace MiscCheats
             network.RPC(new Message_NetworkBehaviour(Messages.Door_Open, door), Target.Other, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
         }
 
+#if !RAFT_BETA
         static MethodInfo _close => AccessTools.Method(typeof(Door), "Close");
         public static void Close(this Door door) => _close.Invoke(door, new object[0]);
 
@@ -5295,6 +5445,7 @@ namespace MiscCheats
         public static Rigidbody GetBody(this Raft raft) => (Rigidbody)_body.GetValue(raft);
         static MethodInfo _raftUpdate => AccessTools.Method(typeof(Raft), "Update");
         public static void Update(this Raft raft) => _raftUpdate.Invoke(raft,Array.Empty<object>());
+#endif
 
         static int smallCropplotIndex = -1;
         public static bool CanPlantInSmall(this Item_Base item)
