@@ -3,7 +3,7 @@
   "slug": "misc-cheats",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -2369,6 +2369,399 @@
         "Can be any number from 1 to 15, each increase of 1 will double the resolution. (1 = 2x2, 5 = 32x32, 9 = 1024x1024)"
       ],
       "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showTreasure",
+      "text": "Show Treasure Spots",
+      "default": false,
+      "section": "graphic",
+      "member": "showTreasure",
+      "tooltip": "Makes treasure points visible"
+    },
+    {
+      "type": "input",
+      "text": "  | Color",
+      "name": "colorTreasure",
+      "mode": "Alphanumeric",
+      "default": "909020",
+      "max": 6,
+      "section": "graphic",
+      "member": "colorTreasure",
+      "memberFallback": "909020",
+      "tooltip": "The colour to display treasure points with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showColliders",
+      "text": "Show Colliders",
+      "default": false,
+      "section": "graphic",
+      "member": "showColliders",
+      "tooltip": "Enables showing colliders, this must be enabled to use any of the settings in the <color=#00FFFF>Show Collider Settings</color>"
+    },
+    {
+      "type": "section",
+      "text": "Show Collider Settings",
+      "name": "graphic-collider",
+      "section": "graphic"
+    },
+    {
+      "type": "input",
+      "text": "   Milliseconds Per Fetch",
+      "name": "msPerFetch",
+      "mode": "IntegerNumber",
+      "default": "100",
+      "max": 9,
+      "section": "graphic-collider",
+      "member": "msPerFetch",
+      "memberFallback": 100,
+      "tooltip": "The min amount of time between fetches of the list of colliders. Higher numbers should improve performance when there is many objects in the world but can also make newly spawned objects take longer to show up",
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "   Curve Detail Multiplier",
+      "name": "circleSegment",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "section": "graphic-collider",
+      "member": "circleSegment",
+      "memberFallback": 1,
+      "tooltip": "A multiplier for the number of lines to use when drawing circles. Higher numbers will have higher circle detail but may cause more lag",
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "   Min Curve Detail",
+      "name": "minCircleSegment",
+      "mode": "IntegerNumber",
+      "default": "4",
+      "max": 4,
+      "section": "graphic-collider",
+      "member": "minCircleSegment",
+      "memberFallback": 4,
+      "tooltip": "The minimum number of lines used to draw circles",
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "   Max Curve Detail",
+      "name": "maxCircleSegment",
+      "mode": "IntegerNumber",
+      "default": "100",
+      "max": 4,
+      "section": "graphic-collider",
+      "member": "maxCircleSegment",
+      "memberFallback": 100,
+      "tooltip": "The maximum number of lines used to draw circles",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showPickupCol",
+      "text": "   Show Pickups",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showPickupCol",
+      "tooltip": [
+        "Makes pickup item colliders and triggers visible.",
+        "If enabled, this setting takes priority over the interactables, box, sphere, capsule and mesh settings."
+      ]
+    },
+    {
+      "type": "input",
+      "text": "    | Color",
+      "name": "colorPickupCol",
+      "mode": "Alphanumeric",
+      "default": "FFFF90",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorPickupCol",
+      "memberFallback": "FFFF90",
+      "tooltip": "The colour to display pickup items with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showShovelCol",
+      "text": "   Show Dig Spots",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showShovelCol",
+      "tooltip": [
+        "Makes dig spot colliders and triggers visible.",
+        "If enabled, this setting takes priority over the interactables, box, sphere, capsule and mesh settings."
+      ]
+    },
+    {
+      "type": "input",
+      "text": "    | Color",
+      "name": "colorShovelCol",
+      "mode": "Alphanumeric",
+      "default": "FFFF90",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorShovelCol",
+      "memberFallback": "FFFF90",
+      "tooltip": "The colour to display dig spots with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showTreeCol",
+      "text": "   Show Choppable Trees",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showTreeCol",
+      "tooltip": [
+        "Makes choppable tree colliders and triggers visible.",
+        "If enabled, this setting takes priority over the interactables, box, sphere, capsule and mesh settings."
+      ]
+    },
+    {
+      "type": "input",
+      "text": "    | Color",
+      "name": "colorTreeCol",
+      "mode": "Alphanumeric",
+      "default": "FFFF90",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorTreeCol",
+      "memberFallback": "FFFF90",
+      "tooltip": "The colour to display choppable trees with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showMineCol",
+      "text": "   Show Minable Resources",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showMineCol",
+      "tooltip": [
+        "Makes minable resource colliders and triggers visible.",
+        "If enabled, this setting takes priority over the interactables, box, sphere, capsule and mesh settings."
+      ]
+    },
+    {
+      "type": "input",
+      "text": "    | Color",
+      "name": "colorMineCol",
+      "mode": "Alphanumeric",
+      "default": "FFFF90",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorMineCol",
+      "memberFallback": "FFFF90",
+      "tooltip": "The colour to display minable resources with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showInteractableCol",
+      "text": "   Show Interactables",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showInteractableCol",
+      "tooltip": [
+        "Makes all interactable objects visible.",
+        "If used, this setting takes priority over the box, sphere, capsule and mesh settings"
+      ]
+    },
+    {
+      "type": "input",
+      "text": "    | Color",
+      "name": "colorInteractableCol",
+      "mode": "Alphanumeric",
+      "default": "60FFFF",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorInteractableCol",
+      "memberFallback": "60FFFF",
+      "tooltip": "The colour to display interactable objects with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showBoxCol",
+      "text": "   Show Box Colliders",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showBoxCol",
+      "tooltip": "Makes box colliders visible"
+    },
+    {
+      "type": "input",
+      "text": "    | Color",
+      "name": "colorBoxCol",
+      "mode": "Alphanumeric",
+      "default": "90FF90",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorBoxCol",
+      "memberFallback": "90FF90",
+      "tooltip": "The colour to display box colliders with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showBoxTrg",
+      "text": "   Show Box Triggers",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showBoxTrg",
+      "tooltip": "Makes box triggers visible"
+    },
+    {
+      "type": "input",
+      "text": "    | Color",
+      "name": "colorBoxTrg",
+      "mode": "Alphanumeric",
+      "default": "FF6060",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorBoxTrg",
+      "memberFallback": "FF6060",
+      "tooltip": "The colour to display box triggers with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showSphereCol",
+      "text": "   Show Sphere Colliders",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showSphereCol",
+      "tooltip": "Makes sphere colliders visible"
+    },
+    {
+      "type": "input",
+      "text": "    | Color",
+      "name": "colorSphereCol",
+      "mode": "Alphanumeric",
+      "default": "90FF90",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorSphereCol",
+      "memberFallback": "90FF90",
+      "tooltip": "The colour to display sphere colliders with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showSphereTrg",
+      "text": "   Show Sphere Triggers",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showSphereTrg",
+      "tooltip": "Makes sphere triggers visible"
+    },
+    {
+      "type": "input",
+      "text": "    | Color",
+      "name": "colorSphereTrg",
+      "mode": "Alphanumeric",
+      "default": "FF6060",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorSphereTrg",
+      "memberFallback": "FF6060",
+      "tooltip": "The colour to display sphere triggers with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showCapsuleCol",
+      "text": "   Show Capsule Colliders",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showCapsuleCol",
+      "tooltip": "Makes capsule colliders visible"
+    },
+    {
+      "type": "input",
+      "text": "    | Colour",
+      "name": "colorCapsuleCol",
+      "mode": "Alphanumeric",
+      "default": "90FF90",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorCapsuleCol",
+      "memberFallback": "90FF90",
+      "tooltip": "The colour to display capsule colliders with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showCapsuleTrg",
+      "text": "   Show Capsule Triggers",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showCapsuleTrg",
+      "tooltip": "Makes capsule triggers visible"
+    },
+    {
+      "type": "input",
+      "text": "    | Colour",
+      "name": "colorCapsuleTrg",
+      "mode": "Alphanumeric",
+      "default": "FF6060",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorCapsuleTrg",
+      "memberFallback": "FF6060",
+      "tooltip": "The colour to display capsule triggers with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showMeshCol",
+      "text": "   Show Mesh Colliders",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showMeshCol",
+      "tooltip": [ "Makes mesh colliders visible", "Note: Some mesh colliders will use a \"non-readable\" mesh. These colliders will not be visible due to being unable to access the points of the mesh" ]
+    },
+    {
+      "type": "input",
+      "text": "    | Colour",
+      "name": "colorMeshCol",
+      "mode": "Alphanumeric",
+      "default": "90FF90",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorMeshCol",
+      "memberFallback": "90FF90",
+      "tooltip": "The colour to display mesh colliders with",
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "showMeshTrg",
+      "text": "   Show Mesh Triggers",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "showMeshTrg",
+      "tooltip": [ "Makes mesh triggers visible", "Note: Some mesh triggers will use a \"non-readable\" mesh. These triggers will not be visible due to being unable to access the points of the mesh" ]
+    },
+    {
+      "type": "input",
+      "text": "    | Colour",
+      "name": "colorMeshTrg",
+      "mode": "Alphanumeric",
+      "default": "FF6060",
+      "max": 6,
+      "section": "graphic-collider",
+      "member": "colorMeshTrg",
+      "memberFallback": "FF6060",
+      "tooltip": "The colour to display mesh triggers with",
+      "resetButton": true
+    },
+    {
+      "type": "seperator",
+      "section": "graphic-collider"
     },
     {
       "type": "section",

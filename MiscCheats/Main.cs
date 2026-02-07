@@ -473,6 +473,56 @@ namespace MiscCheats
         public float hookSpeedMultiplier = 1;
         public bool deathSettings = true;
 
+        public bool showTreasure = false;
+        public int colorTreasure { set { ColorTreasure = value.ToColor(); } }
+        public Color ColorTreasure = 0x909020.ToColor();
+
+        public bool showColliders = false;
+        public int msPerFetch { set { TicksPerFetch = value * 10000L; } }
+        public long TicksPerFetch = 1000000;
+        public float circleSegment = 1;
+        public int minCircleSegment = 4;
+        public int maxCircleSegment = 100;
+        public bool showPickupCol = false;
+        public int colorPickupCol { set { ColorPickupCol = value.ToColor(); } }
+        public Color ColorPickupCol = 0xFFFF90.ToColor();
+        public bool showShovelCol = false;
+        public int colorShovelCol { set { ColorShovelCol = value.ToColor(); } }
+        public Color ColorShovelCol = 0xFFFF90.ToColor();
+        public bool showMineCol = false;
+        public int colorMineCol { set { ColorMineCol = value.ToColor(); } }
+        public Color ColorMineCol = 0xFFFF90.ToColor();
+        public bool showTreeCol = false;
+        public int colorTreeCol { set { ColorTreeCol = value.ToColor(); } }
+        public Color ColorTreeCol = 0xFFFF90.ToColor();
+        public bool showInteractableCol = false;
+        public int colorInteractableCol { set { ColorInteractableCol = value.ToColor(); } }
+        public Color ColorInteractableCol = 0x60FFFF.ToColor();
+        public bool showBoxCol = false;
+        public int colorBoxCol { set { ColorBoxCol = value.ToColor(); } }
+        public Color ColorBoxCol = 0x90FF90.ToColor();
+        public bool showBoxTrg = false;
+        public int colorBoxTrg { set { ColorBoxTrg = value.ToColor(); } }
+        public Color ColorBoxTrg = 0xFF6060.ToColor();
+        public bool showSphereCol = false;
+        public int colorSphereCol { set { ColorSphereCol = value.ToColor(); } }
+        public Color ColorSphereCol = 0x90FF90.ToColor();
+        public bool showSphereTrg = false;
+        public int colorSphereTrg { set { ColorSphereTrg = value.ToColor(); } }
+        public Color ColorSphereTrg = 0xFF6060.ToColor();
+        public bool showCapsuleCol = false;
+        public int colorCapsuleCol { set { ColorCapsuleCol = value.ToColor(); } }
+        public Color ColorCapsuleCol = 0x90FF90.ToColor();
+        public bool showCapsuleTrg = false;
+        public int colorCapsuleTrg { set { ColorCapsuleTrg = value.ToColor(); } }
+        public Color ColorCapsuleTrg = 0xFF6060.ToColor();
+        public bool showMeshCol = false;
+        public int colorMeshCol { set { ColorMeshCol = value.ToColor(); } }
+        public Color ColorMeshCol = 0x90FF90.ToColor();
+        public bool showMeshTrg = false;
+        public int colorMeshTrg { set { ColorMeshTrg = value.ToColor(); } }
+        public Color ColorMeshTrg = 0xFF6060.ToColor();
+
         public bool AllowSharkAttack => ComponentManager<RaftBounds>.Value.FoundationCount >= sharkAttackThresholdMin && (sharkAttackThresholdMax < 0 || sharkAttackThresholdMax >= ComponentManager<RaftBounds>.Value.FoundationCount);
         public bool UsingBino => ComponentManager<CanvasHelper>.Value && ComponentManager<CanvasHelper>.Value.binocularImage && ComponentManager<CanvasHelper>.Value.binocularImage.activeSelf;
         public static Item_Base scrappedGlass;
@@ -1003,7 +1053,47 @@ namespace MiscCheats
                 ComponentManager<Settings>.Value.Toggle();
             }
         }
-        // Draw lines code for future features? currently doesn't draw *over* stuff. var mat = new Material(Shader.Find("UI/Default")); var c = Camera.main; var p = c.transform.position + c.transform.forward; var end = Time.time + 30; Camera.CameraCallback d = null; d = (x) => { if (x != c) return; mat.SetPass(0); GL.PushMatrix(); GL.MultMatrix(Matrix4x4.TRS(p, Quaternion.identity, Vector3.one)); GL.Begin(GL.LINES); GL.Color(Color.red); GL.Vertex(new Vector3(0,0,0)); GL.Vertex(new Vector3(0,1,0)); GL.End(); GL.PopMatrix(); if (Time.time >= end) Camera.onPostRender -= d; }; Camera.onPostRender += d;
+
+        static long lastFetchTime = long.MinValue;
+        public static Collider[] lastFetch;
+        static Camera camera;
+        static Camera _main;
+        public void LateUpdate()
+        {
+            if (showColliders)
+            {
+                GetSystemTimeAsFileTime(out var time);
+                if (lastFetchTime + TicksPerFetch <= time)
+                {
+                    lastFetch = Resources.FindObjectsOfTypeAll<Collider>();
+                    GetSystemTimeAsFileTime(out lastFetchTime);
+                }
+            }
+            if (!camera || _main != Camera.main)
+            {
+                if (camera)
+                    Destroy(camera.gameObject);
+                _main = Camera.main;
+                if (_main)
+                {
+                    var g = new GameObject("MiscCheatsOverlayCamera");
+                    createdObjects.Add(g);
+                    g.transform.SetParent(_main.transform, false);
+                    camera = g.AddComponent<Camera>();
+                    g.AddComponent<OverlayRenderer>();
+                }
+            }
+            if (camera)
+            {
+                camera.CopyFrom(_main);
+                camera.cullingMask = 0;
+                camera.depth += 0.1f;
+                camera.clearFlags = CameraClearFlags.Depth;
+            }
+        }
+
+        [DllImport("kernel32")]
+        static extern void GetSystemTimeAsFileTime(out long value);
 
         static Dictionary<ChunkPointType, (Sprite sprite, float color)> chunkBlips = new Dictionary<ChunkPointType, (Sprite, float)>();
         public static Sprite GetBlip(ChunkPointType type, Sprite original,float hue)
@@ -1355,6 +1445,284 @@ namespace MiscCheats
                 pointer += Size;
             }
         }
+    }
+    public class OverlayRenderer : MonoBehaviour
+    {
+        static Material _lineMat;
+        static Material lineMaterial
+        {
+            get
+            {
+                if (!_lineMat)
+                {
+                    _lineMat = new Material(Shader.Find("UI/Default"));
+                }
+                return _lineMat;
+            }
+        }
+        static Material _spriteMat;
+        static Material spriteMaterial
+        {
+            get
+            {
+                if (!_spriteMat)
+                {
+                    _spriteMat = new Material(Shader.Find("Sprites/Default"));
+                }
+                return _spriteMat;
+            }
+        }
+        public void OnPostRender()
+        {
+            var ins = Main.instance;
+            if ((ins.showColliders && Main.lastFetch != null) || ins.showTreasure)
+            {
+                lineMaterial.SetPass(0);
+                GL.Begin(GL.LINES); // don't PushMatrix or push after Begin so GL.Vertex parameters are in world-space
+                if (ins.showColliders && Main.lastFetch != null)
+                {
+                    var len = Main.lastFetch.Length;
+                    for (int i = 0; i != len; i++)
+                    {
+                        var col = Main.lastFetch[i];
+                        if (CachedIsActive(col))
+                        {
+                            bool isPickup = false;
+                            bool isInteract = false;
+                            if (ins.showInteractableCol || ins.showPickupCol || ins.showShovelCol || ins.showMineCol || ins.showTreeCol)
+                            {
+                                var comp = col.GetComponent<RaycastInteractable>();
+                                if ((object)comp == null)
+                                    comp = col.GetComponent<RaycastInteractable_Redirect>()?.RaycastInteractable;
+                                if ((object)comp != null)
+                                {
+                                    isInteract = true;
+                                    if (ins.showPickupCol || ins.showShovelCol || ins.showMineCol || ins.showTreeCol)
+                                    {
+                                        if (comp.CompareTag("Pickup_Shovel"))
+                                        {
+                                            if (ins.showShovelCol)
+                                            {
+                                                isPickup = true;
+                                                GL.Color(ins.ColorShovelCol);
+                                            }
+                                        }
+                                        else if (comp.CompareTag("PickupHook"))
+                                        {
+                                            if (ins.showMineCol)
+                                            {
+                                                isPickup = true;
+                                                GL.Color(ins.ColorMineCol);
+                                            }
+                                        }
+                                        else if (comp.CompareTag("Tree"))
+                                        {
+                                            if (ins.showTreeCol)
+                                            {
+                                                isPickup = true;
+                                                GL.Color(ins.ColorTreeCol);
+                                            }
+                                        }
+                                        else if (ins.showPickupCol && ((object)comp.GetComponent<PickupItem>() != null || (comp.CompareTag("Resource") && (object)comp.GetComponent<ResourceRegenerative>() != null)))
+                                        {
+                                            isPickup = true;
+                                            GL.Color(ins.ColorPickupCol);
+                                        }
+                                    }
+                                }
+                                if (!isPickup)
+                                {
+                                    if (!ins.showInteractableCol)
+                                        isInteract = false;
+                                    else if (isInteract)
+                                        GL.Color(ins.ColorInteractableCol);
+                                }
+                            }
+                            if ((isInteract || (col.isTrigger ? ins.showBoxTrg : ins.showBoxCol)) && col is BoxCollider box)
+                            {
+                                if (!isInteract)
+                                    GL.Color(col.isTrigger ? ins.ColorBoxTrg : ins.ColorBoxCol);
+                                DrawCube(new Transformer(col.transform), box.center, box.size);
+                            }
+                            else if ((isInteract || (col.isTrigger ? ins.showSphereTrg : ins.showSphereCol)) && col is SphereCollider sph)
+                            {
+                                if (!isInteract)
+                                    GL.Color(col.isTrigger ? ins.ColorSphereTrg : ins.ColorSphereCol);
+                                DrawSphere(new Transformer(col.transform), sph.center, sph.radius);
+                            }
+                            else if ((isInteract || (col.isTrigger ? ins.showCapsuleTrg : ins.showCapsuleCol)) && col is CapsuleCollider cap)
+                            {
+                                if (!isInteract)
+                                    GL.Color(col.isTrigger ? ins.ColorCapsuleTrg : ins.ColorCapsuleCol);
+                                DrawCapsule(new Transformer(col.transform), cap.center, cap.radius, cap.height);
+                            }
+                            else if ((isInteract || (col.isTrigger ? ins.showMeshTrg : ins.showMeshCol)) && col is MeshCollider mesh && mesh.sharedMesh.isReadable)
+                            {
+                                if (!isInteract)
+                                    GL.Color(col.isTrigger ? ins.ColorMeshTrg : ins.ColorMeshCol);
+                                DrawMesh(new Transformer(col.transform), mesh.sharedMesh);
+                            }
+                        }
+                    }
+                }
+                if (ins.showTreasure && ComponentManager<TreasurePointManager>.Value)
+                    foreach (var pair in ComponentManager<TreasurePointManager>.Value.treasurePoints)
+                        if (pair.Key && pair.Key.gameObject.activeInHierarchy)
+                            foreach (var point in pair.Value)
+                                if (point && point.IsBuried && point.gameObject.activeInHierarchy)
+                                {
+                                    GL.Color(ins.ColorTreasure);
+                                    DrawSphere2(new Transformer(point.transform), default, 3);
+                                }
+                GL.End();
+            }
+        }
+
+        static ConditionalWeakTable<Collider, object> ActiveCache = new ConditionalWeakTable<Collider, object>();
+        static object _autofail = new object();
+        static bool CachedIsActive(Collider comp)
+        {
+            if (ActiveCache.TryGetValue(comp, out var cache))
+            {
+                if (cache == _autofail)
+                    return false;
+                if (cache is ActiveMemory mem)
+                    if (mem.IsActive && comp)
+                        return comp.enabled;
+                    else
+                        return mem.IsActive = false;
+
+                // This line should never be reached. Replace stored value with "auto fail" to make future excutions faster
+                ActiveCache.Remove(comp);
+                ActiveCache.Add(comp, _autofail);
+                return false;
+            }
+            if (!comp || comp.gameObject.scene.name == null)
+            {
+                ActiveCache.Add(comp, _autofail);
+                return false;
+            }
+            var nmem = comp.gameObject.AddComponent<ActiveMemory>();
+            ActiveCache.Add(comp, nmem);
+            return nmem.IsActive && comp.enabled;
+        }
+        public class ActiveMemory : MonoBehaviour
+        {
+            public bool IsActive;
+            void OnEnable() => IsActive = true;
+            void OnDisable() => IsActive = false;
+            void OnAwake() => OnEnable();
+            void OnDestroy() => OnDisable();
+        }
+
+        void DrawCube(Transformer transformer, Vector3 center, Vector3 size)
+        {
+            var corners = new Vector3[8];
+            var halfSize = size / 2;
+            for (int i = 0; i < corners.Length; i++)
+                corners[i] = transformer.Transform(center + new Vector3(
+                        (i & 1) == 0 ? -halfSize.x : halfSize.x,
+                        (i & 2) == 0 ? -halfSize.y : halfSize.y,
+                        (i & 4) == 0 ? -halfSize.z : halfSize.z
+                    ));
+            DrawLine(corners[0], corners[1]);
+            DrawLine(corners[0], corners[2]);
+            DrawLine(corners[0], corners[4]);
+            DrawLine(corners[1], corners[3]);
+            DrawLine(corners[1], corners[5]);
+            DrawLine(corners[2], corners[3]);
+            DrawLine(corners[2], corners[6]);
+            DrawLine(corners[3], corners[7]);
+            DrawLine(corners[4], corners[5]);
+            DrawLine(corners[4], corners[6]);
+            DrawLine(corners[5], corners[7]);
+            DrawLine(corners[6], corners[7]);
+        }
+        void DrawSphere(Transformer transformer, Vector3 center, float radius)
+        {
+            var max = 0f;
+            var centerX = Camera.current.WorldToScreenPoint(transformer.Transform(center)).x;
+            for (int i = 0; i < 360; i+= 30)
+                max = Math.Max(max, Math.Abs(centerX - Camera.current.WorldToScreenPoint(transformer.Transform(center) + (Quaternion.Euler(0,i,0) * Camera.current.transform.right * radius)).x));
+            int steps = Math.Max(Main.instance.minCircleSegment, Math.Min(Main.instance.maxCircleSegment, (int)Math.Ceiling((float)Math.Sqrt(max * 2) * 2 * Main.instance.circleSegment)));
+            DrawCurve(transformer, center, new Vector3(radius, 0, 0), Vector3.up, 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(radius, 0, 0), Vector3.forward, 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(0, radius, 0), Vector3.right, 360f / steps, steps);
+        }
+        void DrawSphere2(Transformer transformer, Vector3 center, float radius)
+        {
+            var max = 0f;
+            var centerX = Camera.current.WorldToScreenPoint(transformer.Transform(center)).x;
+            for (int i = 0; i < 360; i += 30)
+                max = Math.Max(max, Math.Abs(centerX - Camera.current.WorldToScreenPoint(transformer.Transform(center) + (Quaternion.Euler(0, i, 0) * Camera.current.transform.right * radius)).x));
+            int steps = Math.Max(Main.instance.minCircleSegment, Math.Min(Main.instance.maxCircleSegment, (int)Math.Ceiling((float)Math.Sqrt(max * 2) * 2 * Main.instance.circleSegment)));
+            DrawCurve(transformer, center, new Vector3(radius, 0, 0), Vector3.up, 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(radius, 0, 0), new Vector3(0, 1, 1), 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(radius, 0, 0), new Vector3(0, 1, -1), 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(0, radius, 0), Vector3.forward, 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(0, radius, 0), new Vector3(1, 0, 1), 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(0, radius, 0), new Vector3(-1, 0, 1), 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(0, 0, radius), Vector3.right, 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(0, 0, radius), new Vector3(1, 1, 0), 360f / steps, steps);
+            DrawCurve(transformer, center, new Vector3(0, 0, radius), new Vector3(1, -1, 0), 360f / steps, steps);
+        }
+        void DrawCapsule(Transformer transformer, Vector3 center, float radius, float height)
+        {
+            var halfHeight = height / 2;
+            //int steps = Math.Max(instance.minCircleSegment / 2, Math.Min(instance.maxCircleSegment / 2, (int)Math.Ceiling((float)Math.Sqrt(Math.Sqrt(maxSqr)) * instance.circleSegment)));
+            int steps = 16;
+            DrawCurve(transformer, center + new Vector3(0, halfHeight, 0), new Vector3(radius, 0, 0), Vector3.up, 180f / steps, steps * 2);
+            DrawCurve(transformer, center + new Vector3(0, halfHeight, 0), new Vector3(radius, 0, 0), Vector3.forward, 180f / steps, steps);
+            DrawCurve(transformer, center + new Vector3(0, halfHeight, 0), new Vector3(0, 0, radius), Vector3.left, 180f / steps, steps);
+            DrawCurve(transformer, center - new Vector3(0, halfHeight, 0), new Vector3(radius, 0, 0), Vector3.up, 180f / steps, steps * 2);
+            DrawCurve(transformer, center - new Vector3(0, halfHeight, 0), new Vector3(radius, 0, 0), Vector3.back, 180f / steps, steps);
+            DrawCurve(transformer, center - new Vector3(0, halfHeight, 0), new Vector3(0, 0, radius), Vector3.right, 180f / steps, steps);
+            //DrawCurve(center, new Vector3(radius, 0, 0), Vector3.up, 180f / steps, steps * 2); // Center circle, disabled because it felt cluttered
+            DrawLine(transformer, center + new Vector3(radius, halfHeight, 0), center + new Vector3(radius, -halfHeight, 0));
+            DrawLine(transformer, center + new Vector3(-radius, halfHeight, 0), center + new Vector3(-radius, -halfHeight, 0));
+            DrawLine(transformer, center + new Vector3(0, halfHeight, radius), center + new Vector3(0, -halfHeight, radius));
+            DrawLine(transformer, center + new Vector3(0, halfHeight, -radius), center + new Vector3(0, -halfHeight, -radius));
+        }
+
+        void DrawMesh(Transformer transformer, Mesh mesh)
+        {
+            var v = mesh.vertices;
+            var t = mesh.triangles;
+            for (int i = 0; i < t.Length; i += 3)
+            {
+                var v1 = transformer.Transform(v[t[i]]);
+                var v2 = transformer.Transform(v[t[i + 1]]);
+                var v3 = transformer.Transform(v[t[i + 2]]);
+                DrawLine(v1, v2);
+                DrawLine(v1, v3);
+                DrawLine(v2, v3);
+            }
+        }
+
+        void DrawCurve(Transformer transformer, Vector3 center, Vector3 start, Vector3 axis, float step, int steps)
+        {
+            var last = transformer.Transform(center + start);
+            for (int i = 1; i <= steps; i++)
+                DrawLine(last, last = transformer.Transform(center + (Quaternion.AngleAxis(step * i, axis) * start)));
+        }
+
+        void DrawLine(Transformer transformer, Vector3 v1, Vector3 v2) => DrawLine(transformer.Transform(v1), transformer.Transform(v2));
+
+        void DrawLine(Vector3 v1, Vector3 v2)
+        {
+            GL.Vertex(v1);
+            GL.Vertex(v2);
+        }
+    }
+
+    public class Transformer
+    {
+        Matrix4x4 matrix;
+        public Transformer(Transform source)
+        {
+            matrix = source.localToWorldMatrix;
+        }
+        public Vector3 Transform(Vector3 localPoint) => matrix.MultiplyPoint(localPoint);
     }
 
     [HarmonyPatch(typeof(BlockCreator), "UpgradeBlock")]
@@ -5597,5 +5965,7 @@ namespace MiscCheats
             l.RemoveAt(i);
             return v;
         }
+
+        public static Color ToColor(this int value) => new Color32((byte)((value >> 16) & 0xFF), (byte)((value >> 8) & 0xFF), (byte)(value & 0xFF), 0xFF);
     }
 }
