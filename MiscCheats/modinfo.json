@@ -3,7 +3,7 @@
   "slug": "misc-cheats",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -2377,7 +2377,7 @@
       "default": false,
       "section": "graphic",
       "member": "showTreasure",
-      "tooltip": "Makes treasure points visible"
+      "tooltip": "Makes treasure points visible. Use settings in the <color=#00FFFF>Show Treasure Spot/Collider Settings</color> to configure"
     },
     {
       "type": "input",
@@ -2399,13 +2399,22 @@
       "default": false,
       "section": "graphic",
       "member": "showColliders",
-      "tooltip": "Enables showing colliders, this must be enabled to use any of the settings in the <color=#00FFFF>Show Collider Settings</color>"
+      "tooltip": "Makes colliders visible. Use settings in the <color=#00FFFF>Show Treasure Spot/Collider Settings</color> to configure"
     },
     {
       "type": "section",
-      "text": "Show Collider Settings",
+      "text": "Show Treasure Spot/Collider Settings",
       "name": "graphic-collider",
       "section": "graphic"
+    },
+    {
+      "type": "checkbox",
+      "name": "collidersWallHack",
+      "text": "Wall Hack",
+      "default": true,
+      "section": "graphic-collider",
+      "member": "collidersWallHack",
+      "tooltip": "Makes it so the lines drawn for colliders and treasure spots are visible through walls"
     },
     {
       "type": "input",

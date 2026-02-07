@@ -644,35 +644,27 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="0Harmony.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\0Harmony.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="coremod.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\coremod.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\coremod.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HMLCoreLibrary.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\HMLCoreLibrary.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RTCP.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\RTCP.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RTCPNetImprovements.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\RTCPNetImprovements.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\HMLCoreLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SemanticVersion.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\SemanticVersion.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\SemanticVersion.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="SharpZipLib.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\SharpZipLib.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.ValueTuple.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\System.ValueTuple.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\System.ValueTuple.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -963,8 +955,8 @@
     <Reference Include="coremod.dll">
       <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\coremod.dll</HintPath>
     </Reference>
-    <Reference Include="HMLCoreLibrary.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\HMLCoreLibrary.dll</HintPath>
+    <Reference Include="AssemblyLoader.dll">
+      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\AssemblyLoader.dll</HintPath>
     </Reference>
     <Reference Include="SharpZipLib.dll">
       <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\SharpZipLib.dll</HintPath>

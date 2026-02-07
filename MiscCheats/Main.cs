@@ -476,10 +476,10 @@ namespace MiscCheats
         public bool showTreasure = false;
         public int colorTreasure { set { ColorTreasure = value.ToColor(); } }
         public Color ColorTreasure = 0x909020.ToColor();
-
         public bool showColliders = false;
         public int msPerFetch { set { TicksPerFetch = value * 10000L; } }
         public long TicksPerFetch = 1000000;
+        public bool collidersWallHack = true;
         public float circleSegment = 1;
         public int minCircleSegment = 4;
         public int maxCircleSegment = 100;
@@ -1087,8 +1087,9 @@ namespace MiscCheats
             {
                 camera.CopyFrom(_main);
                 camera.cullingMask = 0;
-                camera.depth += 0.1f;
-                camera.clearFlags = CameraClearFlags.Depth;
+                camera.depth += 0.01f;
+                camera.clearFlags = CameraClearFlags.Nothing;
+                camera.eventMask = 0;
             }
         }
 
@@ -1479,6 +1480,9 @@ namespace MiscCheats
             {
                 lineMaterial.SetPass(0);
                 GL.Begin(GL.LINES); // don't PushMatrix or push after Begin so GL.Vertex parameters are in world-space
+                GL.PushMatrix();
+                if (ins.collidersWallHack)
+                    GL.LoadProjectionMatrix(Matrix4x4.Scale(new Vector3(1, 1, 0)) * Camera.current.projectionMatrix);
                 if (ins.showColliders && Main.lastFetch != null)
                 {
                     var len = Main.lastFetch.Length;
@@ -1556,7 +1560,7 @@ namespace MiscCheats
                                     GL.Color(col.isTrigger ? ins.ColorCapsuleTrg : ins.ColorCapsuleCol);
                                 DrawCapsule(new Transformer(col.transform), cap.center, cap.radius, cap.height);
                             }
-                            else if ((isInteract || (col.isTrigger ? ins.showMeshTrg : ins.showMeshCol)) && col is MeshCollider mesh && mesh.sharedMesh.isReadable)
+                            else if ((isInteract || (col.isTrigger ? ins.showMeshTrg : ins.showMeshCol)) && col is MeshCollider mesh && mesh.sharedMesh && mesh.sharedMesh.isReadable)
                             {
                                 if (!isInteract)
                                     GL.Color(col.isTrigger ? ins.ColorMeshTrg : ins.ColorMeshCol);
@@ -1574,6 +1578,7 @@ namespace MiscCheats
                                     GL.Color(ins.ColorTreasure);
                                     DrawSphere2(new Transformer(point.transform), default, 3);
                                 }
+                GL.PopMatrix();
                 GL.End();
             }
         }
