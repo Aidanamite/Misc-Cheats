@@ -4115,7 +4115,7 @@ namespace MiscCheats
             if (Main.instance.fuelConsumption == 1)
                 return;
             if (___tankAcceptance == Tank.TankAcceptance.Input && (__instance.tankFiltrationType == FuelValue_FiltrationType.FV_MOTORTANK || __instance.tankFiltrationType == FuelValue_FiltrationType.FV_FUELTANK) && newAmount < __instance.CurrentTankAmount)
-                newAmount = __instance.CurrentTankAmount + (__instance.CurrentTankAmount - newAmount) * Main.instance.fuelConsumption;
+                newAmount = __instance.CurrentTankAmount - (__instance.CurrentTankAmount - newAmount) * Main.instance.fuelConsumption;
         }
     }
 
