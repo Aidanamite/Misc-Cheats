@@ -4637,9 +4637,12 @@ namespace MiscCheats
             yield return AccessTools.Method(typeof(NewGameBox), "Open");
             yield return AccessTools.Method(typeof(LoadGameBox), "Open");
         }
-        static void Postfix(Dropdown ___authSettingDropdown)
+        static void Finalizer(Dropdown ___authSettingDropdown)
         {
-            ___authSettingDropdown.value = Main.instance.selectedMulti;
+            if (Main.instance.selectedMulti < ___authSettingDropdown.options.Count)
+                ___authSettingDropdown.value = Main.instance.selectedMulti;
+            else
+                ___authSettingDropdown.StartCoroutine(HoldingYourHorses(___authSettingDropdown, Main.instance.selectedMulti));
             if (!marked.TryGetValue(___authSettingDropdown,out _))
             {
                 marked.Add(___authSettingDropdown, new object());
@@ -4649,6 +4652,13 @@ namespace MiscCheats
                         Main.instance.selectedMulti = x;
                 });
             }
+        }
+
+        static IEnumerator HoldingYourHorses(Dropdown dropdown, int desiredOption)
+        {
+            while (desiredOption >= dropdown.options.Count)
+                yield return new WaitForEndOfFrame();
+            dropdown.value = Main.instance.selectedMulti;
         }
     }
 
