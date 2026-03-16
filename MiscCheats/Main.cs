@@ -3142,6 +3142,11 @@ namespace MiscCheats
                     i.sizeDelta -= new Vector2(0, s);
                 if (f)
                     f.localPosition += new Vector3(0, s, 0);
+#if RAFT_BETA
+                button.recipeBox.startRectHeight -= s;
+#else
+                Traverse.Create(button.recipeBox).Field<float>("startRectHeight").Value -= s;
+#endif
             }
             else
             {
@@ -3156,11 +3161,6 @@ namespace MiscCheats
                     f.sizeDelta -= new Vector2(s, 0);
                 if (i)
                     i.offsetMax -= new Vector2(s, 0);
-#if RAFT_BETA
-                button.recipeBox.startRectHeight -= s;
-#else
-                Traverse.Create(button.recipeBox).Field<float>("startRectHeight").Value -= s;
-#endif
             }
             Object.Destroy(button.gameObject);
         }
@@ -3189,6 +3189,11 @@ namespace MiscCheats
                     i.sizeDelta += new Vector2(0, s);
                 if (f)
                     f.localPosition -= new Vector3(0, s, 0);
+#if RAFT_BETA
+                __instance.startRectHeight += s;
+#else
+                Traverse.Create(__instance).Field<float>("startRectHeight").Value += s;
+#endif
             }
             else
             {
@@ -3204,11 +3209,6 @@ namespace MiscCheats
                     f.sizeDelta += new Vector2(s, 0);
                 if (i)
                     i.offsetMax += new Vector2(s, 0);
-#if RAFT_BETA
-                __instance.startRectHeight += s;
-#else
-                Traverse.Create(__instance).Field<float>("startRectHeight").Value += s;
-#endif
             }
             Object.DestroyImmediate(u.GetComponentInChildren<I2.Loc.Localize>());
             u.GetComponentInChildren<Text>().text = "Uncraft";
