@@ -4587,43 +4587,39 @@ namespace MiscCheats
         }
     }
 
-    [HarmonyPatch(typeof(Hook),"Update")]
+    [HarmonyPatch(typeof(ItemCollector),"Update")]
     static class Patch_HookArea
     {
-        static void Postfix(Hook __instance, Network_Player ___playerNetwork)
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            if (!___playerNetwork.IsLocalPlayer)
-                return;
-            Data.Get(__instance);
+            var code = instructions.ToList();
+            for (int i = code.Count - 1; i >= 0; i--)
+                if (code[i].opcode == OpCodes.Ldfld && code[i].operand is FieldInfo f && f.Name == "origSize")
+                {
+                    code.InsertRange(i + 1, new[]
+                    {
+                        new CodeInstruction(OpCodes.Ldarg_0),
+                        new CodeInstruction(OpCodes.Call,AccessTools.Method(typeof(Patch_HookArea),nameof(ModifySize)))
+                    });
+                }
+            return code;
+        }
+
+        static ConditionalWeakTable<ItemCollector, Data> table = new ConditionalWeakTable<ItemCollector, Data>();
+        public static Vector3 ModifySize(Vector3 original,ItemCollector collector)
+        {
+            if (!table.TryGetValue(collector,out var data))
+                table.Add(collector, data = new Data() {
+                    isLocalOwned = Resources.FindObjectsOfTypeAll<Hook>().First(x => x.hookItemCollector == collector)?.GetComponentInParent<Network_Player>()?.IsLocalPlayer ?? false
+                });
+            if (data.isLocalOwned)
+                return original * Main.instance.hookArea;
+            return original;
         }
 
         class Data
         {
-            static ConditionalWeakTable<Hook, Data> table = new ConditionalWeakTable<Hook, Data>();
-            public Vector3 original;
-            BoxCollider collider;
-            public static Data Get(Hook instance)
-            {
-                if (!table.TryGetValue(instance, out var d))
-                {
-                    var b = instance.hookObjectCollider as BoxCollider;
-                    table.Add(instance, d = new Data() { collider = b, original = b.size });
-                }
-                if (Main.instance.hookArea * d.original != d.collider.size)
-                    d.collider.size = Main.instance.hookArea * d.original;
-                return d;
-            }
-
-            [OnModUnload]
-            static void TryRevertAll()
-            {
-                foreach (var h in Resources.FindObjectsOfTypeAll<Hook>())
-                    if (table.TryGetValue(h, out var d))
-                    {
-                        d.collider.size = d.original;
-                        table.Remove(h);
-                    }
-            }
+            public bool isLocalOwned;
         }
     }
 
