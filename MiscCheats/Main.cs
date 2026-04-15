@@ -522,6 +522,21 @@ namespace MiscCheats
         public bool showMeshTrg = false;
         public int colorMeshTrg { set { ColorMeshTrg = value.ToColor(); } }
         public Color ColorMeshTrg = 0xFF6060.ToColor();
+        public bool logDrawTimes = false;
+
+        public int deadZone = -1;
+        float _tankMultiplier;
+        public float tankMultiplier
+        {
+            get => _tankMultiplier;
+            set
+            {
+                if (_tankMultiplier == value)
+                    return;
+                _tankMultiplier = value;
+                Patch_InitializeTank.Remodify();
+            }
+        }
 
         public bool AllowSharkAttack => ComponentManager<RaftBounds>.Value.FoundationCount >= sharkAttackThresholdMin && (sharkAttackThresholdMax < 0 || sharkAttackThresholdMax >= ComponentManager<RaftBounds>.Value.FoundationCount);
         public bool UsingBino => ComponentManager<CanvasHelper>.Value && ComponentManager<CanvasHelper>.Value.binocularImage && ComponentManager<CanvasHelper>.Value.binocularImage.activeSelf;
@@ -1067,6 +1082,8 @@ namespace MiscCheats
                 {
                     lastFetch = Resources.FindObjectsOfTypeAll<Collider>();
                     GetSystemTimeAsFileTime(out lastFetchTime);
+                    if (logDrawTimes)
+                        Debug.Log("Fetch time: " + ((lastFetchTime - time)/10000.0));
                 }
             }
             if (!camera || _main != Camera.main)
@@ -1087,14 +1104,14 @@ namespace MiscCheats
             {
                 camera.CopyFrom(_main);
                 camera.cullingMask = 0;
-                camera.depth += 0.01f;
+                camera.depth = 1.99f;
                 camera.clearFlags = CameraClearFlags.Nothing;
                 camera.eventMask = 0;
             }
         }
 
         [DllImport("kernel32")]
-        static extern void GetSystemTimeAsFileTime(out long value);
+        public static extern void GetSystemTimeAsFileTime(out long value);
 
         static Dictionary<ChunkPointType, (Sprite sprite, float color)> chunkBlips = new Dictionary<ChunkPointType, (Sprite, float)>();
         public static Sprite GetBlip(ChunkPointType type, Sprite original,float hue)
@@ -1478,18 +1495,35 @@ namespace MiscCheats
             var ins = Main.instance;
             if ((ins.showColliders && Main.lastFetch != null) || ins.showTreasure)
             {
+                Matrix4x4 current = Camera.current.worldToCameraMatrix;
+                long start;
+                long end;
+                long activeChecks = 0;
+                long boxes = 0;
+                long spheres = 0;
+                long capsules = 0;
+                long meshes = 0;
+                int boxCount = 0;
+                int sphereCount = 0;
+                int capsuleCount = 0;
+                int meshCount = 0;
+                Main.GetSystemTimeAsFileTime(out var totalStart);
                 lineMaterial.SetPass(0);
-                GL.Begin(GL.LINES); // don't PushMatrix or push after Begin so GL.Vertex parameters are in world-space
+                GL.Begin(GL.LINES);
                 GL.PushMatrix();
                 if (ins.collidersWallHack)
-                    GL.LoadProjectionMatrix(Matrix4x4.Scale(new Vector3(1, 1, 0)) * Camera.current.projectionMatrix);
+                    GL.Clear(true, false, Color.clear);
                 if (ins.showColliders && Main.lastFetch != null)
                 {
                     var len = Main.lastFetch.Length;
                     for (int i = 0; i != len; i++)
                     {
                         var col = Main.lastFetch[i];
-                        if (CachedIsActive(col))
+                        Main.GetSystemTimeAsFileTime(out start);
+                        var active = CachedIsActive(col);
+                        Main.GetSystemTimeAsFileTime(out end);
+                        activeChecks += end - start;
+                        if (active)
                         {
                             bool isPickup = false;
                             bool isInteract = false;
@@ -1497,7 +1531,11 @@ namespace MiscCheats
                             {
                                 var comp = col.GetComponent<RaycastInteractable>();
                                 if ((object)comp == null)
-                                    comp = col.GetComponent<RaycastInteractable_Redirect>()?.RaycastInteractable;
+                                {
+                                    var redirect = col.GetComponent<RaycastInteractable_Redirect>();
+                                    if ((object)redirect != null && redirect.RaycastInteractable)
+                                        comp = redirect.RaycastInteractable;
+                                }
                                 if ((object)comp != null)
                                 {
                                     isInteract = true;
@@ -1542,45 +1580,81 @@ namespace MiscCheats
                                         GL.Color(ins.ColorInteractableCol);
                                 }
                             }
+                            Main.GetSystemTimeAsFileTime(out start);
                             if ((isInteract || (col.isTrigger ? ins.showBoxTrg : ins.showBoxCol)) && col is BoxCollider box)
                             {
+                                boxCount++;
                                 if (!isInteract)
                                     GL.Color(col.isTrigger ? ins.ColorBoxTrg : ins.ColorBoxCol);
                                 DrawCube(new Transformer(col.transform), box.center, box.size);
+                                Main.GetSystemTimeAsFileTime(out end);
+                                boxes += end - start;
+                                continue;
                             }
-                            else if ((isInteract || (col.isTrigger ? ins.showSphereTrg : ins.showSphereCol)) && col is SphereCollider sph)
+                            Main.GetSystemTimeAsFileTime(out end);
+                            boxes += end - start;
+                            Main.GetSystemTimeAsFileTime(out start);
+                            if ((isInteract || (col.isTrigger ? ins.showSphereTrg : ins.showSphereCol)) && col is SphereCollider sph)
                             {
+                                sphereCount++;
                                 if (!isInteract)
                                     GL.Color(col.isTrigger ? ins.ColorSphereTrg : ins.ColorSphereCol);
-                                DrawSphere(new Transformer(col.transform), sph.center, sph.radius);
+                                DrawSphere(new Transformer(col.transform), sph.center, sph.radius, current);
+                                Main.GetSystemTimeAsFileTime(out end);
+                                spheres += end - start;
+                                continue;
                             }
-                            else if ((isInteract || (col.isTrigger ? ins.showCapsuleTrg : ins.showCapsuleCol)) && col is CapsuleCollider cap)
+                            Main.GetSystemTimeAsFileTime(out end);
+                            spheres += end - start;
+                            Main.GetSystemTimeAsFileTime(out start);
+                            if ((isInteract || (col.isTrigger ? ins.showCapsuleTrg : ins.showCapsuleCol)) && col is CapsuleCollider cap)
                             {
+                                capsuleCount++;
                                 if (!isInteract)
                                     GL.Color(col.isTrigger ? ins.ColorCapsuleTrg : ins.ColorCapsuleCol);
-                                DrawCapsule(new Transformer(col.transform), cap.center, cap.radius, cap.height);
+                                DrawCapsule(new Transformer(col.transform), cap.center, cap.radius, cap.height, cap.direction, current);
+                                Main.GetSystemTimeAsFileTime(out end);
+                                capsules += end - start;
+                                continue;
                             }
-                            else if ((isInteract || (col.isTrigger ? ins.showMeshTrg : ins.showMeshCol)) && col is MeshCollider mesh && mesh.sharedMesh && mesh.sharedMesh.isReadable)
+                            Main.GetSystemTimeAsFileTime(out end);
+                            capsules += end - start;
+                            Main.GetSystemTimeAsFileTime(out start);
+                            if ((isInteract || (col.isTrigger ? ins.showMeshTrg : ins.showMeshCol)) && col is MeshCollider mesh && mesh.sharedMesh && mesh.sharedMesh.isReadable)
                             {
+                                meshCount++;
                                 if (!isInteract)
                                     GL.Color(col.isTrigger ? ins.ColorMeshTrg : ins.ColorMeshCol);
                                 DrawMesh(new Transformer(col.transform), mesh.sharedMesh);
+                                Main.GetSystemTimeAsFileTime(out end);
+                                meshes += end - start;
+                                continue;
                             }
+                            Main.GetSystemTimeAsFileTime(out end);
+                            meshes += end - start;
                         }
                     }
                 }
+                Main.GetSystemTimeAsFileTime(out var treasureStart);
+                int treasureCount = 0;
                 if (ins.showTreasure && ComponentManager<TreasurePointManager>.Value)
                     foreach (var pair in ComponentManager<TreasurePointManager>.Value.treasurePoints)
                         if (pair.Key && pair.Key.gameObject.activeInHierarchy)
                             foreach (var point in pair.Value)
                                 if (point && point.IsBuried && point.gameObject.activeInHierarchy)
                                 {
+                                    treasureCount++;
                                     GL.Color(ins.ColorTreasure);
-                                    DrawSphere2(new Transformer(point.transform), default, 3);
+                                    DrawSphere2(new Transformer(point.transform), default, 3, current);
                                 }
+                Main.GetSystemTimeAsFileTime(out var treasureEnd);
                 GL.PopMatrix();
                 GL.End();
+                Main.GetSystemTimeAsFileTime(out var totalEnd);
+                if (ins.logDrawTimes)
+                    Debug.Log($"Alive & Active checks: {activeChecks / 10000.0}ms ({Main.lastFetch.Length})\nBox proccessing: {boxes / 10000.0}ms ({boxCount})\nSphere proccessing: {spheres / 10000.0}ms ({sphereCount})\nCapsule proccessing: {capsules / 10000.0}ms ({capsuleCount})\nMesh proccessing: {meshes / 10000.0}ms ({meshCount})\nTotal treasure time: {(treasureEnd - treasureStart) / 10000.0}ms ({treasureCount})\nTotal time taken: {(totalEnd - totalStart) / 10000.0}ms");
             }
+            
         }
 
         static ConditionalWeakTable<Collider, object> ActiveCache = new ConditionalWeakTable<Collider, object>();
@@ -1602,7 +1676,7 @@ namespace MiscCheats
                 ActiveCache.Add(comp, _autofail);
                 return false;
             }
-            if (!comp || comp.gameObject.scene.name == null)
+            if (comp.gameObject.scene.name == null)
             {
                 ActiveCache.Add(comp, _autofail);
                 return false;
@@ -1642,25 +1716,32 @@ namespace MiscCheats
             DrawLine(corners[4], corners[6]);
             DrawLine(corners[5], corners[7]);
             DrawLine(corners[6], corners[7]);
+            GL.Flush();
         }
-        void DrawSphere(Transformer transformer, Vector3 center, float radius)
+        void DrawSphere(Transformer transformer, Vector3 center, float radius, Matrix4x4 worldToCamera)
         {
-            var max = 0f;
-            var centerX = Camera.current.WorldToScreenPoint(transformer.Transform(center)).x;
-            for (int i = 0; i < 360; i+= 30)
-                max = Math.Max(max, Math.Abs(centerX - Camera.current.WorldToScreenPoint(transformer.Transform(center) + (Quaternion.Euler(0,i,0) * Camera.current.transform.right * radius)).x));
-            int steps = Math.Max(Main.instance.minCircleSegment, Math.Min(Main.instance.maxCircleSegment, (int)Math.Ceiling((float)Math.Sqrt(max * 2) * 2 * Main.instance.circleSegment)));
+            var localCenter = worldToCamera.MultiplyPoint(transformer.Transform(center));
+            if (localCenter.z >= radius)
+                return;
+            int steps = Main.instance.minCircleSegment == Main.instance.maxCircleSegment ? Main.instance.maxCircleSegment :
+                Math.Max(Main.instance.minCircleSegment,
+                Math.Min(Main.instance.maxCircleSegment,
+                    (int)Math.Ceiling(radius / (float)Math.Sqrt(Math.Abs(localCenter.z)) * Math.Min(Screen.width, Screen.height) / 10 * Main.instance.circleSegment)
+                ));
             DrawCurve(transformer, center, new Vector3(radius, 0, 0), Vector3.up, 360f / steps, steps);
             DrawCurve(transformer, center, new Vector3(radius, 0, 0), Vector3.forward, 360f / steps, steps);
             DrawCurve(transformer, center, new Vector3(0, radius, 0), Vector3.right, 360f / steps, steps);
         }
-        void DrawSphere2(Transformer transformer, Vector3 center, float radius)
+        void DrawSphere2(Transformer transformer, Vector3 center, float radius, Matrix4x4 worldToCamera)
         {
-            var max = 0f;
-            var centerX = Camera.current.WorldToScreenPoint(transformer.Transform(center)).x;
-            for (int i = 0; i < 360; i += 30)
-                max = Math.Max(max, Math.Abs(centerX - Camera.current.WorldToScreenPoint(transformer.Transform(center) + (Quaternion.Euler(0, i, 0) * Camera.current.transform.right * radius)).x));
-            int steps = Math.Max(Main.instance.minCircleSegment, Math.Min(Main.instance.maxCircleSegment, (int)Math.Ceiling((float)Math.Sqrt(max * 2) * 2 * Main.instance.circleSegment)));
+            var localCenter = worldToCamera.MultiplyPoint(transformer.Transform(center));
+            if (localCenter.z >= radius)
+                return;
+            int steps = Main.instance.minCircleSegment == Main.instance.maxCircleSegment ? Main.instance.maxCircleSegment :
+                Math.Max(Main.instance.minCircleSegment,
+                Math.Min(Main.instance.maxCircleSegment,
+                    (int)Math.Ceiling(radius / (float)Math.Sqrt(Math.Abs(localCenter.z)) * Math.Min(Screen.width, Screen.height) / 10 * Main.instance.circleSegment)
+                ));
             DrawCurve(transformer, center, new Vector3(radius, 0, 0), Vector3.up, 360f / steps, steps);
             DrawCurve(transformer, center, new Vector3(radius, 0, 0), new Vector3(0, 1, 1), 360f / steps, steps);
             DrawCurve(transformer, center, new Vector3(radius, 0, 0), new Vector3(0, 1, -1), 360f / steps, steps);
@@ -1671,22 +1752,35 @@ namespace MiscCheats
             DrawCurve(transformer, center, new Vector3(0, 0, radius), new Vector3(1, 1, 0), 360f / steps, steps);
             DrawCurve(transformer, center, new Vector3(0, 0, radius), new Vector3(1, -1, 0), 360f / steps, steps);
         }
-        void DrawCapsule(Transformer transformer, Vector3 center, float radius, float height)
+        void DrawCapsule(Transformer transformer, Vector3 center, float radius, float height, int direction, Matrix4x4 worldToCamera)
         {
             var halfHeight = height / 2;
-            //int steps = Math.Max(instance.minCircleSegment / 2, Math.Min(instance.maxCircleSegment / 2, (int)Math.Ceiling((float)Math.Sqrt(Math.Sqrt(maxSqr)) * instance.circleSegment)));
-            int steps = 16;
-            DrawCurve(transformer, center + new Vector3(0, halfHeight, 0), new Vector3(radius, 0, 0), Vector3.up, 180f / steps, steps * 2);
-            DrawCurve(transformer, center + new Vector3(0, halfHeight, 0), new Vector3(radius, 0, 0), Vector3.forward, 180f / steps, steps);
-            DrawCurve(transformer, center + new Vector3(0, halfHeight, 0), new Vector3(0, 0, radius), Vector3.left, 180f / steps, steps);
-            DrawCurve(transformer, center - new Vector3(0, halfHeight, 0), new Vector3(radius, 0, 0), Vector3.up, 180f / steps, steps * 2);
-            DrawCurve(transformer, center - new Vector3(0, halfHeight, 0), new Vector3(radius, 0, 0), Vector3.back, 180f / steps, steps);
-            DrawCurve(transformer, center - new Vector3(0, halfHeight, 0), new Vector3(0, 0, radius), Vector3.right, 180f / steps, steps);
+            var main = new Vector3() { [direction] = halfHeight };
+            var localCenter1 = worldToCamera.MultiplyPoint(transformer.Transform(center + main));
+            var localCenter2 = worldToCamera.MultiplyPoint(transformer.Transform(center - main));
+            if (localCenter1.z >= radius && localCenter2.z >= radius)
+                return;
+            int steps =
+                Math.Max(Main.instance.minCircleSegment,
+                Math.Min(Main.instance.maxCircleSegment,
+                    (int)Math.Ceiling(radius / (float)Math.Sqrt(Math.Min(Math.Abs(localCenter1.z), Math.Abs(localCenter2.z))) * Math.Min(Screen.width, Screen.height) / 10 * Main.instance.circleSegment)
+                ));
+            var second = new Vector3() { [(direction + 1) % 3] = radius };
+            var third = new Vector3() { [(direction + 2) % 3] = radius };
+            var mainOne = new Vector3() { [direction] = 1 };
+            var secondOne = new Vector3() { [(direction + 1) % 3] = 1 };
+            var thirdOne = new Vector3() { [(direction + 2) % 3] = 1 };
+            DrawCurve(transformer, center + main, third, mainOne, 180f / steps, steps * 2);
+            DrawCurve(transformer, center + main, third, secondOne, 180f / steps, steps);
+            DrawCurve(transformer, center + main, second, -thirdOne, 180f / steps, steps);
+            DrawCurve(transformer, center - main, third, main, 180f / steps, steps * 2);
+            DrawCurve(transformer, center - main, third, -secondOne, 180f / steps, steps);
+            DrawCurve(transformer, center - main, second, thirdOne, 180f / steps, steps);
             //DrawCurve(center, new Vector3(radius, 0, 0), Vector3.up, 180f / steps, steps * 2); // Center circle, disabled because it felt cluttered
-            DrawLine(transformer, center + new Vector3(radius, halfHeight, 0), center + new Vector3(radius, -halfHeight, 0));
-            DrawLine(transformer, center + new Vector3(-radius, halfHeight, 0), center + new Vector3(-radius, -halfHeight, 0));
-            DrawLine(transformer, center + new Vector3(0, halfHeight, radius), center + new Vector3(0, -halfHeight, radius));
-            DrawLine(transformer, center + new Vector3(0, halfHeight, -radius), center + new Vector3(0, -halfHeight, -radius));
+            DrawLine(transformer, center + main + second, center - main + second);
+            DrawLine(transformer, center + main - second, center - main - second);
+            DrawLine(transformer, center + main + third, center - main + third);
+            DrawLine(transformer, center + main - third, center - main - third);
         }
 
         void DrawMesh(Transformer transformer, Mesh mesh)
@@ -3339,13 +3433,13 @@ namespace MiscCheats
     static class Patch_WaveCalculatorCreate
     {
         static List<WeakReference<WaterWavesSpectrum>> spectrums = new List<WeakReference<WaterWavesSpectrum>>();
-        static ConditionalWeakTable<WaterWavesSpectrum, memory> original = new ConditionalWeakTable<WaterWavesSpectrum, memory>();
+        static ConditionalWeakTable<WaterWavesSpectrum, Ref<float,float>> original = new ConditionalWeakTable<WaterWavesSpectrum, Ref<float, float>>();
         static void Prefix(WaterWavesSpectrum __instance, ref float amplitude, ref float windSpeed)
         {
             spectrums.Add(new WeakReference<WaterWavesSpectrum>(__instance));
             var mem = original.GetOrCreateValue(__instance);
-            mem.amplitude = amplitude;
-            mem.windSpeed = windSpeed;
+            mem.value1 = amplitude;
+            mem.value2 = windSpeed;
             amplitude = EditValue(amplitude, Main.instance.amplitudeMul, Main.instance.amplitudeExp);
             windSpeed = EditValue(windSpeed, Main.instance.windSpeedMul, Main.instance.windSpeedExp);
         }
@@ -3358,11 +3452,11 @@ namespace MiscCheats
                 spectrums.Add(new WeakReference<WaterWavesSpectrum>(p.Data.Spectrum));
                 var mem = original.GetOrCreateValue(p.Data.Spectrum);
 #if RAFT_BETA
-                mem.amplitude = p.Data.Spectrum._Amplitude;
-                mem.windSpeed = p.Data.Spectrum._WindSpeed;
+                mem.value1 = p.Data.Spectrum._Amplitude;
+                mem.value2 = p.Data.Spectrum._WindSpeed;
 #else
-                mem.amplitude = p.Data.Spectrum.GetAmplitude();
-                mem.windSpeed = p.Data.Spectrum.GetWindSpeed();
+                mem.value1 = p.Data.Spectrum.GetAmplitude();
+                mem.value2 = p.Data.Spectrum.GetWindSpeed();
 #endif
             }
         }
@@ -3374,11 +3468,11 @@ namespace MiscCheats
                 {
                     var mem = original.GetOrCreateValue(spectrum);
 #if RAFT_BETA
-                    spectrum._Amplitude = EditValue(mem.amplitude, Main.instance.amplitudeMul, Main.instance.amplitudeExp);
-                    spectrum._WindSpeed = EditValue(mem.windSpeed, Main.instance.windSpeedMul, Main.instance.windSpeedExp);
+                    spectrum._Amplitude = EditValue(mem.value1, Main.instance.amplitudeMul, Main.instance.amplitudeExp);
+                    spectrum._WindSpeed = EditValue(mem.value2, Main.instance.windSpeedMul, Main.instance.windSpeedExp);
 #else
-                    spectrum.SetAmplitude(EditValue(mem.amplitude, Main.instance.amplitudeMul, Main.instance.amplitudeExp));
-                    spectrum.SetWindSpeed(EditValue(mem.windSpeed, Main.instance.windSpeedMul, Main.instance.windSpeedExp));
+                    spectrum.SetAmplitude(EditValue(mem.value1, Main.instance.amplitudeMul, Main.instance.amplitudeExp));
+                    spectrum.SetWindSpeed(EditValue(mem.value2, Main.instance.windSpeedMul, Main.instance.windSpeedExp));
 #endif
                 }
                 else
@@ -3393,11 +3487,11 @@ namespace MiscCheats
                 if (r.TryGetTarget(out var spectrum) && original.TryGetValue(spectrum,out var mem))
                 {
 #if RAFT_BETA
-                    spectrum._Amplitude = mem.amplitude;
-                    spectrum._WindSpeed = mem.windSpeed;
+                    spectrum._Amplitude = mem.value1;
+                    spectrum._WindSpeed = mem.value2;
 #else
-                    spectrum.SetAmplitude(mem.amplitude);
-                    spectrum.SetWindSpeed(mem.windSpeed);
+                    spectrum.SetAmplitude(mem.value1);
+                    spectrum.SetWindSpeed(mem.value2);
 #endif
                 }
             spectrums.Clear();
@@ -3407,11 +3501,15 @@ namespace MiscCheats
         static void MarkDirty()
         {
             foreach (var w in Resources.FindObjectsOfTypeAll<Water>())
-            {
-                foreach (var p in w.ProfilesManager.Profiles)
-                    p.Profile.Dirty = true;
-                w.WindWaves.SpectrumResolver.GetCachedSpectraDirect().Clear();
-            }
+                if (w)
+                {
+                    if (w.ProfilesManager?.Profiles != null)
+                        foreach (var p in w.ProfilesManager.Profiles)
+                            if (p.Profile != null)
+                                p.Profile.Dirty = true;
+                    if (w.WindWaves?.SpectrumResolver?.GetCachedSpectraDirect() != null)
+                        w.WindWaves.SpectrumResolver.GetCachedSpectraDirect().Clear();
+                }
         }
 
         static float EditValue(float val, float mul, float exp) => (float)Math.Pow(val, exp) * mul;
@@ -3622,11 +3720,12 @@ namespace MiscCheats
     static class Patch_NetworkBehaviourUpdate
     {
         static ConditionalWeakTable<AI_NetworkBehaviour, object> req = new ConditionalWeakTable<AI_NetworkBehaviour, object>();
+        static object _obj = new object();
         static void Prefix(AI_NetworkBehaviour __instance)
         {
             if (__instance is AI_NetworkBehaviour_Animal && !req.TryGetValue(__instance, out _) && Main.instance.animalSpecs.GetOrCreate(__instance.behaviourType).IsDisabled)
             {
-                req.GetOrCreateValue(__instance);
+                req.Add(__instance,_obj);
                 Debug.Log("Send remove signal to " + __instance);
                 NetworkIDManager.SendIDBehaviourDead(__instance.ObjectIndex, typeof(AI_NetworkBehaviour), true);
             }
@@ -4605,14 +4704,12 @@ namespace MiscCheats
             return code;
         }
 
-        static ConditionalWeakTable<ItemCollector, Data> table = new ConditionalWeakTable<ItemCollector, Data>();
+        static ConditionalWeakTable<ItemCollector, Ref<bool>> table = new ConditionalWeakTable<ItemCollector, Ref<bool>>();
         public static Vector3 ModifySize(Vector3 original,ItemCollector collector)
         {
             if (!table.TryGetValue(collector,out var data))
-                table.Add(collector, data = new Data() {
-                    isLocalOwned = Resources.FindObjectsOfTypeAll<Hook>().First(x => x.hookItemCollector == collector)?.GetComponentInParent<Network_Player>()?.IsLocalPlayer ?? false
-                });
-            if (data.isLocalOwned)
+                table.Add(collector, data = Resources.FindObjectsOfTypeAll<Hook>().First(x => x.hookItemCollector == collector)?.GetComponentInParent<Network_Player>()?.IsLocalPlayer ?? false);
+            if (data)
                 return original * Main.instance.hookArea;
             return original;
         }
@@ -5467,6 +5564,21 @@ namespace MiscCheats
         }
     }
 
+    [HarmonyPatch(typeof(SteeringWheel), "Update")]
+    static class Patch_SteeringWheel
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator iL)
+        {
+            var code = instructions.ToList();
+            for (int i = code.Count - 1; i >= 0; i--)
+                if (code[i].opcode == OpCodes.Ldfld && code[i].operand is FieldInfo f && f.Name == "deadZoneAngle")
+                    code.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_SteeringWheel), nameof(ModifyDeadZone))));
+            return code;
+        }
+
+        static float ModifyDeadZone(float rotation) => Main.instance.deadZone < 0 ? rotation : Main.instance.deadZone;
+    }
+
     [HarmonyPatch(typeof(PersonController), "WaterControll")]
     static class Patch_WaterControl
     {
@@ -5579,6 +5691,63 @@ namespace MiscCheats
                         return false;
                     }
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(Tank), "OnBlockPlacedInterface")]
+    static class Patch_InitializeTank
+    {
+        static ConditionalWeakTable<Tank, Ref<float>> previous = new ConditionalWeakTable<Tank, Ref<float>>();
+        public static void Prefix(Tank __instance)
+        {
+            if (!previous.TryGetValue(__instance, out var original))
+                previous.Add(__instance, original = __instance.maxCapacity);
+            __instance.maxCapacity = Main.instance.tankMultiplier * original;
+        }
+
+        [OnModLoad]
+        public static void Init()
+        {
+            foreach (var t in Resources.FindObjectsOfTypeAll<Tank>())
+                if (t.hasBeenPlaced)
+                    Prefix(t);
+        }
+
+        public static void Remodify()
+        {
+            foreach (var t in Resources.FindObjectsOfTypeAll<Tank>())
+                if (t.hasBeenPlaced || previous.TryGetValue(t, out _))
+                    Prefix(t);
+        }
+
+        [OnModUnload]
+        public static void Destroy()
+        {
+            foreach (var t in Resources.FindObjectsOfTypeAll<Tank>())
+                if (previous.TryGetValue(t, out var original))
+                    t.maxCapacity = original;
+            previous.Clear();
+        }
+    }
+
+    public class Ref<T>
+    {
+        public T value;
+        public Ref() : this(default) { }
+        public Ref(T value) => this.value = value;
+        public static implicit operator T(Ref<T> obj) => obj.value;
+        public static implicit operator Ref<T>(T val) => new Ref<T>(val);
+    }
+
+    public class Ref<A,B>
+    {
+        public A value1;
+        public B value2;
+        public Ref() : this(default,default) { }
+        public Ref(A value1, B value2)
+        {
+            this.value1 = value1;
+            this.value2 = value2;
         }
     }
 

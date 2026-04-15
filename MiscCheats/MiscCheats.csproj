@@ -50,29 +50,37 @@
     <None Include="build.bat" />
     <None Include="modinfo.json" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Beta'">
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\cache\publicizedAssemblies\Assembly-CSharp.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\cache\publicizedAssemblies\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="com.rlabrecque.steamworks.net.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\cache\publicizedAssemblies\com.rlabrecque.steamworks.net.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\cache\publicizedAssemblies\com.rlabrecque.steamworks.net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="coremod">
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\coremod.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FMODUnity.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\cache\publicizedAssemblies\FMODUnity.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\cache\publicizedAssemblies\FMODUnity.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="HMLCoreLibrary">
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\HMLCoreLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PlayFab.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\cache\publicizedAssemblies\PlayFab.dll</HintPath>
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\cache\publicizedAssemblies\PlayFab.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Autodesk.Fbx.dll">
       <HintPath>D:\Steam\steamapps\common\Raft\Raft_Data/Managed\Autodesk.Fbx.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BasicModLoader.dll">
-      <HintPath>D:\Steam\steamapps\common\Raft\Raft_Data/Managed\BasicModLoader.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FbxBuildTestAssets.dll">
@@ -81,10 +89,6 @@
     </Reference>
     <Reference Include="FMODUnityResonance.dll">
       <HintPath>D:\Steam\steamapps\common\Raft\Raft_Data/Managed\FMODUnityResonance.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="GameInterface.dll">
-      <HintPath>D:\Steam\steamapps\common\Raft\Raft_Data/Managed\GameInterface.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="JBooth.MicroSplat.Core.dll">
@@ -117,6 +121,22 @@
     </Reference>
     <Reference Include="Purchasing.Common.dll">
       <HintPath>D:\Steam\steamapps\common\Raft\Raft_Data/Managed\Purchasing.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RTCP">
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\RTCP.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RTCPNetImprovements">
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\RTCPNetImprovements.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SemanticVersion">
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\SemanticVersion.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SharpZipLib">
+      <HintPath>C:\Users\Aidanamite\AppData\Roaming\RaftModLoader\binaries\SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Sirenix.OdinInspector.Attributes.dll">
@@ -175,6 +195,7 @@
       <HintPath>D:\Steam\steamapps\common\Raft\Raft_Data/Managed\System.Transactions.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.ValueTuple" />
     <Reference Include="System.Xml.dll">
       <HintPath>D:\Steam\steamapps\common\Raft\Raft_Data/Managed\System.Xml.dll</HintPath>
       <Private>False</Private>
@@ -642,327 +663,6 @@
     <Reference Include="UnityEngine.XRModule.dll">
       <HintPath>D:\Steam\steamapps\common\Raft\Raft_Data/Managed\UnityEngine.XRModule.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="0Harmony.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="coremod.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\coremod.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="HMLCoreLibrary.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\HMLCoreLibrary.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SemanticVersion.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\SemanticVersion.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="SharpZipLib.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\SharpZipLib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.ValueTuple.dll">
-      <HintPath>C:\Users\Aidanamite\AppData\Roaming\HModding\games\raft\binaries\System.ValueTuple.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Stable'">
-    <Reference Include="Assembly-CSharp-firstpass.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Autodesk.Fbx.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Autodesk.Fbx.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="com.unity.multiplayer-hlapi.Runtime.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MeshExtension.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\MeshExtension.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Posix.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Mono.Posix.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Security.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Mono.Security.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="mscorlib.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\mscorlib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NavMeshComponents.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\NavMeshComponents.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="PathCreator.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\PathCreator.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Sirenix.OdinInspector.Attributes.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Sirenix.OdinInspector.Attributes.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Configuration.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\System.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\System.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\System.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\System.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\System.Xml.dll</HintPath>
-    </Reference>
-    <Reference Include="Tayx.Graphy.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Tayx.Graphy.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Analytics.DataPrivacy.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Unity.Analytics.DataPrivacy.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Analytics.StandardEvents.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Unity.Analytics.StandardEvents.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Analytics.Tracker.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Unity.Analytics.Tracker.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Formats.Fbx.Runtime.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Unity.Formats.Fbx.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Recorder.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Unity.Recorder.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.RemoteConfig.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Unity.RemoteConfig.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AccessibilityModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.AccessibilityModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AIModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.AIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AndroidJNIModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.AndroidJNIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AnimationModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.AnimationModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ARModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.ARModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.AssetBundleModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AudioModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.AudioModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ClothModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.ClothModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ClusterInputModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.ClusterInputModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ClusterRendererModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.ClusterRendererModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CrashReportingModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.CrashReportingModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.DirectorModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.DirectorModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.DSPGraphModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.DSPGraphModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.GameCenterModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.GameCenterModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.GridModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.GridModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.HotReloadModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.HotReloadModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.ImageConversionModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.InputLegacyModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.InputModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.InputModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.JSONSerializeModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.JSONSerializeModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.LocalizationModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.LocalizationModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ParticleSystemModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.ParticleSystemModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.PerformanceReportingModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.PerformanceReportingModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Physics2DModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.Physics2DModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.PhysicsModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ProfilerModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.ProfilerModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Purchasing.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.Purchasing.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.ScreenCaptureModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.ScreenCaptureModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.SharedInternalsModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.SharedInternalsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.SpatialTracking.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.SpatialTracking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.SpriteMaskModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.SpriteMaskModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.SpriteShapeModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.SpriteShapeModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.StreamingModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.StreamingModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.SubstanceModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.SubstanceModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.SubsystemsModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.SubsystemsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TerrainModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.TerrainModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TerrainPhysicsModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.TerrainPhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextCoreModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.TextCoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.TextRenderingModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TilemapModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.TilemapModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TLSModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.TLSModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UIElementsModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UIElementsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UIModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UmbraModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UmbraModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UNETModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UNETModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityAnalyticsModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UnityAnalyticsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityConnectModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UnityConnectModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityTestProtocolModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UnityTestProtocolModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestAudioModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UnityWebRequestModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestTextureModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestWWWModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.VehiclesModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.VehiclesModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.VFXModule.dll">
-      <HintPath>DC:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.VFXModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.VideoModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.VideoModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.VRModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.VRModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.WindModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.WindModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.XR.LegacyInputHelpers.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.XRModule.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\UnityEngine.XRModule.dll</HintPath>
-    </Reference>
-    <Reference Include="0Harmony.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="coremod.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\coremod.dll</HintPath>
-    </Reference>
-    <Reference Include="AssemblyLoader.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\AssemblyLoader.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpZipLib.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple.dll">
-      <HintPath>C:\Users\Aidanamite\Documents\RaftModding\.stable-dlls\System.ValueTuple.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,7 @@
   "slug": "misc-cheats",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.8.5",
+  "version": "1.8.8",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -1450,7 +1450,7 @@
       "memberFallback": -1,
       "tooltip": [
         "This is the time in seconds before a reciever will automatically turn off. Even if it was turned on by another player.",
-        "A black or negative value will not turn off the reciever (same as vanilla)."
+        "A blank or negative value will not turn off the reciever (same as vanilla)."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -1611,6 +1611,41 @@
       "section": "block",
       "member": "invincibleScarecrow",
       "tooltip": "<color=#007F00>[Host only]</color> This makes it so scarecrows do not take any damage from seagulls.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Steering Wheel Dead Zone Override",
+      "name": "deadZone",
+      "mode": "IntegerNumber",
+      "default": "-1",
+      "access": "split",
+      "section": "block",
+      "member": "deadZone",
+      "memberFallback": -1,
+      "tooltip": [
+        "This is the steering wheel \"deadzone\" angle (in degrees) where the wheel will automatically return to the middle.",
+        "A blank or negative number will use the vanilla value."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Tank Capacity Multiplier",
+      "name": "tankMultiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "block",
+      "member": "tankMultiplier",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the max capacity of tanks on the raft.",
+        "This is primarily controlled by the world host but it's recommend for every player in the multipler to set it the same.",
+        "A value of 1 will be the same as vanilla. Higher numbers will increase the max capacity."
+      ],
       "splitResetButton": true,
       "resetButton": true
     },
@@ -2767,6 +2802,17 @@
       "memberFallback": "FF6060",
       "tooltip": "The colour to display mesh triggers with",
       "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "logDrawTimes",
+      "text": "   <color=#7F0000>[Debug]</color> Log collider draw time",
+      "default": false,
+      "section": "graphic-collider",
+      "member": "logDrawTimes",
+      "tooltip": [
+        "Makes all the collider draw operations log the time in ms they took. This should only be used for debugging purposes"
+      ]
     },
     {
       "type": "seperator",
