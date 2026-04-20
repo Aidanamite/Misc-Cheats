@@ -87,6 +87,7 @@ namespace MiscCheats
         public float fishingWait = 1;
         public float fishingWindow = 1;
         public double itemLooting = 1;
+        public double animalHarvest = 1;
         public KeepInventoryMode keepInventory = KeepInventoryMode.Default;
         bool _ra = false;
         public bool recieverAnywhere
@@ -2184,8 +2185,38 @@ namespace MiscCheats
         static void Prefix_Harvest(out bool __state) { if (__state = Main.instance.itemLooting != 1) calling++; }
 
         [HarmonyPatch(typeof(HarvestableTree), "Harvest")]
-        [HarmonyPostfix]
+        [HarmonyFinalizer]
         static void Postfix_Harvest(bool __state) { if (__state) calling--; }
+    }
+
+    [HarmonyPatch]
+    static class Patch_HarvestAnimal
+    {
+        static int calling;
+
+        [HarmonyPatch(typeof(PlayerInventory), "AddItem", typeof(string), typeof(int))]
+        [HarmonyPrefix]
+        static void PlayerInventory_AddItem(ref int amount)
+        {
+            if (calling != 0 && Main.instance.animalHarvest != 1)
+                amount = amount.Multiply(Main.instance.animalHarvest);
+        }
+
+        [HarmonyPatch(typeof(BeeHive), "HarvestYield")]
+        [HarmonyPrefix]
+        static void BeeHive_HarvestYield_Pre() => calling++;
+
+        [HarmonyPatch(typeof(BeeHive), "HarvestYield")]
+        [HarmonyFinalizer]
+        static void BeeHive_HarvestYield_Post() => calling--;
+
+        [HarmonyPatch(typeof(ResourceCollector), "OnHarvest")]
+        [HarmonyPrefix]
+        static void ResourceCollector_OnHarvest_Pre(ResourceCollector __instance, ref bool __state) { if (__state = __instance.playerNetwork.Inventory.GetSelectedHotbarItem().BaseItemMaxUses > 1) calling++; }
+
+        [HarmonyPatch(typeof(ResourceCollector), "OnHarvest")]
+        [HarmonyFinalizer]
+        static void ResourceCollector_OnHarvest_Post(bool __state) { if (__state) calling--; }
     }
 
     [HarmonyPatch(typeof(FishingRod), "PullItemsFromSea")]
@@ -2720,12 +2751,12 @@ namespace MiscCheats
     [HarmonyPatch(typeof(AI_State_Attack_Block_Shark), nameof(AI_State_Attack_Block_Shark.UpdateState))]
     static class Patch_SharkFindTargetBlock
     {
-        static bool Prefix(AI_StateMachine_Shark ___stateMachineShark)
+        static bool Prefix(AI_State_Attack_Block_Shark __instance)
         {
-            if (Raft_Network.IsHost && !Main.instance.AllowSharkAttack)
+            if (Raft_Network.IsHost && __instance.currentTargetBlock is Block_Foundation && !Main.instance.AllowSharkAttack)
             {
-                ___stateMachineShark.SetSearchBlockProgressCooldown(10f);
-                ___stateMachineShark.ChangeState(___stateMachineShark.circulationSurfaceState);
+                __instance.stateMachineShark.SetSearchBlockProgressCooldown(10f);
+                __instance.stateMachineShark.ChangeState(__instance.stateMachineShark.circulationSurfaceState);
                 return false;
             }
             return true;

@@ -3,7 +3,7 @@
   "slug": "misc-cheats",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.8.8",
+  "version": "1.8.9",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -173,6 +173,23 @@
       "tooltip": [
         "<color=#007F00>[Host only]</color> Multiplies the time it takes for an domestic animal to produce more resource.",
         "A value of 1 will be the same as vanilla. Higher numbers will make them take longer."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Animal Production Amount Multiplier",
+      "name": "animalHarvest",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "animal",
+      "member": "animalHarvest",
+      "memberFallback": 1,
+      "tooltip": [
+        "Multiplies the amount of items collected when harvesting domestic animals and beehives.",
+        "A value of 1 will be the same as vanilla. Higher numbers will give more items."
       ],
       "splitResetButton": true,
       "resetButton": true
