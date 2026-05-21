@@ -451,7 +451,8 @@ namespace MiscCheats
             {
                 if (_nd = value)
                     foreach (var block in BlockCreator.GetPlacedBlocks())
-                        Patch_CreateBlock.Postfix(block);
+                        if (block)
+                            Patch_CreateBlock.Postfix(block);
                 else
                     Patch_CreateBlock.UndoChanges();
 
@@ -473,6 +474,29 @@ namespace MiscCheats
         public float jumpMultiplier = 1;
         public float hookSpeedMultiplier = 1;
         public bool deathSettings = true;
+        bool _da = true;
+        public bool disableAntennaWire
+        {
+            get => _da;
+            set
+            {
+                if (_da = value)
+                {
+                    foreach (var block in Resources.FindObjectsOfTypeAll<Reciever_Antenna>())
+                        if (block)
+                            Patch_RecieverAntenna.Postfix(block);
+                }
+                else
+                    foreach (var block in Resources.FindObjectsOfTypeAll<Reciever_Antenna>())
+                        if (block && block.reciever)
+                        {
+                            var rec = block.reciever;
+                            block.reciever = null;
+                            block.ConnectToReciever(rec);
+                        }
+
+            }
+        }
 
         public bool showTreasure = false;
         public int colorTreasure { set { ColorTreasure = value.ToColor(); } }
@@ -5758,6 +5782,16 @@ namespace MiscCheats
                 if (previous.TryGetValue(t, out var original))
                     t.maxCapacity = original;
             previous.Clear();
+        }
+    }
+
+    [HarmonyPatch(typeof(Reciever_Antenna), "ConnectToReciever")]
+    public class Patch_RecieverAntenna
+    {
+        public static void Postfix(Reciever_Antenna __instance)
+        {
+            if (Main.instance.disableAntennaWire && __instance.wire)
+                __instance.wire.gameObject.SetActive(false);
         }
     }
 

@@ -3,7 +3,7 @@
   "slug": "misc-cheats",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.8.9",
+  "version": "1.8.10",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -1454,6 +1454,16 @@
       "tooltip": "This makes it so the antenna ignore how close they are to other antenna.",
       "splitResetButton": true,
       "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Disable Antenna Wire",
+      "name": "disableAntennaWire",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "disableAntennaWire",
+      "tooltip": "This makes it so the wire connecting an antenna to a reciever is hidden, this does not affect functionality in any way, this is just a visual change."
     },
     {
       "type": "input",
