@@ -474,7 +474,7 @@ namespace MiscCheats
         public float jumpMultiplier = 1;
         public float hookSpeedMultiplier = 1;
         public bool deathSettings = true;
-        bool _da = true;
+        bool _da = false;
         public bool disableAntennaWire
         {
             get => _da;
