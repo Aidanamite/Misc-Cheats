@@ -3,7 +3,7 @@
   "slug": "misc-cheats",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.8.10",
+  "version": "1.8.11",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -191,6 +191,34 @@
         "Multiplies the amount of items collected when harvesting domestic animals and beehives.",
         "A value of 1 will be the same as vanilla. Higher numbers will give more items."
       ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Beehive Flower Range Multiplier",
+      "name": "beehiveRangeMultiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "animal",
+      "member": "beehiveRangeMultiplier",
+      "memberFallback": 1,
+      "tooltip": [
+        "Multiplies the distance that beehives can detect growing flowers from. This setting is primarily controlled by the host but should be set the same on clients for consistent graphics.",
+        "A value of 1 will be the same as vanilla. Higher numbers will include flowers that are futher away."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "name": "disableBeeParticles",
+      "text": "Disable Beehive Particles",
+      "default": false,
+      "section": "animal",
+      "member": "disableBeeParticles",
+      "tooltip": "Disables the bee visuals that appear around the beehives when there are flowers nearby.",
       "splitResetButton": true,
       "resetButton": true
     },
@@ -555,6 +583,18 @@
       "section": "loot",
       "member": "freeCrafting",
       "tooltip": "This will allow you to build and craft without spending or requiring any resources. You won't get any resources back from breaking stuff with an axe either.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Free Painting",
+      "name": "freePainting",
+      "default": false,
+      "access": "split",
+      "section": "loot",
+      "member": "freePainting",
+      "tooltip": "This will allow you to paint without spending or requiring any paint.",
       "splitResetButton": true,
       "resetButton": true
     },
@@ -1151,6 +1191,14 @@
       ],
       "splitResetButton": true,
       "resetButton": true
+    },
+    {
+      "type": "keybind",
+      "text": "Toggle Headlight Key",
+      "name": "toggleHeadlightKey",
+      "section": "tool",
+      "member": "toggleHeadlightKey",
+      "tooltip": "Press this key to toggle headlights on and off. While turned off, the headlights won't loose durability."
     },
     {
       "type": "section",

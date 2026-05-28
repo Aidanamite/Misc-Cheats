@@ -48,11 +48,7 @@ namespace MiscCheats
                 var i = value ? ItemManager.GetItemByIndex(294) : null;
                 foreach (var e in Resources.FindObjectsOfTypeAll<Placeable_BiofuelExtractor>())
                 {
-#if RAFT_BETA
                     var l = e.honeyTank.acceptableTypes;
-#else
-                    var l = Traverse.Create(e.honeyTank).Field("acceptableTypes").GetValue<List<Item_Base>>();
-#endif
                     if (value)
                         l.Add(i);
                     else
@@ -71,6 +67,7 @@ namespace MiscCheats
         public float autoOff = -1;
         public bool fishingEqual = false;
         public bool freeCrafting = false;
+        public bool freePainting = false;
         int _cl = -1;
         public int consoleLines
         {
@@ -190,11 +187,7 @@ namespace MiscCheats
                     return;
                 _rb = value;
                 foreach (var r in Resources.FindObjectsOfTypeAll<SelectedRecipeBox>())
-#if RAFT_BETA
                     if (r.initialized)
-#else
-                    if (Traverse.Create(r).Field("initialized").GetValue<bool>())
-#endif
                         Patch_UncraftButton.TryAddButton(r);
             }
         }
@@ -433,11 +426,7 @@ namespace MiscCheats
                 foreach (var c in Resources.FindObjectsOfTypeAll<AI_Component_SeePlayerSwitchState>())
                     if (c.connectedState && c.GetComponentInParent<AI_NetworkBehaviour>() && c.GetComponentInParent<AI_NetworkBehaviour>().behaviourType == AI_NetworkBehaviourType.Roach)
                     {
-#if RAFT_BETA
                         c.isThisTamed = false;
-#else
-                        Traverse.Create(c).Field("isThisTamed").SetValue(false);
-#endif
                         c.Start();
                     }
             }
@@ -562,6 +551,38 @@ namespace MiscCheats
                 Patch_InitializeTank.Remodify();
             }
         }
+        public string toggleHeadlightKey;
+        float _beehiveRange = 1;
+        public float beehiveRangeMultiplier
+        {
+            get => _beehiveRange;
+            set
+            {
+                if (_beehiveRange == value)
+                    return;
+                _beehiveRange = value;
+                foreach (var beehive in FindObjectsOfType<BeeHive>())
+                {
+                    beehive.plantationCropplots.Clear();
+                    beehive.plantationCropplots.AddRange(Helper.FindNearbyCropplots(beehive.transform.position, beehive.FlowerFindDistance, beehive.cropplotLayer));
+                    beehive.flowersInPlantationSlots = beehive.GetWateredFlowerPlantationSlotCount();
+                    beehive.RecheckBeeParticles();
+                }    
+            }
+        }
+        bool _disableBeeParticles;
+        public bool disableBeeParticles
+        {
+            get => _disableBeeParticles;
+            set
+            {
+                if (_disableBeeParticles == value)
+                    return;
+                _disableBeeParticles = value;
+                foreach (var beehive in FindObjectsOfType<BeeHive>())
+                    beehive.RecheckBeeParticles();
+            }
+        }
 
         public bool AllowSharkAttack => ComponentManager<RaftBounds>.Value.FoundationCount >= sharkAttackThresholdMin && (sharkAttackThresholdMax < 0 || sharkAttackThresholdMax >= ComponentManager<RaftBounds>.Value.FoundationCount);
         public bool UsingBino => ComponentManager<CanvasHelper>.Value && ComponentManager<CanvasHelper>.Value.binocularImage && ComponentManager<CanvasHelper>.Value.binocularImage.activeSelf;
@@ -653,27 +674,16 @@ namespace MiscCheats
             if (!boostedStacks)
             {
                 foreach (var p in PrevStackSizes)
-#if RAFT_BETA
                     p.Key.settings_Inventory.stackSize = p.Value;
-#else
-                    Traverse.Create(p.Key.settings_Inventory).Field("stackSize").SetValue(p.Value);
-#endif
                 PrevStackSizes.Clear();
                 return;
             }
             foreach (var i in ItemManager.GetAllItems())
                 if (i.settings_Inventory.StackSize > 1 || i.MaxUses <= 1)
                 {
-#if RAFT_BETA
                     if (!PrevStackSizes.ContainsKey(i))
                         PrevStackSizes[i] = i.settings_Inventory.stackSize;
                     i.settings_Inventory.stackSize = i.MaxUses > 1 ? Math.Min(int.MaxValue / i.MaxUses, short.MaxValue) : short.MaxValue;
-#else
-                    var f = Traverse.Create(i.settings_Inventory).Field<int>("stackSize");
-                    if (!PrevStackSizes.ContainsKey(i))
-                        PrevStackSizes[i] = f.Value;
-                    f.Value = i.MaxUses > 1 ? Math.Min(int.MaxValue / i.MaxUses, short.MaxValue) : short.MaxValue;
-#endif
                 }
         }
 
@@ -719,30 +729,18 @@ namespace MiscCheats
                 }
                 else if (Index == 1) { 
                     var l = new List<Message>();
-#if RAFT_BETA
                     foreach (var i in ComponentManager<Inventory_ResearchTable>.Value.availableResearchItems)
-#else
-                    foreach (var i in Traverse.Create(ComponentManager<Inventory_ResearchTable>.Value).Field("availableResearchItems").GetValue<Dictionary<Item_Base, AvaialableResearchItem>>())
-#endif
                         if (!i.Value.Researched && !i.Key.settings_recipe.IsBlueprint)
                         {
                             l.Add(new Message_ResearchTable_ResearchOrLearn(Messages.ResearchTable_Research, RAPI.GetLocalPlayer(), RAPI.GetLocalPlayer().steamID, i.Key.UniqueIndex));
                             if (Raft_Network.IsHost)
                                 ComponentManager<Inventory_ResearchTable>.Value.Research(i.Key, false);
                         }
-#if RAFT_BETA
                     var m = new Message_Compound(l);
                     if (Raft_Network.IsHost)
                         ComponentManager<Raft_Network>.Value.RPC(m, Target.Other, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
                     else
                         ComponentManager<Raft_Network>.Value.SendP2P(ComponentManager<Raft_Network>.Value.HostID, m, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
-#else
-                    var m = new Packet_Multiple(EP2PSend.k_EP2PSendReliable) { messages = l.ToArray() };
-                    if (Raft_Network.IsHost)
-                        ComponentManager<Raft_Network>.Value.RPC(m, Target.Other, NetworkChannel.Channel_Game);
-                    else
-                        ComponentManager<Raft_Network>.Value.SendP2P(ComponentManager<Raft_Network>.Value.HostID, m, NetworkChannel.Channel_Game);
-#endif
                 }
                 else if (Index == 2)
                 {
@@ -754,19 +752,11 @@ namespace MiscCheats
                             if (Raft_Network.IsHost)
                                 ComponentManager<Inventory_ResearchTable>.Value.ResearchBlueprint(i);
                         }
-#if RAFT_BETA
                     var m = new Message_Compound(l);
                     if (Raft_Network.IsHost)
                         ComponentManager<Raft_Network>.Value.RPC(m, Target.Other, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
                     else
                         ComponentManager<Raft_Network>.Value.SendP2P(ComponentManager<Raft_Network>.Value.HostID, m, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
-#else
-                    var m = new Packet_Multiple(EP2PSend.k_EP2PSendReliable) { messages = l.ToArray() };
-                    if (Raft_Network.IsHost)
-                        ComponentManager<Raft_Network>.Value.RPC(m, Target.Other, NetworkChannel.Channel_Game);
-                    else
-                        ComponentManager<Raft_Network>.Value.SendP2P(ComponentManager<Raft_Network>.Value.HostID, m, NetworkChannel.Channel_Game);
-#endif
                 }
             }
             else if (SettingName == "unlearning")
@@ -781,17 +771,10 @@ namespace MiscCheats
                     foreach (var i in ComponentManager<Inventory_ResearchTable>.Value.GetMenuItems())
                         if (i.Learned)
                         {
-#if RAFT_BETA
                             i.learned = false;
                             i.canvasgroup.alpha = 1;
                             i.learnedText.gameObject.SetActive(false);
                             i.learnButton.gameObject.SetActive(i.learnButton.interactable = i.SortBingoPercent == 1);
-#else
-                            Traverse.Create(i).Field("learned").SetValue(false);
-                            Traverse.Create(i).Field("canvasgroup").GetValue<CanvasGroup>().alpha = 1;
-                            Traverse.Create(i).Field("learnedText").GetValue<Text>().gameObject.SetActive(false);
-                            Traverse.Create(i).Field("learnButton").GetValue<Button>().gameObject.SetActive(Traverse.Create(i).Field("learnButton").GetValue<Button>().interactable = i.SortBingoPercent == 1);
-#endif
                             i.GetItem().settings_recipe.Learned = false;
                         }
                     ComponentManager<Inventory_ResearchTable>.Value.SortMenuItems();
@@ -804,11 +787,7 @@ namespace MiscCheats
                         return;
                     }
                     var h = new HashSet<int>();
-#if RAFT_BETA
                     foreach (var i in ComponentManager<Inventory_ResearchTable>.Value.availableResearchItems)
-#else
-                    foreach (var i in Traverse.Create(ComponentManager<Inventory_ResearchTable>.Value).Field("availableResearchItems").GetValue<Dictionary<Item_Base, AvaialableResearchItem>>())
-#endif
                         if (i.Value.Researched)
                         {
                             h.Add(i.Key.UniqueIndex);
@@ -817,23 +796,14 @@ namespace MiscCheats
                     ComponentManager<Inventory_ResearchTable>.Value.GetResearchedItems().RemoveAll(x => h.Contains(x.UniqueIndex));
                     foreach (var i in ComponentManager<Inventory_ResearchTable>.Value.GetMenuItems())
                     {
-#if RAFT_BETA
                         foreach (var b in i.bingoMenuItems)
-#else
-                        foreach (var b in Traverse.Create(i).Field("bingoMenuItems").GetValue<List<BingoMenuItem>>())
-#endif
                             if (b.BingoState)
                             {
                                 b.SetBingoState(false);
                                 b.SetSprite(b.BingoItem.settings_Inventory.Sprite);
                             }
-#if RAFT_BETA
                         i.itemImage.color = new Color(1f, 1f, 1f, 0.5f);
                         i.learnButton.gameObject.SetActive(i.learnButton.interactable = false);
-#else
-                        Traverse.Create(i).Field("itemImage").GetValue<Image>().color = new Color(1f, 1f, 1f, 0.5f);
-                        Traverse.Create(i).Field("learnButton").GetValue<Button>().gameObject.SetActive(Traverse.Create(i).Field("learnButton").GetValue<Button>().interactable = false);
-#endif
                     }
                     ComponentManager<Inventory_ResearchTable>.Value.SortMenuItems();
                 }
@@ -883,7 +853,6 @@ namespace MiscCheats
                 if (SettingName == "respawn")
                 {
                     var bed = BedManager.FindClosestBedToPlayer(player);
-#if RAFT_BETA
                     var pHealth = bed.healthPercentage;
                     var pHunger = bed.hungerPercentage;
                     var pThirst = bed.thirstPercentage;
@@ -896,14 +865,6 @@ namespace MiscCheats
                         bed.hungerPercentage = pHunger;
                         bed.thirstPercentage = pThirst;
                     }
-#else
-                    var edit = new[] { Traverse.Create(bed).Field<float>("healthPercentage"), Traverse.Create(bed).Field<float>("hungerPercentage"), Traverse.Create(bed).Field<float>("thirstPercentage") }.Select(x => (x, x.Value));
-                    if (Index == 2)
-                        foreach (var i in edit) i.x.Value = 100;
-                    player.PlayerScript.StartRespawn(bed, Index == 0);
-                    if (Index == 2)
-                        foreach (var i in edit) i.x.Value = i.Value;
-#endif
                 }
                 else
                 {
@@ -934,13 +895,13 @@ namespace MiscCheats
             return !IsInWorld || Raft_Network.IsHost;
         }
 
-#if RAFT_BETA
-        public override void WorldEvent_OnPlayerConnected(Network_UserId userid, RGD_Settings_Character characterSettings) => ExtraSettingsAPI_CheckSettingVisibility();
+        public override void WorldEvent_OnPlayerConnected(Network_UserId userid, RGD_Settings_Character characterSettings)
+        {
+            ExtraSettingsAPI_CheckSettingVisibility();
+            if (Message_ToggleHeadLamp.TryGetLocalPlayerState(out var state))
+                SendNetworkMessageToPlayer(new Message_ToggleHeadLamp() { state = state }, userid);
+        }
         public override void WorldEvent_OnPlayerDisconnected(Network_UserId userid, DisconnectReason disconnectReason) => ExtraSettingsAPI_CheckSettingVisibility();
-#else
-        public override void WorldEvent_OnPlayerConnected(CSteamID steamid, RGD_Settings_Character characterSettings) => ExtraSettingsAPI_CheckSettingVisibility();
-        public override void WorldEvent_OnPlayerDisconnected(CSteamID steamid, DisconnectReason disconnectReason) => ExtraSettingsAPI_CheckSettingVisibility();
-#endif
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ExtraSettingsAPI_CheckSettingVisibility() { }
@@ -1092,6 +1053,13 @@ namespace MiscCheats
             {
                 ComponentManager<Settings>.Value.Toggle();
             }
+
+            if (MyInput.GetButtonDown(toggleHeadlightKey) && Message_ToggleHeadLamp.TryGetLocalPlayerState(out var lightState))
+            {
+                var msg = new Message_ToggleHeadLamp() { state = !lightState };
+                Message_ToggleHeadLamp.SetPlayer(RAPI.GetLocalPlayer(), msg.state);
+                SendNetworkMessage(msg);
+            }
         }
 
         static long lastFetchTime = long.MinValue;
@@ -1159,6 +1127,16 @@ namespace MiscCheats
                 chunkBlips[type] = tup = (tup.sprite, hue);
             }
             return tup.sprite;
+        }
+
+        public override bool OnNetworkMessage(object message, Network_UserId from, string modslug)
+        {
+            if (message is Message_ToggleHeadLamp toggleLamp && ComponentManager<Raft_Network>.Value.remoteUsers.TryGetValue(from, out var player))
+            {
+                Message_ToggleHeadLamp.SetPlayer(player, toggleLamp.state);
+                return true;
+            }
+            return base.OnNetworkMessage(message, from, modslug);
         }
     }
     public enum TrashMode
@@ -1898,6 +1876,33 @@ namespace MiscCheats
         {
             if (Main.instance.freeCrafting)
                 __result = true;
+        }
+    }
+
+    [HarmonyPatch(typeof(ColorMenu), "HasEnoughMaterialsToPaint")]
+    static class Patch_HasEnoughPaint
+    {
+        static void Postfix(ref bool __result)
+        {
+            if (Main.instance.freePainting)
+                __result = true;
+        }
+    }
+
+    [HarmonyPatch(typeof(PaintBrush), "PaintBlock")]
+    static class Patch_SpendPaint
+    {
+        static void Prefix(out bool __state)
+        {
+            if (Main.instance.freePainting && (__state = !Cheat.UseGodMode))
+                Cheat.UseGodMode = true;
+            else
+                __state = false;
+        }
+        static void Finalizer(bool __state)
+        {
+            if (__state)
+                Cheat.UseGodMode = false;
         }
     }
 
@@ -2701,11 +2706,7 @@ namespace MiscCheats
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             var code = instructions.ToList();
-#if RAFT_BETA
             var ind = code.FindIndex(x => x.opcode == OpCodes.Stloc_S && (x.operand is LocalBuilder loc ? loc.LocalIndex : (x.operand as IConvertible).ToInt32(CultureInfo.InvariantCulture)) == 5);
-#else
-            var ind = code.FindIndex(x => x.opcode == OpCodes.Stloc_3);
-#endif
             var lbl = code[ind].labels;
             code[ind].labels = new List<Label>();
             code.InsertRange(ind, new[]
@@ -3150,14 +3151,8 @@ namespace MiscCheats
         {
             if (Main.instance.permHearty && __instance.Asset.ApplyDeathPrevention)
             {
-#if RAFT_BETA
                 if (__instance.buffDisplayObject.progress > __instance.durationTimer)
                     __instance.buffDisplayObject.progress = __instance.durationTimer;
-#else
-                var f = Traverse.Create(___buffDisplayObject).Field<float>("progress");
-                if (f.Value > ___durationTimer)
-                    f.Value = ___durationTimer;
-#endif
                 __result = true;
                 return false;
             }
@@ -3291,11 +3286,7 @@ namespace MiscCheats
                     i.sizeDelta -= new Vector2(0, s);
                 if (f)
                     f.localPosition += new Vector3(0, s, 0);
-#if RAFT_BETA
                 button.recipeBox.startRectHeight -= s;
-#else
-                Traverse.Create(button.recipeBox).Field<float>("startRectHeight").Value -= s;
-#endif
             }
             else
             {
@@ -3338,11 +3329,7 @@ namespace MiscCheats
                     i.sizeDelta += new Vector2(0, s);
                 if (f)
                     f.localPosition -= new Vector3(0, s, 0);
-#if RAFT_BETA
                 __instance.startRectHeight += s;
-#else
-                Traverse.Create(__instance).Field<float>("startRectHeight").Value += s;
-#endif
             }
             else
             {
@@ -3506,13 +3493,8 @@ namespace MiscCheats
             {
                 spectrums.Add(new WeakReference<WaterWavesSpectrum>(p.Data.Spectrum));
                 var mem = original.GetOrCreateValue(p.Data.Spectrum);
-#if RAFT_BETA
                 mem.value1 = p.Data.Spectrum._Amplitude;
                 mem.value2 = p.Data.Spectrum._WindSpeed;
-#else
-                mem.value1 = p.Data.Spectrum.GetAmplitude();
-                mem.value2 = p.Data.Spectrum.GetWindSpeed();
-#endif
             }
         }
 
@@ -3522,13 +3504,8 @@ namespace MiscCheats
                 if (spectrums[i].TryGetTarget(out var spectrum))
                 {
                     var mem = original.GetOrCreateValue(spectrum);
-#if RAFT_BETA
                     spectrum._Amplitude = EditValue(mem.value1, Main.instance.amplitudeMul, Main.instance.amplitudeExp);
                     spectrum._WindSpeed = EditValue(mem.value2, Main.instance.windSpeedMul, Main.instance.windSpeedExp);
-#else
-                    spectrum.SetAmplitude(EditValue(mem.value1, Main.instance.amplitudeMul, Main.instance.amplitudeExp));
-                    spectrum.SetWindSpeed(EditValue(mem.value2, Main.instance.windSpeedMul, Main.instance.windSpeedExp));
-#endif
                 }
                 else
                     spectrums.RemoveAt(i);
@@ -3541,13 +3518,8 @@ namespace MiscCheats
             foreach (var r in spectrums)
                 if (r.TryGetTarget(out var spectrum) && original.TryGetValue(spectrum,out var mem))
                 {
-#if RAFT_BETA
                     spectrum._Amplitude = mem.value1;
                     spectrum._WindSpeed = mem.value2;
-#else
-                    spectrum.SetAmplitude(mem.value1);
-                    spectrum.SetWindSpeed(mem.value2);
-#endif
                 }
             spectrums.Clear();
             MarkDirty();
@@ -3914,11 +3886,7 @@ namespace MiscCheats
                     if (data.items.Count > 0)
                     {
                         var time = data.lastCollect + Main.instance.fruitTime - Time.time;
-#if RAFT_BETA
                         pickup.showingText = true;
-#else
-                        Traverse.Create(pickup).Field("showingText").SetValue(true);
-#endif
                         if (time < 0)
                         {
                             ComponentManager<CanvasHelper>.Value.displayTextManager.ShowText(Helper.GetTerm("Game/Harvest", false), MyInput.Keybinds["Interact"].MainKey, 0, 1, true);
@@ -3955,11 +3923,7 @@ namespace MiscCheats
                             MaybeAddItem(c.item);
                 if (item.dropper)
                 {
-#if RAFT_BETA
                     var asset = item.dropper.randomDropperAsset;
-#else
-                    var asset = Traverse.Create(item.dropper).Field("randomDropperAsset").GetValue<SO_RandomDropper>();
-#endif
                     if (asset)
                         foreach (var i in asset.randomizer.GetAllItems<Item_Base>())
                             MaybeAddItem(i);
@@ -4341,10 +4305,10 @@ namespace MiscCheats
     [HarmonyPatch(typeof(Equipment_Model), "SetModelState")]
     static class Patch_EquipmentModel
     {
-        static void Postfix(Transform ___localModel)
+        static void Postfix(Equipment_Model __instance)
         {
-            if (Main.instance.firstpersonEquipment && ___localModel)
-                ___localModel.gameObject.SetActive(false);
+            if (Main.instance.firstpersonEquipment && !(__instance is Equipment_HeadLight) && __instance.localModel)
+                __instance.localModel.gameObject.SetActive(false);
         }
     }
 
@@ -4609,23 +4573,16 @@ namespace MiscCheats
         }
         static float ModifyTime(float original, Equipment_HeadLight equipment)
         {
+            if (!Message_ToggleHeadLamp.TryGetLocalPlayerState(out var state) || !state)
+                return 0;
             if (Main.instance.allowMultiEquipment)
             {
-#if RAFT_BETA
                 var light = equipment.lightSourceLight;
                 var allLamps = equipment.playerNetwork.GetComponentsInChildren<Equipment_HeadLight>();
-#else
-                var light = equipment.GetLight();
-                var allLamps = equipment.GetPlayer().GetComponentsInChildren<Equipment_HeadLight>();
-#endif
                 foreach (var l in allLamps)
                     if (l == equipment)
                         break;
-#if RAFT_BETA
                     else if (l.lightSourceLight == light)
-#else
-                    else if (l.GetLight() == light)
-#endif
                         return 0;
             }
             return original * Main.instance.lampDurability;
@@ -5695,7 +5652,6 @@ namespace MiscCheats
         static bool OverrideHasPower(bool original) => original || Main.instance.sprinklerMode.HasFlag(SprinklerRequirementMode.NoBatteryNeeded);
     }
 
-#if RAFT_BETA
     [HarmonyPatch(typeof(NetworkUpdateManager), "DeserializeSingleMessage")]
     static class Patch_HandleMessage
     {
@@ -5703,42 +5659,6 @@ namespace MiscCheats
         static bool Prefix(Message msg, Network_UserId remoteID)
         {
             if (msg is Message_NetworkBehaviour message)
-#else
-    [HarmonyPatch(typeof(NetworkUpdateManager), "Deserialize")]
-    static class Patch_HandleMessage
-    {
-        public static List<Predicate<Message_NetworkBehaviour>> ignores = new List<Predicate<Message_NetworkBehaviour>>();
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator iL)
-        {
-            var code = instructions.ToList();
-            var ind = code.FindLastIndex(x => x.operand is MethodInfo m && m.Name == "Deserialize");
-            var lbl1 = iL.DefineLabel();
-            var lbl2 = iL.DefineLabel();
-            code.InsertRange(
-                ind + 1,
-                new[] {
-                    new CodeInstruction(OpCodes.Br_S, lbl2),
-                    new CodeInstruction(OpCodes.Nop) { labels = { lbl1 } },
-                    new CodeInstruction(OpCodes.Pop),
-                    new CodeInstruction(OpCodes.Pop),
-                    new CodeInstruction(OpCodes.Pop),
-                    new CodeInstruction(OpCodes.Ldc_I4_0),
-                    new CodeInstruction(OpCodes.Nop) { labels = { lbl2 } }
-                }
-            );
-            code.InsertRange(
-                ind,
-                new[] {
-                    new CodeInstruction(OpCodes.Ldloc_3),
-                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_HandleMessage), nameof(ShouldProcessMessage))),
-                    new CodeInstruction(OpCodes.Brfalse_S, lbl1)
-                }
-            );
-            return code;
-        }
-        static bool ShouldProcessMessage(Message_NetworkBehaviour message)
-        {
-#endif
                 for (int i = 0; i < ignores.Count; i++)
                     if (ignores[i](message))
                     {
@@ -5786,12 +5706,37 @@ namespace MiscCheats
     }
 
     [HarmonyPatch(typeof(Reciever_Antenna), "ConnectToReciever")]
-    public class Patch_RecieverAntenna
+    static class Patch_RecieverAntenna
     {
         public static void Postfix(Reciever_Antenna __instance)
         {
             if (Main.instance.disableAntennaWire && __instance.wire)
                 __instance.wire.gameObject.SetActive(false);
+        }
+    }
+
+    [HarmonyPatch(typeof(BeeHive), "FlowerFindDistance",MethodType.Getter)]
+    static class Patch_BeehiveRange
+    {
+        static void Postfix(ref float __result) => __result *= Main.instance.beehiveRangeMultiplier;
+
+        [OnModUnload]
+        public static void OnUnload()
+        {
+            Main.instance.beehiveRangeMultiplier = 1;
+        }
+    }
+
+    [HarmonyPatch(typeof(BeeHive), "RecheckBeeParticles")]
+    static class Patch_HiveParticles
+    {
+        static void Postfix(BeeHive __instance)
+        {
+            if (Main.instance.disableBeeParticles)
+            {
+                var emit = __instance.beeParticleSystem.emission;
+                emit.rateOverTime = 0;
+            }
         }
     }
 
@@ -6002,20 +5947,11 @@ namespace MiscCheats
         }
         public static void SetRecipe(this Item_Base item, CostMultiple[] cost, CraftingCategory category = CraftingCategory.Resources, int amountToCraft = 1, bool learnedFromBeginning = false, string subCategory = null, int subCatergoryOrder = 0)
         {
-#if RAFT_BETA
             item.settings_recipe.craftingCategory = category;
             item.settings_recipe.amountToCraft = amountToCraft;
             item.settings_recipe.learnedFromBeginning = learnedFromBeginning;
             item.settings_recipe.subCategory = subCategory;
             item.settings_recipe.subCatergoryOrder = subCatergoryOrder;
-#else
-            Traverse recipe = Traverse.Create(item.settings_recipe);
-            recipe.Field("craftingCategory").SetValue(category);
-            recipe.Field("amountToCraft").SetValue(amountToCraft);
-            recipe.Field("learnedFromBeginning").SetValue(learnedFromBeginning);
-            recipe.Field("subCategory").SetValue(subCategory);
-            recipe.Field("subCatergoryOrder").SetValue(subCatergoryOrder);
-#endif
             item.settings_recipe.NewCost = cost;
         }
 
@@ -6038,27 +5974,6 @@ namespace MiscCheats
             door.Open();
             network.RPC(new Message_NetworkBehaviour(Messages.Door_Open, door), Target.Other, EP2PSend.k_EP2PSendReliable, NetworkChannel.Channel_Game);
         }
-
-#if !RAFT_BETA
-        static MethodInfo _close => AccessTools.Method(typeof(Door), "Close");
-        public static void Close(this Door door) => _close.Invoke(door, new object[0]);
-
-        static FieldInfo _Amplitude => AccessTools.Field(typeof(WaterWavesSpectrum), "_Amplitude");
-        public static void SetAmplitude(this WaterWavesSpectrum spectrum, float value) => _Amplitude.SetValue(spectrum, value);
-        public static float GetAmplitude(this WaterWavesSpectrum spectrum) => (float)_Amplitude.GetValue(spectrum);
-        static FieldInfo _WindSpeed => AccessTools.Field(typeof(WaterWavesSpectrum), "_WindSpeed");
-        public static void SetWindSpeed(this WaterWavesSpectrum spectrum, float value) => _WindSpeed.SetValue(spectrum, value);
-        public static float GetWindSpeed(this WaterWavesSpectrum spectrum) => (float)_WindSpeed.GetValue(spectrum);
-
-        static FieldInfo _lightSourceLight => AccessTools.Field(typeof(Equipment_HeadLight), "lightSourceLight");
-        public static Light GetLight(this Equipment_HeadLight equip) => (Light)_lightSourceLight.GetValue(equip);
-        static FieldInfo _playerNetwork => AccessTools.Field(typeof(Equipment_HeadLight), "playerNetwork");
-        public static Network_Player GetPlayer(this Equipment_HeadLight equip) => (Network_Player)_playerNetwork.GetValue(equip);
-        static FieldInfo _body => AccessTools.Field(typeof(Raft), "body");
-        public static Rigidbody GetBody(this Raft raft) => (Rigidbody)_body.GetValue(raft);
-        static MethodInfo _raftUpdate => AccessTools.Method(typeof(Raft), "Update");
-        public static void Update(this Raft raft) => _raftUpdate.Invoke(raft,Array.Empty<object>());
-#endif
 
         static int smallCropplotIndex = -1;
         public static bool CanPlantInSmall(this Item_Base item)
@@ -6212,5 +6127,76 @@ namespace MiscCheats
         }
 
         public static Color ToColor(this int value) => new Color32((byte)((value >> 16) & 0xFF), (byte)((value >> 8) & 0xFF), (byte)(value & 0xFF), 0xFF);
+    }
+
+    [Serializable]
+    public class Message_ToggleHeadLamp
+    {
+        public bool state;
+
+        static ConditionalWeakTable<Network_Player, HashSet<Light>> memory = new ConditionalWeakTable<Network_Player, HashSet<Light>>();
+        public static void SetPlayer(Network_Player player, bool state)
+        {
+            if (!memory.TryGetValue(player, out var modified))
+            {
+                if (state)
+                    return;
+                else
+                    memory.Add(player, modified = new HashSet<Light>());
+            }
+            if (state)
+            {
+                foreach (var light in modified)
+                    if (light)
+                        light.enabled = true;
+            }
+            else
+                foreach (var equip in player.PlayerEquipment.equipment)
+                    if (equip && equip is Equipment_HeadLight headlight)
+                    {
+                        if (headlight.remoteModel)
+                            foreach (var light in headlight.remoteModel.GetComponentsInChildren<Light>(true))
+                                if (light && light.enabled)
+                                {
+                                    modified.Add(light);
+                                    light.enabled = false;
+                                }
+                        if (headlight.localModel)
+                            foreach (var light in headlight.localModel.GetComponentsInChildren<Light>(true))
+                                if (light && light.enabled)
+                                {
+                                    modified.Add(light);
+                                    light.enabled = false;
+                                }
+                    }
+        }
+        public static bool TryGetLocalPlayerState(out bool state)
+        {
+            state = true;
+            if (!ComponentManager<Raft_Network>.Value)
+                return true;
+            var player = ComponentManager<Raft_Network>.Value.GetLocalPlayer();
+            if (!player)
+                return true;
+            if (!memory.TryGetValue(player, out var modified))
+                state = true;
+            else
+                foreach (var light in modified)
+                    if (light)
+                    {
+                        state = light.enabled;
+                        break;
+                    }
+            return true;
+        }
+
+        [OnModUnload]
+        static void OnUnload()
+        {
+            if (ComponentManager<Raft_Network>.Value)
+                foreach (var player in ComponentManager<Raft_Network>.Value.remoteUsers.Values)
+                    SetPlayer(player, true);
+            memory.Clear();
+        }
     }
 }
