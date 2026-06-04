@@ -1054,7 +1054,7 @@ namespace MiscCheats
                 ComponentManager<Settings>.Value.Toggle();
             }
 
-            if (MyInput.GetButtonDown(toggleHeadlightKey) && Message_ToggleHeadLamp.TryGetLocalPlayerState(out var lightState))
+            if (ButtonExists(toggleHeadlightKey) && MyInput.GetButtonDown(toggleHeadlightKey) && Message_ToggleHeadLamp.TryGetLocalPlayerState(out var lightState))
             {
                 var msg = new Message_ToggleHeadLamp() { state = !lightState };
                 Message_ToggleHeadLamp.SetPlayer(RAPI.GetLocalPlayer(), msg.state);
@@ -1138,6 +1138,8 @@ namespace MiscCheats
             }
             return base.OnNetworkMessage(message, from, modslug);
         }
+
+        public static bool ButtonExists(string button) => button != null && MyInput.IdentifierToKeybind(button) != null;
     }
     public enum TrashMode
     {
@@ -2157,7 +2159,7 @@ namespace MiscCheats
         }
         static float OverrideFOV(float original)
         {
-            if (Main.instance.zoomKey != null && CanvasHelper.ActiveMenu == MenuType.None && MyInput.GetButton(Main.instance.zoomKey))
+            if (CanvasHelper.ActiveMenu == MenuType.None && Main.ButtonExists(Main.instance.zoomKey) && MyInput.GetButton(Main.instance.zoomKey))
                 return Main.instance.zoomFOV;
             if (Main.instance.FOVOverride > 0)
                 return Main.instance.FOVOverride;
