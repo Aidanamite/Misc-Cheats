@@ -3,7 +3,7 @@
   "slug": "misc-cheats",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.8.12",
+  "version": "1.9.0",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -1390,6 +1390,18 @@
     },
     {
       "type": "checkbox",
+      "name": "anyCrop",
+      "text": "Plant any Crop Anywhere",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "anyCrop",
+      "tooltip": "Allows you to plant any size crop in any size cropplot.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
       "text": "Return Armor Resources",
       "name": "returnArmor",
       "default": false,
@@ -2076,6 +2088,86 @@
         "This multiplies the rate that you lose thirst.",
         "A value of 1 will be the same as vanilla. Higher values will make you get thirsty faster."
       ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Food Yield Multiplier",
+      "name": "foodMultiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "foodMultiplier",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of hunger you restore when eating food.",
+        "A value of 1 will be the same as vanilla. Higher values will give you more food."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Bonus Food Yield Multiplier",
+      "name": "foodBonusMultiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "foodBonusMultiplier",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of bonus hunger you restore when eating food (not all food give \"bonus\").",
+        "A value of 1 will be the same as vanilla. Higher values will give you more bonus food."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Water Yield Multiplier",
+      "name": "waterMultiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "waterMultiplier",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of thirst you restore when drinking.",
+        "A value of 1 will be the same as vanilla. Higher values will give you more water."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "input",
+      "text": "Bonus Water Yield Multiplier",
+      "name": "waterBonusMultiplier",
+      "mode": "DecimalNumber",
+      "default": "1",
+      "access": "split",
+      "section": "player",
+      "member": "waterBonusMultiplier",
+      "memberFallback": 1,
+      "tooltip": [
+        "This multiplies the amount of bonus thirst you restore when drinking (not all items give \"bonus\").",
+        "A value of 1 will be the same as vanilla. Higher values will give you more bonus water."
+      ],
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
+      "text": "Consistent Food",
+      "name": "linearFood",
+      "default": false,
+      "access": "split",
+      "section": "player",
+      "member": "linearFood",
+      "tooltip": "Makes it so food and drinks will always give the full amount of hunger and thirst instead of giving less the more full your bar is.",
       "splitResetButton": true,
       "resetButton": true
     },

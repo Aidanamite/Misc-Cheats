@@ -539,7 +539,7 @@ namespace MiscCheats
         public bool logDrawTimes = false;
 
         public int deadZone = -1;
-        float _tankMultiplier;
+        float _tankMultiplier = 1;
         public float tankMultiplier
         {
             get => _tankMultiplier;
@@ -570,7 +570,7 @@ namespace MiscCheats
                 }    
             }
         }
-        bool _disableBeeParticles;
+        bool _disableBeeParticles = false;
         public bool disableBeeParticles
         {
             get => _disableBeeParticles;
@@ -583,6 +583,12 @@ namespace MiscCheats
                     beehive.RecheckBeeParticles();
             }
         }
+        public bool anyCrop = false;
+        public bool linearFood = false;
+        public float foodMultiplier = 1;
+        public float foodBonusMultiplier = 1;
+        public float waterMultiplier = 1;
+        public float waterBonusMultiplier = 1;
 
         public bool AllowSharkAttack => ComponentManager<RaftBounds>.Value.FoundationCount >= sharkAttackThresholdMin && (sharkAttackThresholdMax < 0 || sharkAttackThresholdMax >= ComponentManager<RaftBounds>.Value.FoundationCount);
         public bool UsingBino => ComponentManager<CanvasHelper>.Value && ComponentManager<CanvasHelper>.Value.binocularImage && ComponentManager<CanvasHelper>.Value.binocularImage.activeSelf;
@@ -1197,7 +1203,7 @@ namespace MiscCheats
                     new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_ReturnItemsFromBlock), nameof(ModifyReturnCost)))
                 });
             code.InsertRange(
-                code.FindIndex(x => x.opcode == OpCodes.Stloc_0) + 1,
+                code.FindIndex(x => x.IsStloc()) + 1,
                 new[] {
                     new CodeInstruction(OpCodes.Ldarg_0),
                     new CodeInstruction(OpCodes.Ldarg_1),
@@ -3647,6 +3653,37 @@ namespace MiscCheats
         }
     }
 
+    [HarmonyPatch(typeof(Stat_Bonus_Consumable), "Consume")]
+    static class Patch_ConsumeItem
+    {
+        static void Prefix(Stat_Bonus_Consumable __instance, ref float yield, ref float bonusYield)
+        {
+            var s = __instance.GetComponentInParent<PlayerStats>();
+            if (s.stat_hunger == __instance)
+            {
+                yield *= Main.instance.foodMultiplier;
+                bonusYield *= Main.instance.foodBonusMultiplier;
+            }
+            else
+            {
+                yield *= Main.instance.waterMultiplier;
+                bonusYield *= Main.instance.waterBonusMultiplier;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Stat_Consumable), "ConsumeWithManipulatorCurve")]
+    static class Patch_ManipulateYield
+    {
+        static bool Prefix(Stat_Consumable __instance, float yield)
+        {
+            if (!Main.instance.linearFood)
+                return true;
+            __instance.Consume(yield);
+            return false;
+        }
+    }
+
     [HarmonyPatch]
     static class Patch_ValidTarget
     {
@@ -4794,8 +4831,6 @@ namespace MiscCheats
                 code.FindLastIndex(x => x.opcode == OpCodes.Stfld && x.operand is FieldInfo f && f.Name == "spawnTimer"),
                 new[] {
                     new CodeInstruction(OpCodes.Ldarg_0),
-                    new CodeInstruction(OpCodes.Ldarg_0),
-                    new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(ObjectSpawner_RaftDirection), "spawnTimer")),
                     new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Methods), nameof(Methods.ModifyNewTime)))
                 });
             return code;
@@ -4811,10 +4846,6 @@ namespace MiscCheats
                 code.FindIndex(x => x.operand is MethodInfo m && m.Name == "GetRandomValue") + 1,
                 new[] {
                     new CodeInstruction(OpCodes.Ldarg_0),
-                    new CodeInstruction(OpCodes.Ldfld,AccessTools.Field(typeof(ObjectSpawner_RaftDirection), "spawnDelay")),
-                    new CodeInstruction(OpCodes.Ldarg_0),
-                    new CodeInstruction(OpCodes.Ldflda,AccessTools.Field(typeof(ObjectSpawner_RaftDirection), "spawnTimer")),
-                    new CodeInstruction(OpCodes.Ldarg_0),
                     new CodeInstruction(OpCodes.Ldloca,loc),
                     new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Methods), nameof(Methods.ModifySpawnCount)))
                 });
@@ -4822,8 +4853,6 @@ namespace MiscCheats
                 code.FindLastIndex(code.FindIndex(x => x.operand is MethodInfo m && m.Name == "IsSpawnPositionValid"),x => x.opcode == OpCodes.Ldarg_0) + 1,
                 new[] {
                     new CodeInstruction(OpCodes.Ldloca_S,6),
-                    new CodeInstruction(OpCodes.Ldarg_0),
-                    new CodeInstruction(OpCodes.Ldflda,AccessTools.Field(typeof(ObjectSpawner_RaftDirection), "spawnTimer")),
                     new CodeInstruction(OpCodes.Ldarg_0),
                     new CodeInstruction(OpCodes.Ldloc,loc),
                     new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Methods), nameof(Methods.ModifyPosition)))
@@ -4870,7 +4899,7 @@ namespace MiscCheats
                 return original * Main.instance.trashSpawn;
             }
             public static float ModifyDelay(float original) => Main.instance.trashMode == TrashMode.Area ? float.Epsilon : original;
-            public static float ModifyNewTime(float original, ObjectSpawner_RaftDirection instance, float before) => Main.instance.trashMode == TrashMode.Area ? before : original;
+            public static float ModifyNewTime(float original, ObjectSpawner_RaftDirection instance) => Main.instance.trashMode == TrashMode.Area ? instance.spawnTimer : original;
             public static float ModifyDespawnRange(float original) => Main.instance.trashMode == TrashMode.Area ? original * Main.instance.trashArea : original;
 
             public class SpawnArea
@@ -4887,7 +4916,7 @@ namespace MiscCheats
                 public float segmentArea;
             }
 
-            public static int ModifySpawnCount(int original, float spawnDelay, ref float spawnTimer, ObjectSpawner_RaftDirection spawner, out SpawnArea area)
+            public static int ModifySpawnCount(int original, ObjectSpawner_RaftDirection spawner, out SpawnArea area)
             {
                 if (Main.instance.trashMode == TrashMode.Area)
                 {
@@ -4929,20 +4958,20 @@ namespace MiscCheats
                         area.area = area.midWidth * area.travelDist + area.segmentArea;
                         area.travelNorm = area.travel / area.travelDist;
                     }
-                    var areaPerItem = ((maxV + maxV) * (maxH - minH)) / (original * Main.instance.trashQuantity) * spawnDelay / 100 / ((Prewarm ? area.travelDist / 2 * Main.instance.trashSpawn : spawnTimer) / area.travelDist);
+                    var areaPerItem = ((maxV + maxV) * (maxH - minH)) / (original * Main.instance.trashQuantity) * spawner.spawnDelay / 100 / ((Prewarm ? area.travelDist / 2 * Main.instance.trashSpawn : spawner.spawnTimer) / area.travelDist);
                     if (areaPerItem < 0.01f)
                         areaPerItem = 0.01f;
                     var itemCount = (int)(area.area / areaPerItem);
-                    if (!Prewarm && float.IsFinite(spawnTimer))
-                        spawnTimer *= 1 - (itemCount * areaPerItem / area.area);
+                    if (!Prewarm && float.IsFinite(spawner.spawnTimer))
+                        spawner.spawnTimer *= 1 - (itemCount * areaPerItem / area.area);
                     else
-                        spawnTimer = 0;
+                        spawner.spawnTimer = 0;
                     return itemCount;
                 }
                 area = null;
                 return original.Multiply(Main.instance.trashQuantity);
             }
-            public static void ModifyPosition(ref Vector3 spawnPosition, ref float spawnTimer, ObjectSpawner_RaftDirection spawner, SpawnArea area)
+            public static void ModifyPosition(ref Vector3 spawnPosition, ObjectSpawner_RaftDirection spawner, SpawnArea area)
             {
                 if (Main.instance.trashMode == TrashMode.Area)
                 {
@@ -5739,6 +5768,18 @@ namespace MiscCheats
                 var emit = __instance.beeParticleSystem.emission;
                 emit.rateOverTime = 0;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(Cropplot), "AcceptsPlantType")]
+    static class Patch_AcceptableCrop
+    {
+        static bool Prefix(Cropplot __instance, Item_Base item, ref bool __result)
+        {
+            if (!Main.instance.anyCrop || __instance.acceptableItemTypes.Count <= 1)
+                return true;
+            __result = __instance.plantManager && item && __instance.plantManager.GetPlantByIndex(item.UniqueIndex);
+            return false;
         }
     }
 
