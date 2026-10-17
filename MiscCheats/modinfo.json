@@ -3,7 +3,7 @@
   "slug": "misc-cheats",
   "author": "Aidanamite",
   "description": "Adds a bunch of little tweak and cheat settings. Everything is optional",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "license": "GNU AGPLv3",
   "icon": "icon.png",
   "banner": "banner.jpg",
@@ -171,7 +171,7 @@
       "member": "animalProduce",
       "memberFallback": 1,
       "tooltip": [
-        "<color=#007F00>[Host only]</color> Multiplies the time it takes for an domestic animal to produce more resource.",
+        "<color=#007F00>[Host only]</color> Multiplies the time it takes for a domestic animal to produce more resource.",
         "A value of 1 will be the same as vanilla. Higher numbers will make them take longer."
       ],
       "splitResetButton": true,
@@ -206,7 +206,7 @@
       "memberFallback": 1,
       "tooltip": [
         "Multiplies the distance that beehives can detect growing flowers from. This setting is primarily controlled by the host but should be set the same on clients for consistent graphics.",
-        "A value of 1 will be the same as vanilla. Higher numbers will include flowers that are futher away."
+        "A value of 1 will be the same as vanilla. Higher numbers will include flowers that are further away."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -620,7 +620,7 @@
         "Undoing game progress is not a game supported feature so these options are only available in singleplayer and <i>may</i> not work as well as other features.",
         "• Forget Recipes = This will reset your learned recipes back to the start of the game. This does not clear researched resources or relock blueprint locked recipes.",
         "• Unresearch All = This clear all researched resources. This does not unlearn any recipes.",
-        "• Discover Blueprints = This will relock all blueprint locked recipes in the research table. This does not unlearn any recipes."
+        "• Forget Blueprints = This will relock all blueprint locked recipes in the research table. This does not unlearn any recipes."
       ]
     },
     {
@@ -712,7 +712,7 @@
         "<color=#007F00>[Host only]</color> This controls how the game decides when to spawn more trash.",
         "• Vanilla = Trash will be spawned based on the amount of time spent traveling. This is the vanilla behaviour.",
         "• Distance = Trash will be spawned based on the distance traveled.",
-        "• Area = Trash will be spawned as an area around the raft, making it behave like an ocean full of trash instead of spawning in clumps in the direction you're traveling. <color=#FFFF00>Warning</color>: This will generally greatly increase the total trash in the ocean which will have a hefty performance impact. It's highly recommend to use the <color=#00FFFF>Trash Lag Fix</color> settings and turn down the <color=#00FFFF>Trash Radius Multiplier</color> setting"
+        "• Area = Trash will be spawned as an area around the raft, making it behave like an ocean full of trash instead of spawning in clumps in the direction you're traveling. <color=#FFFF00>Warning</color>: This will generally greatly increase the total trash in the ocean which will have a hefty performance impact. It's highly recommended to use the <color=#00FFFF>Trash Lag Fix</color> settings and turn down the <color=#00FFFF>Trash Radius Multiplier</color> setting"
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -767,8 +767,8 @@
       "tooltip": [
         "This affects when the axe loses durability while breaking blocks on the raft.",
         "• No Change = This is the vanilla behaviour. The axe will lose durability every time it visually \"hits\" the block.",
-        "• Once on Break = The axe will loose 1 durability per block broken.",
-        "• Disabled = The axe will not loose durability from breaking blocks."
+        "• Once on Break = The axe will lose 1 durability per block broken.",
+        "• Disabled = The axe will not lose durability from breaking blocks."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -1108,7 +1108,7 @@
       "access": "split",
       "section": "tool",
       "member": "infiniteDurability",
-      "tooltip": "This will make it so equipment and tools do not loose durability at all.",
+      "tooltip": "This will make it so equipment and tools do not lose durability at all.",
       "splitResetButton": true,
       "resetButton": true
     },
@@ -1198,7 +1198,7 @@
       "name": "toggleHeadlightKey",
       "section": "tool",
       "member": "toggleHeadlightKey",
-      "tooltip": "Press this key to toggle headlights on and off. While turned off, the headlights won't loose durability."
+      "tooltip": "Press this key to toggle headlights on and off. While turned off, the headlights won't lose durability."
     },
     {
       "type": "section",
@@ -1382,7 +1382,7 @@
       "member": "cropSpeed",
       "memberFallback": 1,
       "tooltip": [
-        "This multiplies how fast plants on the raft grow. <color=#FFFF00>NOTE</color>: it is recommended for all players in a multiplayer to set this the same.",
+        "This multiplies how long plants on the raft take to grow. <color=#FFFF00>NOTE</color>: it is recommended for all players in a multiplayer to set this the same.",
         "A value of 1 will be the same as vanilla. Higher numbers will make them take longer to grow."
       ],
       "splitResetButton": true,
@@ -1523,11 +1523,11 @@
       "access": "split",
       "section": "block",
       "member": "disableAntennaWire",
-      "tooltip": "This makes it so the wire connecting an antenna to a reciever is hidden, this does not affect functionality in any way, this is just a visual change."
+      "tooltip": "This makes it so the wire connecting an antenna to a receiver is hidden, this does not affect functionality in any way, this is just a visual change."
     },
     {
       "type": "input",
-      "text": "Reciever Auto-Off Timer (secs)",
+      "text": "Receiver Auto-Off Timer (secs)",
       "name": "autoOff",
       "mode": "DecimalNumber",
       "default": "-1",
@@ -1536,8 +1536,8 @@
       "member": "autoOff",
       "memberFallback": -1,
       "tooltip": [
-        "This is the time in seconds before a reciever will automatically turn off. Even if it was turned on by another player.",
-        "A blank or negative value will not turn off the reciever (same as vanilla)."
+        "This is the time in seconds before a receiver will automatically turn off. Even if it was turned on by another player.",
+        "A blank or negative value will not turn off the receiver (same as vanilla)."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -1639,7 +1639,7 @@
       "member": "recycleMetal",
       "tooltip": [
         "This makes it so you can put bolts and hinges into a smelter to melt them back into metal ingots.",
-        "<color=#FFFF00>NOTE</color>: This setting will only work if the host has it enabled, and each player will only be able to put the item in in they also have it enabled."
+        "<color=#FFFF00>NOTE</color>: This setting will only work if the host has it enabled, and each player will only be able to put the item in if they also have it enabled."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -1654,7 +1654,7 @@
       "member": "refineComb",
       "tooltip": [
         "This makes it so you can directly put honeycombs into refiners instead of needing to craft it into honey jars. 5 Honeycombs are equal to 1 Honey Jar.",
-        "<color=#FFFF00>NOTE</color>: This setting will only work if the host has it enabled, and each player will only be able to put the item in in they also have it enabled."
+        "<color=#FFFF00>NOTE</color>: This setting will only work if the host has it enabled, and each player will only be able to put the item in if they also have it enabled."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -1683,7 +1683,7 @@
       "tooltip": [
         "This changes how cooking pots and juicers check for the item used to collect the food they've made.",
         "• Default = This is the vanilla behaviour.",
-        "• Disable Pickup Item = This makes it does not use clay bowls or glass cups to collect food.",
+        "• Disable Pickup Item = This makes it so it does not use clay bowls or glass cups to collect food.",
         "• Better Item Detection = This makes it so collecting food will check your whole inventory for the clay bowls or glass cups instead of requiring you to have it in your hand."
       ],
       "splitResetButton": true,
@@ -1730,7 +1730,7 @@
       "memberFallback": 1,
       "tooltip": [
         "This multiplies the max capacity of tanks on the raft.",
-        "This is primarily controlled by the world host but it's recommend for every player in the multipler to set it the same.",
+        "This is primarily controlled by the world host but it's recommended for every player in the multipler to set it the same.",
         "A value of 1 will be the same as vanilla. Higher numbers will increase the max capacity."
       ],
       "splitResetButton": true,
@@ -2020,7 +2020,7 @@
       "memberFallback": -1,
       "tooltip": [
         "Overrides the portion of item durability lost when respawning.",
-        "A blank value will be the same as vanilla (about 50%). A value of 0.5 will makes items lose half their remaining durability. A value of 0 will makes items lose none of their durability.",
+        "A blank value will be the same as vanilla (about 50%). A value of 0.5 will make items lose half their remaining durability. A value of 0 will make items lose none of their durability.",
         "<color=#FFFF00>NOTE</color>: This setting only affects gamemodes where you lose only part of your inventory on respawn."
       ],
       "splitResetButton": true,
@@ -2040,7 +2040,7 @@
         "This multiplies the time it takes for items dropped by players to despawn.",
         "A value of 1 will be the same as vanilla (about 5 minutes). Higher values will make it take longer to despawn.",
         "<color=#FFFF00>NOTE</color>: This setting only affects items at the time they are dropped, changing this value will not affect items that have already been dropped.",
-        "<color=#FFFF00>NOTE 2</color>: It is recommend for all players in a multiplayer to have this set the same. Once an item has despawned on for the host, other players will not be able to pick that item up even if it hasn't despawned for them yet."
+        "<color=#FFFF00>NOTE 2</color>: It is recommended for all players in a multiplayer to have this set the same. Once an item has despawned for the host, other players will not be able to pick that item up even if it hasn't despawned for them yet."
       ],
       "splitResetButton": true,
       "resetButton": true
@@ -2293,7 +2293,7 @@
     {
       "type": "checkbox",
       "name": "invincible",
-      "text": "Invinciblity",
+      "text": "Invincibility",
       "default": false,
       "access": "split",
       "section": "player",
@@ -2387,7 +2387,7 @@
       "default": false,
       "section": "graphic",
       "member": "fullLook",
-      "tooltip": "Allows you to look staight up and down.",
+      "tooltip": "Allows you to look straight up and down.",
       "resetButton": true
     },
     {
@@ -2416,7 +2416,7 @@
       "memberFallback": -1,
       "tooltip": [
         "This controls the speed that the water drips on the screen will fade out after existing water.",
-        "A blank value will be the same as vanilla (equivilent to about 0.98). Lower values will make the water fade out faster. A value of 1 will make the water never fade."
+        "A blank value will be the same as vanilla (equivalent to about 0.98). Lower values will make the water fade out faster. A value of 1 will make the water never fade."
       ],
       "resetButton": true
     },
@@ -2427,7 +2427,7 @@
       "default": false,
       "section": "graphic",
       "member": "gradualUnhealthy",
-      "tooltip": "This makes it so the visual effects of being hungry, thrist or badly injured will gradually become more obvious as your stats get worse.",
+      "tooltip": "This makes it so the visual effects of being hungry, thirsty or badly injured will gradually become more obvious as your stats get worse.",
       "resetButton": true
     },
     {
@@ -2567,7 +2567,7 @@
       "memberFallback": 0,
       "tooltip": [
         "Overrides the shadow resolution of sky light.",
-        "A blank value will be the same as vanilla (equivelent value will vary but will be no more than 11 = 4096x4096).",
+        "A blank value will be the same as vanilla (equivalent value will vary but will be no more than 11 = 4096x4096).",
         "Can be any number from 1 to 15, each increase of 1 will double the resolution. (1 = 2x2, 5 = 32x32, 9 = 1024x1024)"
       ],
       "resetButton": true
@@ -2583,7 +2583,7 @@
     },
     {
       "type": "input",
-      "text": "  | Color",
+      "text": "  | Colour",
       "name": "colorTreasure",
       "mode": "Alphanumeric",
       "default": "909020",
@@ -2683,7 +2683,7 @@
     },
     {
       "type": "input",
-      "text": "    | Color",
+      "text": "    | Colour",
       "name": "colorPickupCol",
       "mode": "Alphanumeric",
       "default": "FFFF90",
@@ -2708,7 +2708,7 @@
     },
     {
       "type": "input",
-      "text": "    | Color",
+      "text": "    | Colour",
       "name": "colorShovelCol",
       "mode": "Alphanumeric",
       "default": "FFFF90",
@@ -2733,7 +2733,7 @@
     },
     {
       "type": "input",
-      "text": "    | Color",
+      "text": "    | Colour",
       "name": "colorTreeCol",
       "mode": "Alphanumeric",
       "default": "FFFF90",
@@ -2758,7 +2758,7 @@
     },
     {
       "type": "input",
-      "text": "    | Color",
+      "text": "    | Colour",
       "name": "colorMineCol",
       "mode": "Alphanumeric",
       "default": "FFFF90",
@@ -2783,7 +2783,7 @@
     },
     {
       "type": "input",
-      "text": "    | Color",
+      "text": "    | Colour",
       "name": "colorInteractableCol",
       "mode": "Alphanumeric",
       "default": "60FFFF",
@@ -2805,7 +2805,7 @@
     },
     {
       "type": "input",
-      "text": "    | Color",
+      "text": "    | Colour",
       "name": "colorBoxCol",
       "mode": "Alphanumeric",
       "default": "90FF90",
@@ -2827,7 +2827,7 @@
     },
     {
       "type": "input",
-      "text": "    | Color",
+      "text": "    | Colour",
       "name": "colorBoxTrg",
       "mode": "Alphanumeric",
       "default": "FF6060",
@@ -2849,7 +2849,7 @@
     },
     {
       "type": "input",
-      "text": "    | Color",
+      "text": "    | Colour",
       "name": "colorSphereCol",
       "mode": "Alphanumeric",
       "default": "90FF90",
@@ -2871,7 +2871,7 @@
     },
     {
       "type": "input",
-      "text": "    | Color",
+      "text": "    | Colour",
       "name": "colorSphereTrg",
       "mode": "Alphanumeric",
       "default": "FF6060",
@@ -3079,8 +3079,8 @@
       "member": "puzzleTime",
       "memberFallback": 1,
       "tooltip": [
-        "This multiplies amount of time you have to complete the \"Computer Puzzle\" in [STORY LOCATION REDACTED].",
-        "<color=#FFFF00>NOTE</color>: The actual time you have to complete the puzzle is controlled by the host, however each player will <i>see</i> the timer modified by their own settings so it's best, but not nessasary, to set all players to the same setting.",
+        "This multiplies the amount of time you have to complete the \"Computer Puzzle\" in [STORY LOCATION REDACTED].",
+        "<color=#FFFF00>NOTE</color>: The actual time you have to complete the puzzle is controlled by the host, however each player will <i>see</i> the timer modified by their own settings so it's best, but not necessary, to set all players to the same setting.",
         "A value of 1 will be the same as vanilla. Higher values will give you more time."
       ],
       "splitResetButton": true,
@@ -3094,7 +3094,7 @@
       "access": "splitcustom",
       "section": "island",
       "member": "freeVending",
-      "tooltip": "<color=#007F00>[Host only]</color> This makes vending machienes not cost or require any tokens. This will affect all players.",
+      "tooltip": "<color=#007F00>[Host only]</color> This makes vending machines not cost or require any tokens. This will affect all players.",
       "splitResetButton": true,
       "resetButton": true
     },
@@ -3124,7 +3124,6 @@
       "memberFallback": -1,
       "tooltip": [
         "This changes the max number of entries that stay in the RML console.",
-        "<color=#FFFF00>NOTE</color>: The actual time you have to complete the puzzle is controlled by the host, however each player will <i>see</i> the timer modified by their own settings so it's best, but not nessasary, to set all players to the same setting.",
         "A negative value will be left as the default (about 100)."
       ]
     },
