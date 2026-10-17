@@ -1116,7 +1116,7 @@ namespace MiscCheats
         public static Sprite GetBlip(ChunkPointType type, Sprite original,float hue)
         {
             if (!chunkBlips.TryGetValue(type, out var tup) || !tup.sprite)
-                chunkBlips[type] = tup = (original.GetReadable(), -1);
+                chunkBlips[type] = tup = (original.GetReadable(TextureFormat.BGRA32), -1); // Note: BGRA32 needs to be used instead of ARGB32 otherwise the texture copies wrong
             if (tup.color != hue)
             {
                 var p = tup.sprite.texture.GetPixels(0);
@@ -6071,17 +6071,25 @@ namespace MiscCheats
             // This line should never be reached
             return default;
         }
-        public static Sprite GetReadable(this Sprite source)
+        public static Sprite GetReadable(this Sprite source, TextureFormat format = TextureFormat.ARGB32)
         {
-            var s = Sprite.Create(source.texture.GetReadable(), source.rect, source.pivot, source.pixelsPerUnit);
+            var s = Sprite.Create(source.texture.GetReadable(format), source.rect, source.pivot, source.pixelsPerUnit);
             Main.createdObjects.Add(s);
             return s;
         }
 
         public static Texture2D GetReadable(this Texture2D source, TextureFormat format = TextureFormat.ARGB32)
         {
+            if (source.isReadable)
+            {
+                var texture2 = new Texture2D(source.width, source.height, format, source.mipmapCount, GraphicsFormatUtility.IsSRGBFormat(source.graphicsFormat));
+                texture2.SetPixels(source.GetPixels());
+                texture2.Apply(false, false);
+                Main.createdObjects.Add(texture2);
+                return texture2;
+            }
             var prev = RenderTexture.active;
-            var temp = RenderTexture.GetTemporary(new RenderTextureDescriptor(source.width, source.height, GraphicsFormatUtility.GetGraphicsFormat(format, GraphicsFormatUtility.IsSRGBFormat(source.graphicsFormat)), 16, source.mipmapCount));
+            var temp = RenderTexture.GetTemporary(new RenderTextureDescriptor(source.width, source.height, GraphicsFormatUtility.GetGraphicsFormat(format, GraphicsFormatUtility.IsSRGBFormat(source.graphicsFormat)), GraphicsFormatUtility.GetDepthBits(source.graphicsFormat), source.mipmapCount));
             temp.dimension = UnityEngine.Rendering.TextureDimension.Tex2D;
             temp.useMipMap = true;
             Graphics.Blit(source, temp);
@@ -6091,9 +6099,10 @@ namespace MiscCheats
             texture.Apply(true, false);
             RenderTexture.active = prev;
             RenderTexture.ReleaseTemporary(temp);
+            Main.createdObjects.Add(texture);
             return texture;
         }
-
+        
         public static Y GetOrCreate<X,Y>(this IDictionary<X,Y> d,X key) where Y : new()
         {
             if (!d.TryGetValue(key, out var value))
