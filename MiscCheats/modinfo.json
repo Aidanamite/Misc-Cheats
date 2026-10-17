@@ -1631,6 +1631,18 @@
     },
     {
       "type": "checkbox",
+      "name": "radarBlipHalo",
+      "text": "Disable the halo on the islands blips",
+      "default": false,
+      "access": "split",
+      "section": "block",
+      "member": "radarBlipHalo",
+      "tooltip": "Enabling this option removes the halo/aura around the Small Islands blips that appear on the radar, making them only show the actual blip, like vanilla island blips.",
+      "splitResetButton": true,
+      "resetButton": true
+    },
+    {
+      "type": "checkbox",
       "text": "Allow Smelting Bolts and Hinges",
       "name": "recycleMetal",
       "default": false,

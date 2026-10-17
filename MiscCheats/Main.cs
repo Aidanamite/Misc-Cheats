@@ -364,6 +364,7 @@ namespace MiscCheats
         public bool radarSmall = false;
         public bool radarRaft = false;
         public bool radarAch = false;
+        public bool radarBlipHalo = false;
         public float rcolorSmall = 0.16667f;
         public float rcolorRaft = 0;
         public float rcolorAch = 0.83333f;
@@ -1112,25 +1113,30 @@ namespace MiscCheats
         [DllImport("kernel32")]
         public static extern void GetSystemTimeAsFileTime(out long value);
 
-        static Dictionary<ChunkPointType, (Sprite sprite, float color)> chunkBlips = new Dictionary<ChunkPointType, (Sprite, float)>();
-        public static Sprite GetBlip(ChunkPointType type, Sprite original,float hue)
+        static Dictionary<ChunkPointType, (Sprite sprite, float color, bool noHalo)> chunkBlips = new Dictionary<ChunkPointType, (Sprite, float, bool)>();
+        public static Sprite GetBlip(ChunkPointType type, Sprite original, float hue)
         {
-            if (!chunkBlips.TryGetValue(type, out var tup) || !tup.sprite)
-                chunkBlips[type] = tup = (original.GetReadable(), -1);
-            if (tup.color != hue)
+            bool noHalo = instance != null && instance.radarBlipHalo;
+            if (!chunkBlips.TryGetValue(type, out var tup) || !tup.sprite || tup.color != hue || tup.noHalo != noHalo)
             {
-                var p = tup.sprite.texture.GetPixels(0);
-                for (int i = 0; i < p.Length; i++)
+                tup = (original.GetReadable(), hue, noHalo);
+                var pixels = tup.sprite.texture.GetPixels(0);
+                for (int i = 0; i < pixels.Length; i++)
                 {
-                    var c = p[i];
+                    var c = pixels[i];
+                    if (noHalo && c.a < 0.5f)
+                    {
+                        pixels[i] = Color.clear;
+                        continue;
+                    }
                     c.ToHSL(out _, out var ps, out var pl);
                     var nc = ColorConvert.FromHSL(hue, ps, pl);
                     nc.a = c.a;
-                    p[i] = nc;
-                        }
-                tup.sprite.texture.SetPixels(p, 0);
+                    pixels[i] = nc;
+                }
+                tup.sprite.texture.SetPixels(pixels, 0);
                 tup.sprite.texture.Apply(true);
-                chunkBlips[type] = tup = (tup.sprite, hue);
+                chunkBlips[type] = tup;
             }
             return tup.sprite;
         }
